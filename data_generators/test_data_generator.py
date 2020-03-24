@@ -5,12 +5,10 @@ import numpy as np
 class TestDataGenerator(keras.utils.Sequence):
     'Generates data for segmentation (test)'
 
-    def __init__(self, train_img_path, train_mask_path, test_img_path, test_mask_path, n_classes, batch_size=4, use_data_augmentation=False, shuffle_seed=None):
+    def __init__(self, img_path, mask_path, n_classes, batch_size=4, use_data_augmentation=False, shuffle_seed=None):
         """Initializes
-        :param train_img_path: path of the directory that contains the train RGB images
-        :param train_mask_path: path of the directory that contains the train mask images
-        :param test_img_path: path of the directory that contains the test RGB images
-        :param test_mask_path: path of the directory that contains the test mask images
+        :param img_path: path of the directory that contains the RGB images
+        :param mask_path: path of the directory that contains the mask images (labels)
         :param n_classes: number of classes
         :param batch_size: batch size for the training
         :param use_data_augmentation: flag that indicates whether data augmentation is used
@@ -25,16 +23,9 @@ class TestDataGenerator(keras.utils.Sequence):
         self.use_data_augmentation = use_data_augmentation
         self.shuffle_seed = shuffle_seed
 
-        # list train_img directory
+        # list img directory
         
-
-        # list train_mask directory
-
-
-        # list test_img directory
-
-
-        # list test_mask directory
+        # list mask directory
 
         pass
 
