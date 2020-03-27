@@ -23,6 +23,7 @@ def init_augmenter():
         sometimes(iaa.MultiplyBrightness((0.7, 1.3))),
         # TODO: try no ChangeColor or Brightness
         sometimes(iaa.ChangeColorTemperature((5000, 7000))),
+        sometimes(iaa.Crop(percent=(0, 0.1)))
     ])
 
 
@@ -46,7 +47,7 @@ def process_augmentation(image, mask, depth=None):
     # only RGB
     else:
         aug_image, aug_seg = augmenter(image=image, segmentation_maps=segmap)
-        return aug_image, aug_seg.get_arr()
+        return aug_image, aug_seg.get_arr(), None
 
 
 if __name__ == "__main__":
@@ -66,8 +67,9 @@ if __name__ == "__main__":
     cv2.imshow('', depth)
     cv2.waitKey()
 
-    aug_img, aug_seg, aug_depth = process_augmentation(image, mask, depth)
-
+    aug_img, aug_seg, aug_depth = process_augmentation(image, mask)
+    print(aug_depth)
+    exit()
     cv2.imshow('', aug_img)
     cv2.waitKey(0)
     cv2.imshow('', aug_seg)
