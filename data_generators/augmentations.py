@@ -23,7 +23,7 @@ def init_augmenter():
         sometimes(iaa.MultiplyBrightness((0.7, 1.3))),
         # TODO: try no ChangeColor or Brightness
         sometimes(iaa.ChangeColorTemperature((5000, 7000))),
-        sometimes(iaa.Crop(percent=(0, 0.1)))
+        sometimes(iaa.Crop(percent=(0, 0.15)))
     ])
 
 
@@ -68,7 +68,8 @@ if __name__ == "__main__":
     cv2.waitKey()
 
     aug_img, aug_seg, aug_depth = process_augmentation(image, mask)
-    print(aug_depth)
+    from tensorflow import keras
+    print(keras.backend.one_hot(aug_seg, 38))
     exit()
     cv2.imshow('', aug_img)
     cv2.waitKey(0)

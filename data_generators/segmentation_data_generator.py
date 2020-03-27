@@ -176,3 +176,4 @@ if __name__ == "__main__":
             print(img.shape, depth.shape, mask.shape)
             showim(img)
             showim(depth)
+            
