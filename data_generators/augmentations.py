@@ -50,6 +50,7 @@ def process_augmentation(image, mask, depth=None):
 
 
 if __name__ == "__main__":
+    # tests
     image = cv2.imread(
         'datasets/sun_rgbd/SUNRGBD-test_images/img-000001.jpg', flags=cv2.IMREAD_COLOR)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
