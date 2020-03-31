@@ -78,14 +78,17 @@ def iou_score(gt, pr, class_weights=1., class_indexes=None, smooth=SMOOTH, per_i
     """
 
     gt, pr = gather_channels(gt, pr, indexes=class_indexes)
+    print(gt.shape, pr.shape)
     pr = round_if_needed(pr, threshold)
     axes = get_reduce_axes(per_image)
-
+    # print(axes)
     # score calculation
     intersection = K.sum(gt * pr, axis=axes)
+    # print(intersection)
     union = K.sum(gt + pr, axis=axes) - intersection
-
+    # print(union)
     score = (intersection + smooth) / (union + smooth)
+    print(score)
     score = average(score, per_image, class_weights)
 
     return score
