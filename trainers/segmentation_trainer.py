@@ -3,14 +3,20 @@ import os
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
 
-class SunRgbdTrainer(BaseTrain):
-    def __init__(self, model, data, config):
-        super(SunRgbdTrainer, self).__init__(model, data, config)
+class SegmentationTrainer():
+    def __init__(self, model, data_generator, config):
+        """
+        :param model: the compiled model to use
+        :param data_generator: the data_generator to use (must inherit keras.utils.Sequence)
+        """
+        super(SegmentationTrainer, self).__init__(
+            model, data_generator, config)
         self.callbacks = []
         self.loss = []
         self.acc = []
         self.val_loss = []
         self.val_acc = []
+        self.mious = []  # table of mIoU metrics to use
         self.init_callbacks()
 
     def init_callbacks(self):
@@ -34,15 +40,14 @@ class SunRgbdTrainer(BaseTrain):
         )
 
     def train(self):
-        history = self.model.fit(
-            self.data[0], self.data[1],
+        history = self.model.fit_generator(
+            generator=self.data_generator,
             epochs=self.config.trainer.num_epochs,
             verbose=self.config.trainer.verbose_training,
             batch_size=self.config.trainer.batch_size,
-            validation_split=self.config.trainer.validation_split,
             callbacks=self.callbacks,
+            use_multiprocessing=True if hasattr(
+                self.config.trainer, 'workers') else False,
+            workers=1 if not hasattr(
+                self.config.trainer, 'workers') else self.config.trainer.workers
         )
-        self.loss.extend(history.history['loss'])
-        self.acc.extend(history.history['acc'])
-        self.val_loss.extend(history.history['val_loss'])
-        self.val_acc.extend(history.history['val_acc'])
