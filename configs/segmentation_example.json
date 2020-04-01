@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "simple_mnist"
+    "name": "fast_scnn_sunrgbd_RGB"
   },
   "model": {
     "learning_rate": 0.001,
@@ -8,9 +8,9 @@
   },
   "trainer": {
     "num_epochs": 20,
-    "batch_size": 64,
-    "validation_split": 0.25,
-    "verbose_training": true
+    "batch_size": 8,
+    "verbose_training": true,
+    "workers": 2
   },
   "callbacks": {
     "checkpoint_monitor": "val_loss",
