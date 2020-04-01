@@ -3,8 +3,9 @@
     "name": "fast_scnn_sunrgbd_RGB"
   },
   "model": {
-    "learning_rate": 0.001,
-    "optimizer": "adam"
+    "optimizer": "SGD",
+    "learning_rate": 0.045,
+    "momentum": 0.9
   },
   "trainer": {
     "num_epochs": 20,
