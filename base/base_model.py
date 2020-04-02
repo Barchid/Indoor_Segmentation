@@ -29,12 +29,22 @@ class BaseModel(object):
     def build_model(self):
         raise NotImplementedError
 
-    def _generate_metrics_sun_rgbd(self):
+    def build_optimizer(self):
+        """Builds the optimizer according to the config file
+        """
+        if hasattr(self.config.model, "optimizer") and self.config.model.optimizer == 'SGD':
+            return keras.optimizers.SGD(momentum=self.config.model.momentum, lr=self.config.model.learning_rate)
+        elif hasattr(self.config.model, "optimizer") and self.config.model.optimizer == 'Adam':
+            return keras.optimizers.Adam(learning_rate=self.config.model.learning_rate)
+        else:
+            raise Exception('No model.optimizer found in JSON config file')
+
+    def build_metrics_SUN(self):
         """Generates the list of metrics to evaluate with SUN RGB-D.
         """
-        metrics = self._generate_metrics(n_classes=38)
+        metrics = self._generate_metrics()
         ious = build_iou_for(
-            label=range(38),
+            label=[*range(38)],
             name=[
                 "background",  # 0
                 "wall",  # 1
@@ -76,21 +86,19 @@ class BaseModel(object):
                 "bag"  # 37
             ]
         )
-        metrics.append(mean_iou)  # general mIoU
-        metrics.append(keras.metrics.MeanIoU(num_classes=38))
-        metrics.append('acc')
+        metrics.extend(ious)
         return metrics
 
-    def _nyu_v2_metrics(self):
+    def build_metrics_NYU(self):
         """Generates the metrics for the NYU-v2 dataset
         """
-        metrics = self._generate_metrics(n_classes=40)
+        metrics = self._generate_metrics()
         # TODO
         return metrics
 
-    def _generate_metrics(self, n_classes):
+    def _generate_metrics(self):
         metrics = []
         metrics.append(mean_iou)  # general mIoU
-        metrics.append(keras.metrics.MeanIoU(num_classes=n_classes))
-        metrics.append('acc')
+        metrics.append(keras.metrics.MeanIoU(num_classes=self.config.model.classes))
+        metrics.append('accuracy')
         return metrics
