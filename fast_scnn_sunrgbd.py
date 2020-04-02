@@ -17,22 +17,18 @@ def main():
         print("missing or invalid arguments")
         exit(0)
 
-    print("Load model")
-    FastScnnModel(config)
-
     # create the experiments dirs
     create_dirs([config.callbacks.tensorboard_log_dir,
                  config.callbacks.checkpoint_dir])
 
     print('Create the data generator.')
-    train_data = SegmentationDataGenerator()
+    train_data = SegmentationDataGenerator(config)
 
     print('Create the model.')
     model = FastScnnModel(config)
 
     print('Create the trainer')
-    trainer = SimpleMnistModelTrainer(
-        model.model, data_loader.get_train_data(), config)
+    trainer = SegmentationTrainer(model, train_data, config)
 
     print('Start training the model.')
     trainer.train()

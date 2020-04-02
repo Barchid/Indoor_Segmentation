@@ -105,7 +105,6 @@ def ffm_block(low_resolution, high_resolution, c):
 class FastScnnModel(BaseModel):
     def __init__(self, config):
         super(FastScnnModel, self).__init__(config)
-        self.build_model()
 
     def build_model(self):
         # input layer
@@ -161,4 +160,7 @@ class FastScnnModel(BaseModel):
         fast_scnn.summary()
         optimizer = self.build_optimizer()
         metrics = self.build_metrics_SUN()
-        fast_scnn.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=metrics)
+        fast_scnn.compile(loss='categorical_crossentropy',
+                          optimizer=optimizer, metrics=metrics)
+
+        return fast_scnn

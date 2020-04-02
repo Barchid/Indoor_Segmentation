@@ -5,6 +5,7 @@ import os
 import random
 import cv2
 import data_generators.augmentations as augmentations
+import math
 
 class SegmentationDataGenerator(keras.utils.Sequence):
     'Generates data for segmentation (test)'
@@ -18,7 +19,7 @@ class SegmentationDataGenerator(keras.utils.Sequence):
         self.n_classes = config.model.classes
         self.use_data_augmentation = config.generator.use_data_augmentation
         self.shuffle_seed = config.generator.shuffle_seed
-        self.depth_dir = config.generator.depth_dir
+        self.depth_dir = None if not hasattr(config.generator, 'depth_dir') else config.generator.depth_dir 
         self.input_dimensions = (config.model.height, config.model.width)
 
         random.seed(self.shuffle_seed)
@@ -26,7 +27,8 @@ class SegmentationDataGenerator(keras.utils.Sequence):
 
     def __len__(self):
         'Denotes the number of batches per epoch'
-        return int(np.floor(len(self.data_tuples) / self.batch_size))
+        return math.ceil(len(self.data_tuples) / self.batch_size)
+        # return int(np.floor(len(self.data_tuples) / self.batch_size))
 
     def __getitem__(self, index):
         # Retrieve the paths used in the current batch
@@ -56,7 +58,7 @@ class SegmentationDataGenerator(keras.utils.Sequence):
                 Z.append(self._get_depth_tensor(depth))
 
         if self.depth_dir is None:  # No depth available
-            return X, Y
+            return np.array(X), np.array(Y)
         else:
             return X, Z, Y
 

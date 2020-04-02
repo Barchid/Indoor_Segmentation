@@ -6,7 +6,7 @@ from tensorflow import keras
 class BaseModel(object):
     def __init__(self, config):
         self.config = config
-        self.model = None
+        self.model = self.build_model()
 
     # save function that saves the checkpoint in the path defined in the config file
     def save(self, checkpoint_path):
@@ -98,7 +98,7 @@ class BaseModel(object):
 
     def _generate_metrics(self):
         metrics = []
-        metrics.append(mean_iou)  # general mIoU
+        # metrics.append(mean_iou)  # general mIoU
         metrics.append(keras.metrics.MeanIoU(num_classes=self.config.model.classes))
         metrics.append('accuracy')
         return metrics

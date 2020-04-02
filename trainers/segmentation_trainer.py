@@ -3,7 +3,7 @@ import os
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
 
-class SegmentationTrainer():
+class SegmentationTrainer(BaseTrain):
     def __init__(self, model, data_generator, config):
         """
         :param model: the compiled model to use
@@ -22,8 +22,10 @@ class SegmentationTrainer():
     def init_callbacks(self):
         self.callbacks.append(
             ModelCheckpoint(
+                # filepath=os.path.join(self.config.callbacks.checkpoint_dir,
+                #                       '%s-{epoch:02d}-{loss:.2f}.hdf5' % self.config.exp.name),
                 filepath=os.path.join(self.config.callbacks.checkpoint_dir,
-                                      '%s-{epoch:02d}-{loss:.2f}.hdf5' % self.config.exp.name),
+                                      '%s-{epoch:02d}-pute.hdf5' % self.config.exp.name),
                 monitor=self.config.callbacks.checkpoint_monitor,
                 mode=self.config.callbacks.checkpoint_mode,
                 save_best_only=self.config.callbacks.checkpoint_save_best_only,
@@ -40,14 +42,24 @@ class SegmentationTrainer():
         )
 
     def train(self):
-        history = self.model.fit_generator(
-            generator=self.data_generator,
+        # history = self.model.model.fit_generator(
+        #     generator=self.data_generator,
+        #     epochs=self.config.trainer.num_epochs,
+        #     verbose=self.config.trainer.verbose_training,
+        #     callbacks=self.callbacks,
+        #     use_multiprocessing=True if hasattr(
+        #         self.config.trainer, 'workers') else False,
+        #     workers=1 if not hasattr(
+        #         self.config.trainer, 'workers') else self.config.trainer.workers
+        # )
+        history = self.model.model.fit(
+            x=self.data_generator,
             epochs=self.config.trainer.num_epochs,
             verbose=self.config.trainer.verbose_training,
-            batch_size=self.config.trainer.batch_size,
             callbacks=self.callbacks,
             use_multiprocessing=True if hasattr(
-                self.config.trainer, 'workers') else False,
+                self.config.trainer, 'workers') and self.config.trainer.workers > 1 else False,
             workers=1 if not hasattr(
                 self.config.trainer, 'workers') else self.config.trainer.workers
         )
+        print(history)
