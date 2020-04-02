@@ -1,6 +1,7 @@
 from data_loader.simple_mnist_data_loader import SimpleMnistDataLoader
 from models.fast_scnn_model import FastScnnModel
 from trainers.segmentation_trainer import SegmentationTrainer
+from data_generators.segmentation_data_generator import SegmentationDataGenerator
 from utils.config import process_config
 from utils.dirs import create_dirs
 from utils.utils import get_args
@@ -16,14 +17,15 @@ def main():
         print("missing or invalid arguments")
         exit(0)
 
-    print("")
+    print("Load model")
+    FastScnnModel(config)
 
     # create the experiments dirs
     create_dirs([config.callbacks.tensorboard_log_dir,
                  config.callbacks.checkpoint_dir])
 
     print('Create the data generator.')
-    data_loader = SimpleMnistDataLoader(config)
+    train_data = SegmentationDataGenerator()
 
     print('Create the model.')
     model = FastScnnModel(config)

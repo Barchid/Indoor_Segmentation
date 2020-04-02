@@ -4,33 +4,24 @@ import numpy as np
 import os
 import random
 import cv2
-import augmentations
-
+import data_generators.augmentations as augmentations
 
 class SegmentationDataGenerator(keras.utils.Sequence):
     'Generates data for segmentation (test)'
 
-    def __init__(self, img_dir, mask_dir, n_classes, batch_size=4, input_dimensions=(1024, 2048), depth_dir=None, use_data_augmentation=False, shuffle_seed=None):
-        """Initializes
-        :param img_dir: path of the directory that contains the RGB images
-        :param mask_dir: path of the directory that contains the mask images (labels)
-        :param n_classes: number of classes
-        :param batch_size: batch size for the training
-        :param input_dimensions: dimension (H x W) required for the model's input
-        :param depth_dir: path of the directory that contains the depth images (for RGB-D mode only). Default value is None, and it indicates that there is no depth channel in the dataset
-        :param use_data_augmentation: flag that indicates whether data augmentation is used
-        :param shuffle_seed: seed used for the random module to pseudo-randomly shuffle the dataset
+    def __init__(self, config):
+        """Initializes the data generator used in the segmentation task.
         """
-        self.img_dir = img_dir
-        self.mask_dir = mask_dir
-        self.batch_size = batch_size
-        self.n_classes = n_classes
-        self.use_data_augmentation = use_data_augmentation
-        self.shuffle_seed = shuffle_seed
-        self.depth_dir = depth_dir
-        self.input_dimensions = input_dimensions
+        self.img_dir = config.generator.img_dir
+        self.mask_dir = config.generator.mask_dir
+        self.batch_size = config.trainer.batch_size
+        self.n_classes = config.model.classes
+        self.use_data_augmentation = config.generator.use_data_augmentation
+        self.shuffle_seed = config.generator.shuffle_seed
+        self.depth_dir = config.generator.depth_dir
+        self.input_dimensions = (config.model.height, config.model.width)
 
-        random.seed(shuffle_seed)
+        random.seed(self.shuffle_seed)
         self.data_tuples = self._get_data_tuples()
 
     def __len__(self):
@@ -151,16 +142,32 @@ class SegmentationDataGenerator(keras.utils.Sequence):
 
 if __name__ == "__main__":
     # TEST the implementation
-    datagen = SegmentationDataGenerator(
-        'datasets/sun_rgbd/SUNRGBD-train_images',
-        'datasets/sun_rgbd/train_labels',
-        38,
-        batch_size=3,
-        input_dimensions=(530, 730),
-        depth_dir='datasets/sun_rgbd/sunrgbd_train_depth',
-        use_data_augmentation=True,
-        shuffle_seed=9
-    )
+    from dotmap import DotMap
+    config = {
+        'generator': {
+            "img_dir": "datasets/sun_rgbd/SUNRGBD-train_images",
+            "mask_dir": "datasets/sun_rgbd/train_labels",
+            "depth_dir": 'datasets/sun_rgbd/sunrgbd_train_depth',
+            "use_data_augmentation": True,
+            "shuffle_seed": 9
+        },
+        "model": {
+            "optimizer": "SGD",
+            "learning_rate": 0.045,
+            "momentum": 0.9,
+            "width": 1024,
+            "height": 2048,
+            "classes": 38
+        },
+        "trainer": {
+            "num_epochs": 20,
+            "batch_size": 8,
+            "verbose_training": True,
+            "workers": 2
+        },
+    }
+    config = DotMap(config)
+    datagen = SegmentationDataGenerator(config)
     print(len(datagen.data_tuples))
     print(datagen.data_tuples[0])
 
@@ -176,4 +183,3 @@ if __name__ == "__main__":
             print(img.shape, depth.shape, mask.shape)
             showim(img)
             showim(depth)
-            

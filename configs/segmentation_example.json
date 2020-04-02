@@ -2,12 +2,20 @@
   "exp": {
     "name": "fast_scnn_sunrgbd_RGB"
   },
+  "generator": {
+    "img_dir": "datasets/sun_rgbd/SUNRGBD-train_images",
+    "mask_dir": "datasets/sun_rgbd/train_labels",
+    "depth_dir": null,
+    "use_data_augmentation": true,
+    "shuffle_seed": 9
+  },
   "model": {
     "optimizer": "SGD",
     "learning_rate": 0.045,
     "momentum": 0.9,
-    "width": 730,
-    "height": 530
+    "width": 1024,
+    "height": 2048,
+    "classes": 38
   },
   "trainer": {
     "num_epochs": 20,
@@ -16,7 +24,7 @@
     "workers": 2
   },
   "callbacks": {
-    "checkpoint_monitor": "val_loss",
+    "checkpoint_monitor": "loss",
     "checkpoint_mode": "min",
     "checkpoint_save_best_only": true,
     "checkpoint_save_weights_only": true,
