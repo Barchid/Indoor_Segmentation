@@ -19,7 +19,7 @@
   },
   "trainer": {
     "num_epochs": 20,
-    "batch_size": 12,
+    "batch_size": 8,
     "verbose_training": true,
     "workers": 1
   },

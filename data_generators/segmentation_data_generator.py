@@ -7,6 +7,7 @@ import cv2
 import data_generators.augmentations as augmentations
 import math
 
+
 class SegmentationDataGenerator(keras.utils.Sequence):
     'Generates data for segmentation (test)'
 
@@ -19,7 +20,8 @@ class SegmentationDataGenerator(keras.utils.Sequence):
         self.n_classes = config.model.classes
         self.use_data_augmentation = config.generator.use_data_augmentation
         self.shuffle_seed = config.generator.shuffle_seed
-        self.depth_dir = None if not hasattr(config.generator, 'depth_dir') else config.generator.depth_dir 
+        self.depth_dir = None if not hasattr(
+            config.generator, 'depth_dir') else config.generator.depth_dir
         self.input_dimensions = (config.model.height, config.model.width)
 
         random.seed(self.shuffle_seed)
@@ -88,6 +90,12 @@ class SegmentationDataGenerator(keras.utils.Sequence):
     def _read_depth(self, depth_path):
         """Reads the depth image from the depth directory and returns the associated numpy array
         """
+        # Choice between ".jpg" or ".png" extension in the depth images
+        data_id = os.path.splitext(depth_path)[0]
+        depth_path = data_id + \
+            ".png" if os.path.exists(
+                self.depth_dir, data_id + '.png') else data_id + ".jpg"
+
         depth = cv2.imread(os.path.join(
             self.depth_dir, depth_path), cv2.IMREAD_GRAYSCALE)
         # Resize image
