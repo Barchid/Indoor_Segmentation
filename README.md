@@ -1,111 +1,64 @@
-﻿# Keras Project Template [![CometML](https://img.shields.io/badge/comet.ml-track-brightgreen.svg)](https://www.comet.ml)
+# Semantic segmentation for indoor RGB-D images
 
-A project template to simplify building and training deep learning models using Keras.
+**Keywords :** Semantic segmentation, Deep Learning, Convolutional Neural Network, RGB-D images, SUN RGB-D, NYU-V2, SceneNet RGB-D, Computer Vision, Neural Networks, Tensorflow, Keras.
 
-# Table of contents
+## Introduction
+This repository contains the codes and models to address the problem of semantic segmentation for indoor scenes in real-time. The project is written in Keras and Tensorflow 2.1.
 
-- [Getting Started](#getting-started)
-- [Running The Demo Project](#running-the-demo-project)
-- [Comet.ml Integration](#cometml-integration)
-- [Template Details](#template-details)
-    - [Project Architecture](#project-architecture)
-    - [Folder Structure](#folder-structure)
-    - [Main Components](#main-components)
-- [Future Work](#future-work)
-- [Example Projects](#example-projects)
-- [Contributing](#contributing)
-- [Acknowledgements](#acknowledgements)
+## Dependencies
+This code was used with **Python 3.7.6** Install the dependencies with :
 
-# Getting Started
-This template allows you to simply build and train deep learning models with checkpoints and tensorboard visualization.
-
-In order to use the template you have to:
-1. Define a data loader class.
-2. Define a model class that inherits from BaseModel.
-3. Define a trainer class that inherits.
-4. Define a configuration file with the parameters needed in an experiment.
-5. Run the model using:
-```shell
-python main.py -c [path to configuration file]
-```
-
-# Running The Demo Project
-A simple model for the mnist dataset is available to test the template.
-To run the demo project:
-1. Start the training using:
-```shell
-python main.py -c configs/simple_mnist_config.json
-```
-2. Start Tensorboard visualization using:
-```shell
-tensorboard --logdir=experiments/simple_mnist/logs
-```
-
-<div align="center">
-
-<img align="center" width="600" src="https://github.com/Ahmkel/Keras-Project-Template/blob/master/figures/Tensorboard_demo.PNG?raw=true">
-
-</div>
-
-# Comet.ml Integration
-This template also supports reporting to Comet.ml which allows you to see all your hyper-params, metrics, graphs, dependencies and more including real-time metric.
-
-Add your API key [in the configuration file](configs/simple_mnist_config.json#L15):
+``pip install -r requirements.txt``
 
 
-For example:  `"comet_api_key": "your key here"`
+## Install the datasets
+The project uses three datasets well known in the indoor semantic segmentation problem : **NYU-v2**, **SUN RGB-D** and **SceneNet RGB-D**.
 
-Here's how it looks after you start training:
-<div align="center">
+Execute the bash script ``install.sh`` located in the project root in order to install and format the datasets.
 
-<img align="center" width="800" src="https://comet-ml.nyc3.digitaloceanspaces.com/CometDemo.gif">
-
-</div>
-
-You can also link your Github repository to your comet.ml project for full version control.
-
-
-# Template Details
-
-## Project Architecture
-
-<div align="center">
-
-<img align="center" width="600" src="https://github.com/Ahmkel/Keras-Project-Template/blob/master/figures/ProjectArchitecture.jpg?raw=true">
-
-</div>
-
-
-## Folder Structure
+## Usage
+You can use one of the available models of this repository by executing a python script with a JSON config file that describes all the parameters used by the model (e.g. the learning rate, the dataset's directory, ...). For exemple : 
 
 ```
-├── main.py             - here's an example of main that is responsible for the whole pipeline.
+python light-scnn.py -c configs/segmentation-example.json
+```
+
+## Project architecture
+The project contains a customizable structure you can use to create your personal models :
+
+```
+├── main.py             - here's an example of main that is responsible for the whole pipeline. It instantiates and executes all the other components
 │
 │
 ├── base                - this folder contains the abstract classes of the project components
-│   ├── base_data_loader.py   - this file contains the abstract class of the data loader.
-│   ├── base_model.py   - this file contains the abstract class of the model.
-│   └── base_train.py   - this file contains the abstract class of the trainer.
+│   ├── base_model.py   - abstract class to inherit in order to define the new model architecture.
+│   └── base_train.py   - this file contains the abstract class of the trainer to inherit to define a new trainer architecture.
 │
 │
-├── model               - this folder contains the models of your project.
-│   └── simple_mnist_model.py
+├── models               - this folder contains the models of your project.
 │
-│
-├── trainer             - this folder contains the trainers of your project.
-│   └── simple_mnist_trainer.py
+├── trainers             - this folder contains the trainers of your project.
+│   ├── simple_mnist_trainer.py             - Example for MNIST classification training
+│   └── segmentation_trainer.py             - General trainer to use for segmentation task.
 │
 |
-├── data_loader         - this folder contains the data loaders of your project.
-│   └── simple_mnist_data_loader.py
+├── configs                                 - this folder contains the experiment and model configs of your project.
+│   ├── simple_mnist_config.json            - example for simple MNIST classification task.
+│   └── segmentation_example.json           - another example for segmentation task.
 │
+├── datasets                                - this folder might contain the datasets of your project.
+│   ├── sun_rgbd                            - contains the SUN RGB-D dataset.
+│   ├── nyu_v2                              - contains the NYU-V2 dataset.
+│   ├── scenenet_rgbd                       - contains the ScenetNet RGB-D dataset.
+│   └── stanford_indoor                     - contains the Stanford 2D-3D-S RGB-D dataset.
 │
-├── configs             - this folder contains the experiment and model configs of your project.
-│   └── simple_mnist_config.json
+├── evaluater                               - this folder contains the evaluation for a segmentation task using the selected test set.
 │
+├── data_generators                         - this folder contains all the process of data generation for a segmentation task training.
 │
-├── datasets            - this folder might contain the datasets of your project.
+├── layers                                  - this folder contains some Keras layers that can be used in the models architecture.
 │
+├── metrics                                 - this folder contains several implementation of metrics to use in our Keras architecture.
 │
 └── utils               - this folder contains any utils you need.
      ├── config.py      - util functions for parsing the config files.
@@ -113,72 +66,58 @@ You can also link your Github repository to your comet.ml project for full versi
      └── utils.py       - util functions for parsing arguments.
 ```
 
+## Customization 
+You can adapt this project structure to use create a custom model or use another dataset.
 
-## Main Components
+### Create a new model
+In order to create a model, you have to :
+- Create a model that inherits `BaseModel` and constructs the architecture. *Note : examples available in `models/` directory*.
+- Create a JSON config file with all the required options. Option fields can be added and will be available during the execution of the models. *Note : examples available in `configs/` directory.*
+- Create a python main script that instantiates at least the required components (a `trainer`, a `model` & the `SegmentationDataGenerator`). Don't hesitate to read the examples available.
 
-### Models
-You need to:
-1. Create a model class that inherits from **BaseModel**.
-2. Override the ***build_model*** function which defines your model.
-3. Call ***build_model*** function from the constructor.
+### Add another dataset
+The `SegmentationDataGenerator` class can perform data generation and data augmentation for a segmentation training but requires the new dataset to have the right structure. 
 
+Assuming there is three kinds of image inputs for the model : the input images (RGB), the associated depth images and the associated mask images. The dataset's training and testing sets have to be split up into 3 folders : one for the training RGB images, one for the depth images and one for the mask images. The below example shows the kind of nomenclature that has to be used :
 
-### Trainers
-You need to:
-1. Create a trainer class that inherits from **BaseTrainer**.
-2. Override the ***train*** function which defines the training logic.
-
-**Note:** To add functionalities after each training epoch such as saving checkpoints or logs for tensorboard using Keras callbacks:
-1. Declare a callbacks array in your constructor.
-2. Define an ***init_callbacks*** function to populate your callbacks array and call it in your constructor.
-3. Pass the callbacks array to the ***fit*** function on the model object.
-
-**Note:** You can use ***fit_generator*** instead of ***fit*** to support generating new batches of data instead of loading the whole dataset at one time.
-
-### Data Loaders
-You need to:
-1. Create a data loader class that inherits from **BaseDataLoader**.
-2. Override the ***get_train_data()*** and the ***get_test_data()*** functions to return your train and test dataset splits.
-
-**Note:** You can also define a different logic where the data loader class has a function ***get_next_batch*** if you want the data reader to read batches from your dataset each time.
-
-### Configs
-You need to define a .json file that contains your experiment and model configurations such as the experiment name, the batch size, and the number of epochs.
-
-
-### Main
-Responsible for building the pipeline.
-1. Parse the config file
-2. Create an instance of your data loader class.
-3. Create an instance of your model class.
-4. Create an instance of your trainer class.
-5. Train your model using ".Train()" function on the trainer object.
-
-### From Config
-We can now load models without having to explicitly create an instance of each class. Look at:
-1. from_config.py: this can load any config file set up to point to the right modules/classes to import
-2. Look at configs/simple_mnist_from_config.json to get an idea of how this works from the config. Run it with:
-```shell
-python from_config.py -c configs/simple_mnist_from_config.json
 ```
-3. See conv_mnist_from_config.json (and the additional data_loader/model) to see how easy it is to run a different experiment with just a different config file:
-```shell
-python from_config.py -c configs/conv_mnist_from_config.json
+├── RGB_train_set                               - this folder contains the RGB images used in the training set
+│   ├── 1.jpg                                   - example image of the training set.
+...
+...
+├── mask_train_set                              - this folder contains the mask labels images used in the training set.
+│   ├── 1.png                                   - Mask image related to the RGB image '1.jpg'. WARNING : the filename must be the same.
+...
+...
+├── depth_train_set                             - this folder contains the depth images used in the training set.
+│   ├── 1.png                                   - depth images related to the RGB image '1.jpg'. WARNING : the filename must be the same.
+...
+...
+├── RGB_test_set                                - this folder contains the RGB images used in the testing set
+│   ├── 5.jpg                                   - example image of the testing set.
+...
+...
+├── mask_test_set                               - this folder contains the mask labels images used in the testing set.
+│   ├── 5.png                                   - Mask image related to the testing RGB image '5.jpg'. WARNING : the filename must be the same.
+...
+...
+├── depth_test_set                              - this folder contains the depth images used in the testing set.
+│   ├── 5.png                                   - depth images related to the testing RGB image '5.jpg'. WARNING : the filename must be the same.
+...
+...
+
 ```
 
-# Example Projects
-* [Toxic comments classification using Convolutional Neural Networks and Word Embedding](https://github.com/Ahmkel/Toxic-Comments-Competition-Kaggle)
-
-
-# Future Work
-Create a command line tool for Keras project scaffolding where the user defines a data loader, a model, a trainer and runs the tool to generate the whole project. (This is somewhat complete now by loading each of these from the config)
-
-
-# Contributing
-Any contributions are welcome including improving the template and example projects.
-
-# Acknowledgements
-This project template is based on [MrGemy95](https://github.com/MrGemy95)'s [Tensorflow Project Template](https://github.com/MrGemy95/Tensorflow-Project-Template).
-
-
-Thanks for my colleagues [Mahmoud Khaled](https://github.com/MahmoudKhaledAli), [Ahmed Waleed](https://github.com/Rombux) and [Ahmed El-Gammal](https://github.com/AGammal) who worked on the initial project that spawned this template.
+## Features available
+- Data generation for segmentation dataset
+- Data augmention with the following random operations :
+    - Temperature change
+    - Brightness modification
+    - Horizontal flipping
+    - Cropping
+- Tensorboard integration (Keras callback)
+```shell
+tensorboard --logdir=experiments/simple_mnist/logs
+```
+- Training + evaluation
+- Load/Save weights file (Keras callback)
