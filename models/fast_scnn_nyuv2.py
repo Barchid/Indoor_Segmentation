@@ -143,7 +143,7 @@ class FastScnnNyuv2(BaseModel):
         print(gfe3.shape)
 
         # adding the PPM module into layers
-        gfe4 = ppm_block(gfe3, [2, 4, 6], 23, 17, 128)
+        gfe4 = ppm_block(gfe3, [2, 4, 6], 20, 15, 128)
         print(gfe4.shape)
 
         ffm = ffm_block(gfe4, ltd3, 128)
