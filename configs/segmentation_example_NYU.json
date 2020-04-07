@@ -1,0 +1,34 @@
+{
+  "exp": {
+    "name": "fast_scnn_sunrgbd_RGB"
+  },
+  "generator": {
+    "img_dir": "datasets/nyu_v2/train_rgb",
+    "mask_dir": "datasets/nyu_v2/train_mask",
+    "depth_dir": null,
+    "use_data_augmentation": true,
+    "shuffle_seed": 9
+  },
+  "model": {
+    "optimizer": "SGD",
+    "learning_rate": 0.045,
+    "momentum": 0.9,
+    "width": 730,
+    "height": 530,
+    "classes": 41
+  },
+  "trainer": {
+    "num_epochs": 20,
+    "batch_size": 8,
+    "verbose_training": true,
+    "workers": 1
+  },
+  "callbacks": {
+    "checkpoint_monitor": "loss",
+    "checkpoint_mode": "min",
+    "checkpoint_save_best_only": true,
+    "checkpoint_save_weights_only": true,
+    "checkpoint_verbose": true,
+    "tensorboard_write_graph": true
+  }
+}
