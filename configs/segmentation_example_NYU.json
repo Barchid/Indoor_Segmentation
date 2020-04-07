@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "fast_scnn_sunrgbd_RGB"
+    "name": "fast_scnn_NYU_V2"
   },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",

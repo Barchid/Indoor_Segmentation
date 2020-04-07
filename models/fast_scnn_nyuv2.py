@@ -2,6 +2,7 @@ from base.base_model import BaseModel
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import *
+from layers.utils_layers import resize_img
 
 # define conv block
 
@@ -95,6 +96,13 @@ def ffm_block(low_resolution, high_resolution, c):
 
     low = conv2d(low, c, 1, 1, kernel_size=1, use_relu=False)
 
+    # resize feature if needed
+    high_shape = keras.backend.int_shape(high)
+    low_shape = keras.backend.int_shape(low)
+    if(high_shape[1] != low_shape[1] or high_shape[2] != low_shape[2]):
+        high = resize_img(
+            high, low_shape[1], low_shape[2])
+
     # "add" fusion of both low and high features
     fusion = add([high, low])
     fusion = BatchNormalization()(fusion)
@@ -102,9 +110,9 @@ def ffm_block(low_resolution, high_resolution, c):
     return fusion
 
 
-class FastScnnModel(BaseModel):
+class FastScnnNyuv2(BaseModel):
     def __init__(self, config):
-        super(FastScnnModel, self).__init__(config)
+        super(FastScnnNyuv2, self).__init__(config)
 
     def build_model(self):
         # input layer
@@ -135,7 +143,7 @@ class FastScnnModel(BaseModel):
         print(gfe3.shape)
 
         # adding the PPM module into layers
-        gfe4 = ppm_block(gfe3, [2, 4, 6, 8], 32, 64, 128)
+        gfe4 = ppm_block(gfe3, [2, 4, 6], 23, 17, 128)
         print(gfe4.shape)
 
         ffm = ffm_block(gfe4, ltd3, 128)
@@ -150,6 +158,11 @@ class FastScnnModel(BaseModel):
                         1, 1, kernel_size=3, use_relu=True)
 
         class3 = UpSampling2D(size=(8, 8))(class2)
+
+        class3_shape = keras.backend.int_shape(class3)
+        if(class3_shape[1] != self.config.model.height or class3_shape[2] != self.config.model.width):
+            class3 = resize_img(
+                class3, self.config.model.height, self.config.model.width)
 
         prediction = keras.activations.softmax(class3)
         print(prediction.shape)

@@ -1,4 +1,4 @@
-from models.light_fast_scnn_model import LightFastScnnModel
+from models.fast_scnn_nyuv2 import FastScnnNyuv2
 from trainers.segmentation_trainer import SegmentationTrainer
 from data_generators.segmentation_data_generator import SegmentationDataGenerator
 from utils.config import process_config
@@ -24,7 +24,7 @@ def main():
     train_data = SegmentationDataGenerator(config)
 
     print('Create the model.')
-    model = LightFastScnnModel(config)
+    model = FastScnnNyuv2(config)
 
     print('Create the trainer')
     trainer = SegmentationTrainer(model, train_data, config)

@@ -1,5 +1,4 @@
-from data_loader.simple_mnist_data_loader import SimpleMnistDataLoader
-from models.fast_scnn_model import FastScnnModel
+from models.fast_scnn_sunrgbd import FastScnnSunrgbd
 from trainers.segmentation_trainer import SegmentationTrainer
 from data_generators.segmentation_data_generator import SegmentationDataGenerator
 from utils.config import process_config
@@ -25,7 +24,7 @@ def main():
     train_data = SegmentationDataGenerator(config)
 
     print('Create the model.')
-    model = FastScnnModel(config)
+    model = FastScnnSunrgbd(config)
 
     print('Create the trainer')
     trainer = SegmentationTrainer(model, train_data, config)

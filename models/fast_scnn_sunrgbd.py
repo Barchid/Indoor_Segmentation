@@ -110,9 +110,9 @@ def ffm_block(low_resolution, high_resolution, c):
     return fusion
 
 
-class LightFastScnnModel(BaseModel):
+class FastScnnSunrgbd(BaseModel):
     def __init__(self, config):
-        super(LightFastScnnModel, self).__init__(config)
+        super(FastScnnSunrgbd, self).__init__(config)
 
     def build_model(self):
         # input layer
