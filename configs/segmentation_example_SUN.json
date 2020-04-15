@@ -9,6 +9,11 @@
     "use_data_augmentation": true,
     "shuffle_seed": 9
   },
+  "validation": {
+    "img_dir": "datasets/sun_rgbd/SUNRGBD-test_images",
+    "mask_dir": "datasets/sun_rgbd/test_labels",
+    "depth_dir": null
+  },
   "model": {
     "optimizer": "SGD",
     "learning_rate": 0.045,
@@ -24,7 +29,7 @@
     "workers": 1
   },
   "callbacks": {
-    "checkpoint_monitor": "loss",
+    "checkpoint_monitor": "val_loss",
     "checkpoint_mode": "min",
     "checkpoint_save_best_only": true,
     "checkpoint_save_weights_only": true,
