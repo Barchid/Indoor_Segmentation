@@ -11,17 +11,28 @@ import math
 class SegmentationDataGenerator(keras.utils.Sequence):
     'Generates data for segmentation (test)'
 
-    def __init__(self, config):
+    def __init__(self, config, is_training_set=True):
         """Initializes the data generator used in the segmentation task.
         """
-        self.img_dir = config.generator.img_dir
-        self.mask_dir = config.generator.mask_dir
+        # IF [the generator uses the training set]
+        if is_training_set:
+            self.img_dir = config.generator.img_dir
+            self.mask_dir = config.generator.mask_dir
+            self.depth_dir = None if not hasattr(
+                config.generator, 'depth_dir') else config.generator.depth_dir
+            self.use_data_augmentation = config.generator.use_data_augmentation
+
+        # ELSE [means the generator uses the validation set]
+        else:
+            self.img_dir = config.validation.img_dir
+            self.mask_dir = config.validation.mask_dir
+            self.depth_dir = None if not hasattr(
+                config.validation, 'depth_dir') else config.generator.depth_dir
+            self.use_data_augmentation = False
+
         self.batch_size = config.trainer.batch_size
         self.n_classes = config.model.classes
-        self.use_data_augmentation = config.generator.use_data_augmentation
         self.shuffle_seed = config.generator.shuffle_seed
-        self.depth_dir = None if not hasattr(
-            config.generator, 'depth_dir') else config.generator.depth_dir
         self.input_dimensions = (config.model.height, config.model.width)
 
         random.seed(self.shuffle_seed)

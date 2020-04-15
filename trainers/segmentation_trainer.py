@@ -4,13 +4,13 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 
 
 class SegmentationTrainer(BaseTrain):
-    def __init__(self, model, data_generator, config):
+    def __init__(self, model, data_generator, config, validation_generator=None):
         """
         :param model: the compiled model to use
         :param data_generator: the data_generator to use (must inherit keras.utils.Sequence)
         """
         super(SegmentationTrainer, self).__init__(
-            model, data_generator, config)
+            model, data_generator, config, validation_generator)
         self.callbacks = []
         self.loss = []
         self.acc = []
@@ -54,6 +54,7 @@ class SegmentationTrainer(BaseTrain):
         # )
         history = self.model.model.fit(
             x=self.data_generator,
+            validation_data=self.validation_generator,
             epochs=self.config.trainer.num_epochs,
             verbose=self.config.trainer.verbose_training,
             callbacks=self.callbacks,
