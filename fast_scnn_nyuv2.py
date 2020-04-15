@@ -20,14 +20,21 @@ def main():
     create_dirs([config.callbacks.tensorboard_log_dir,
                  config.callbacks.checkpoint_dir])
 
-    print('Create the data generator.')
+    print('Create the training data generator.')
     train_data = SegmentationDataGenerator(config)
+
+    validation_data = None
+    if hasattr(config, 'validation'):
+        print('Create the validation data generator.')
+        validation_data = SegmentationDataGenerator(
+            config, is_training_set=False)
 
     print('Create the model.')
     model = FastScnnNyuv2(config)
 
     print('Create the trainer')
-    trainer = SegmentationTrainer(model, train_data, config)
+    trainer = SegmentationTrainer(
+        model, train_data, config, validation_generator=validation_data)
 
     print('Start training the model.')
     trainer.train()
