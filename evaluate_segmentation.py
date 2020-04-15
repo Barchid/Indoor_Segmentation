@@ -20,7 +20,7 @@ def evaluate(model, config):
     :param config: the config object created from JSON configuration
     """
     # Data generator creation
-    datagen = SegmentationDataGenerator(config)
+    datagen = SegmentationDataGenerator(config, is_training_set=False)
 
     for i in range(len(datagen)):
         # IF there is depth data
@@ -68,7 +68,7 @@ def visualize_results(model, config):
     """
 
     # Data generator creation
-    datagen = SegmentationDataGenerator(config)
+    datagen = SegmentationDataGenerator(config, is_training_set=False)
 
     for i in range(len(datagen)):
         # IF there is depth data
