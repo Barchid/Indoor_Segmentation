@@ -12,11 +12,6 @@
     "use_data_augmentation": true,
     "shuffle_seed": 9
   },
-  "validation": {
-    "img_dir": "datasets/nyu_v2/test_rgb",
-    "mask_dir": "datasets/nyu_v2/test_mask",
-    "depth_dir": null
-  },
   "model": {
     "optimizer": "SGD",
     "learning_rate": 0.045,
