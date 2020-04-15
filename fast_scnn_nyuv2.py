@@ -24,7 +24,7 @@ def main():
     train_data = SegmentationDataGenerator(config)
 
     validation_data = None
-    if hasattr(config, 'validation'):
+    if type(config.validation.img_dir) == str:
         print('Create the validation data generator.')
         validation_data = SegmentationDataGenerator(
             config, is_training_set=False)
