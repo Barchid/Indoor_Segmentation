@@ -26,7 +26,7 @@
     "classes": 41
   },
   "trainer": {
-    "num_epochs": 20,
+    "num_epochs": 50,
     "batch_size": 8,
     "verbose_training": true,
     "workers": 1
