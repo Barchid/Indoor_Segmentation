@@ -95,6 +95,8 @@ def load_weights(model, config):
     """
     if not hasattr(config, 'evaluation') or not hasattr(config.evaluation, 'weights_file'):
         return
+
+    print('Load weight file : ', config.evaluation.weights_file)
     model.load_weights(config.evaluation.weights_file)
 
 
