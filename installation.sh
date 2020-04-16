@@ -47,8 +47,14 @@ mv test_depth datasets/nyu_v2/
 
 cd datasets/nyu_v2
 wget http://www.doc.ic.ac.uk/~ahanda/nyu_train_rgb.tgz
+mkdir train_rgb
+mv nyu_train_rgb.tgz train_rgb
+tar -xzf train_rgb/nyu_train_rgb.tgz
+
 wget http://www.doc.ic.ac.uk/~ahanda/nyu_test_rgb.tgz
-tar -xzf nyu_train_rgb.tgz
-tar -xzf nyu_test_rgb.tgz
+mkdir test_rgb
+mv nyu_test_rgb.tgz test_rgb
+tar -xzf test_rgb/nyu_test_rgb.tgz
+
 cd ../..
 python nyu_v2_dataset_parser.py

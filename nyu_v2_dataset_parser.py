@@ -71,4 +71,4 @@ if __name__ == "__main__":
     parse_image_folder(test_rgb)
     parse_depth_folder(train_depth)
     parse_depth_folder(test_depth)
-    parse_mask_folder(os.path.join(nyu_v2, 'masks'))
+    parse_mask_folder(os.path.join(nyu_v2, 'labels_40'))
