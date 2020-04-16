@@ -51,6 +51,7 @@ mkdir train_rgb
 mv nyu_train_rgb.tgz train_rgb
 cd train_rgb
 tar -xzf nyu_train_rgb.tgz
+rm nyu_train_rgb.tgz
 cd ..
 
 wget http://www.doc.ic.ac.uk/~ahanda/nyu_test_rgb.tgz
@@ -58,6 +59,7 @@ mkdir test_rgb
 mv nyu_test_rgb.tgz test_rgb
 cd test_rgb
 tar -xzf nyu_test_rgb.tgz
+rm nyu_test_rgb.tgz
 cd ..
 
 cd ../..
