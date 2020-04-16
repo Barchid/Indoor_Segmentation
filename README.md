@@ -11,17 +11,23 @@ This code was used with **Python 3.7.6** Install the dependencies with :
 ``pip install -r requirements.txt``
 
 
-## Install the datasets
+## Datasets installation
+
+Execute the following commands :
+```bash
+chmod u+x installation.sh
+./installation.sh
+```
+
 The project uses three datasets well known in the indoor semantic segmentation problem : **NYU-v2**, **SUN RGB-D** and **SceneNet RGB-D**.
 
-Execute the bash script ``install.sh`` located in the project root in order to install and format the datasets.
-
-## Usage
+## Training
 You can use one of the available models of this repository by executing a python script with a JSON config file that describes all the parameters used by the model (e.g. the learning rate, the dataset's directory, ...). For exemple : 
 
+```bash
+python fast_scnn_nyuv2.py -c configs/segmentation-example_NYU.json
 ```
-python light-scnn.py -c configs/segmentation-example.json
-```
+
 
 ## Project architecture
 The project contains a customizable structure you can use to create your personal models :
