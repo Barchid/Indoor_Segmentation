@@ -10,11 +10,10 @@
 
 echo "########################################################################\nCreate datasets\n########################################################################"
 mkdir datasets
-cd datasets
 
 echo "########################################################################\nCreate SUN-RGBD dataset\n########################################################################"
-# mkdir sun_rgbd
-# cd sun_rgbd
+# mkdir datasets/sun_rgbd
+# cd datasets/sun_rgbd
 
 # mkdir SUNRGBD-train_images
 # wget http://www.doc.ic.ac.uk/~ahanda/SUNRGBD-train_images.tgz
