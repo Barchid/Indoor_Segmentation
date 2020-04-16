@@ -1,9 +1,9 @@
 {
   "exp": {
-    "name": "fast_scnn_NYU_V2"
+    "name": "new_fast_scnn_nyuv2"
   },
   "evaluation": {
-    "weights_file": "experiments/validation_Fast_scnn_NYU_21.hdf5"
+    "weights_file": "experiments/fast_scnn_NYU_V2-16-pute.hdf5"
   },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",

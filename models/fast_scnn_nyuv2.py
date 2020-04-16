@@ -100,6 +100,7 @@ def ffm_block(low_resolution, high_resolution, c):
     high_shape = keras.backend.int_shape(high)
     low_shape = keras.backend.int_shape(low)
     if(high_shape[1] != low_shape[1] or high_shape[2] != low_shape[2]):
+        print('WRONG SHAPE')
         high = resize_img(
             high, low_shape[1], low_shape[2])
 
@@ -136,14 +137,14 @@ class FastScnnNyuv2(BaseModel):
         gfe1 = bottleneck(ltd3, 3, 6, 64, 2)
         print(gfe1.shape)
 
-        gfe2 = bottleneck(gfe1, 3, 6, 96, 1)
+        gfe2 = bottleneck(gfe1, 3, 6, 96, 2)
         print(gfe2.shape)
 
         gfe3 = bottleneck(gfe2, 3, 6, 128, 1)
         print(gfe3.shape)
 
         # adding the PPM module into layers
-        gfe4 = ppm_block(gfe3, [2, 4, 6, 8], 40, 30, 128)
+        gfe4 = ppm_block(gfe3, [2, 4, 6], 20, 15, 128)
         print(gfe4.shape)
 
         ffm = ffm_block(gfe4, ltd3, 128)
@@ -154,17 +155,12 @@ class FastScnnNyuv2(BaseModel):
         class1 = ds_conv2d(ffm, 128, 1, 2, kernel_size=3)
         print(class1.shape)
 
-        class2 = conv2d(class1, self.config.model.classes,
+        class2 = UpSampling2D(size=(8, 8))(class1)
+        print(class2.shape)
+
+        class3 = conv2d(class2, self.config.model.classes,
                         1, 1, kernel_size=3, use_relu=True)
-
-        class3 = UpSampling2D(size=(4, 4))(class2)
-        print('BEFORE RESHAPE ?', class3.shape)
-
-        class3_shape = keras.backend.int_shape(class3)
-        if(class3_shape[1] != self.config.model.height or class3_shape[2] != self.config.model.width):
-            print('WRONG SIZE !')
-            class3 = resize_img(
-                class3, self.config.model.height, self.config.model.width)
+        print(class3.shape)
 
         prediction = keras.activations.softmax(class3)
         print(prediction.shape)
