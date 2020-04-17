@@ -144,7 +144,7 @@ class FastScnnNyuv2(BaseModel):
         print(gfe3.shape)
 
         # adding the PPM module into layers
-        gfe4 = ppm_block(gfe3, [2, 4, 6], 20, 15, 128)
+        gfe4 = ppm_block(gfe3, [2, 4, 6, 8], 20, 15, 128)
         print(gfe4.shape)
 
         ffm = ffm_block(gfe4, ltd3, 128)
@@ -155,11 +155,11 @@ class FastScnnNyuv2(BaseModel):
         class1 = ds_conv2d(ffm, 128, 1, 2, kernel_size=3)
         print(class1.shape)
 
-        class2 = UpSampling2D(size=(8, 8))(class1)
+        class2 = conv2d(class1, self.config.model.classes,
+                        1, 1, kernel_size=3, use_relu=True)
         print(class2.shape)
 
-        class3 = conv2d(class2, self.config.model.classes,
-                        1, 1, kernel_size=3, use_relu=True)
+        class3 = resize_img(class2, H=480, W=640)
         print(class3.shape)
 
         prediction = keras.activations.softmax(class3)
