@@ -1,6 +1,7 @@
 from metrics.iou import build_iou_for, mean_iou
 import tensorflow as tf
 from tensorflow import keras
+from metrics.softmax_miou import SoftmaxMeanIoU
 
 
 class BaseModel(object):
@@ -145,7 +146,7 @@ class BaseModel(object):
     def _generate_metrics(self):
         metrics = []
         # metrics.append(mean_iou)  # general mIoU
-        metrics.append(keras.metrics.MeanIoU(
+        metrics.append(SoftmaxMeanIoU(
             num_classes=self.config.model.classes))
         metrics.append('accuracy')
         return metrics
