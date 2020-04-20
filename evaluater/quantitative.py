@@ -38,12 +38,38 @@ def onehot_to_argmax(pred, gt):
 
 
 def pixel_accuracy(pred, gt):
-    """Calculates the pixel accuracy between the prediction and the ground truth mask
+    """Computes the pixel accuracy between the prediction and the ground truth masks
     """
     correct_pred_count = (pred == gt).sum()
-    total_pixels = pred.shape[0] * pred.shape[1]
+    total_pixels = gt.shape[0] * gt.shape[1]
 
     return correct_pred_count / total_pixels
+
+
+def mean_pixel_accuracy(pred, gt):
+    """Computes the mean pixel accuracy between the prediction and the ground truth masks
+    """
+    # the notation used is from https://github.com/martinkersner/py_img_seg_eval
+    mean_pixel_acc = 0.
+
+    cls = np.unique(gt)  # classes included in ground truth
+    n_cl = float(len(cls))  # n_cl = number of class in ground truth
+
+    for i in cls:
+        # t_i = total number of pixel of class i in ground truth
+        t_i = (gt == i).sum()
+
+        # n_ij = number of pixels of class i predicted as class j
+        class_pred = (pred == i).astype(np.uint8)
+        class_gt = (gt == i).astype(np.uint8)
+        # n_ii = number of correct prediction
+        n_ii = (class_pred == class_gt).sum()
+
+        mean_pixel_acc += n_ii / t_i
+
+    mean_pixel_acc = (1./n_cl) * mean_pixel_acc
+
+    return mean_pixel_acc
 
 
 def evaluate_accuracy(model, config):
