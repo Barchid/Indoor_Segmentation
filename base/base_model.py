@@ -147,6 +147,6 @@ class BaseModel(object):
         metrics = []
         # metrics.append(mean_iou)  # general mIoU
         metrics.append(SoftmaxMeanIoU(
-            num_classes=self.config.model.classes))
+            num_classes=self.config.model.classes, name='Mean_IoU'))
         metrics.append('accuracy')
         return metrics
