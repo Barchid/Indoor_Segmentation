@@ -29,6 +29,8 @@ def quantitative(model, config, datagen):
     print('Mean pixel accuracy : ', mean_pixel_acc)
     print('Mean IoU : ', Aiou)
     print('Per-class mIoUs : ', class_Aiou)
+    print('Total inference time :', total_time)
+    print('FPS :', fps)
 
 
 def qualitative(model, config, datagen):
