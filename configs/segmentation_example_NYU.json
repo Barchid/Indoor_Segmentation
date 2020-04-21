@@ -30,7 +30,8 @@
     "num_epochs": 100,
     "batch_size": 8,
     "verbose_training": true,
-    "workers": 1
+    "workers": 1,
+    "checkpoint_weights": "experiments/new_fast_scnn_nyuv2-99-pute.hdf5"
   },
   "callbacks": {
     "checkpoint_monitor": "loss",

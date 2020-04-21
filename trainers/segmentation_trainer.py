@@ -25,7 +25,7 @@ class SegmentationTrainer(BaseTrain):
                 # filepath=os.path.join(self.config.callbacks.checkpoint_dir,
                 #                       '%s-{epoch:02d}-{loss:.2f}.hdf5' % self.config.exp.name),
                 filepath=os.path.join(self.config.callbacks.checkpoint_dir,
-                                      '%s-{epoch:02d}-pute.hdf5' % self.config.exp.name),
+                                      '%s-{epoch:02d}.hdf5' % self.config.exp.name),
                 monitor=self.config.callbacks.checkpoint_monitor,
                 mode=self.config.callbacks.checkpoint_mode,
                 save_best_only=self.config.callbacks.checkpoint_save_best_only,
@@ -42,16 +42,12 @@ class SegmentationTrainer(BaseTrain):
         )
 
     def train(self):
-        # history = self.model.model.fit_generator(
-        #     generator=self.data_generator,
-        #     epochs=self.config.trainer.num_epochs,
-        #     verbose=self.config.trainer.verbose_training,
-        #     callbacks=self.callbacks,
-        #     use_multiprocessing=True if hasattr(
-        #         self.config.trainer, 'workers') else False,
-        #     workers=1 if not hasattr(
-        #         self.config.trainer, 'workers') else self.config.trainer.workers
-        # )
+        # load weights if weight file exists
+        if type(self.config.trainer.checkpoint_weights) == str:
+            print('Load weight file : ', self.config.trainer.checkpoint_weights)
+            self.model.model.load_weights(
+                self.config.trainer.checkpoint_weights)
+
         history = self.model.model.fit(
             x=self.data_generator,
             validation_data=self.validation_generator,
