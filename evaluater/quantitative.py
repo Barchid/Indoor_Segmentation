@@ -1,6 +1,7 @@
 """Evaluates the class-wise IoU, mean IoU, pixel accuracy and class-wise mean pixel accuracy for the test set"""
 import numpy as np
-from data_generators.segmentation_data_generator import SegmentationDataGenerator
+import time
+
 
 def get_iou(pred, gt, num_class):
     if pred.shape != gt.shape:
@@ -71,26 +72,27 @@ def mean_pixel_accuracy(pred, gt):
     return mean_pixel_acc
 
 
-def evaluate_accuracy(model, config):
+def evaluate_accuracy(model, config, datagen):
     num_class = config.model.classes
     Aiou = 0
     pixel_acc = 0.
     mean_pixel_acc = 0.
-
-    # Data generator creation
-    datagen = SegmentationDataGenerator(config, is_training_set=False)
 
     num_samples = len(datagen)
 
     class_Aiou = np.zeros((num_class,))
     count_class = np.zeros((num_class,))
 
-    out_prdlbl = 'outimgs/'
-
     # FOR EACH [image] IN [data generator]
     for i in range(len(datagen)):
-        # retrieve
-        X, Y = datagen[i]
+        print('Processing sample n°', i, '...')
+
+        # RGB Mode
+        if config.generator.depth_dir is None:
+            X, Y = datagen[i]
+        # RGBD Mode
+        else:
+            X, Z, Y = datagen[i]
         gt = Y[0]
         pred = model.predict(
             X, batch_size=config.trainer.batch_size, verbose=1)
@@ -125,3 +127,21 @@ def evaluate_accuracy(model, config):
     class_Aiou = np.where(np.isnan(class_Aiou), 0, class_Aiou)
 
     return Aiou, class_Aiou, pixel_acc, mean_pixel_acc
+
+
+def evaluate_speed(model, config, datagen):
+    total_time = 0
+    for i in range(len(datagen)):
+        X, Y = datagen[i]
+
+        start = time.time()
+        model.predict(X, batch_size=config.trainer.batch_size, verbose=1)
+        end = time.time()
+        delay = end - start
+
+        print('Inference time for sample n°', i, ' : ', delay)
+
+        total_time += delay
+
+    fps = total_time / len(datagen)
+    return total_time, fps
