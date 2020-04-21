@@ -5,11 +5,6 @@
   "evaluation": {
     "weights_file": "experiments/new_fast_scnn_nyuv2-99-pute.hdf5"
   },
-  "validation": {
-    "img_dir": "datasets/nyu_v2/train_rgb",
-    "mask_dir": "datasets/nyu_v2/train_mask",
-    "depth_dir": null
-  },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",
     "mask_dir": "datasets/nyu_v2/train_mask",
@@ -18,6 +13,7 @@
     "shuffle_seed": 9
   },
   "model": {
+    "class_name": "models.fast_scnn_nyuv2.FastScnnNyuv2",
     "optimizer": "SGD",
     "learning_rate": 0.045,
     "momentum": 0.9,

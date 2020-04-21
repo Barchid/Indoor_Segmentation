@@ -15,6 +15,7 @@
     "depth_dir": null
   },
   "model": {
+    "class_name": "models.fast_scnn_sunrgbd.FastScnnSunrgbd",
     "optimizer": "SGD",
     "learning_rate": 0.045,
     "momentum": 0.9,
