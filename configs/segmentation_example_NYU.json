@@ -5,11 +5,6 @@
   "evaluation": {
     "weights_file": "experiments/new_fast_scnn_nyuv2-99-pute.hdf5"
   },
-  "validation": {
-    "img_dir": "datasets/nyu_v2/train_rgb",
-    "mask_dir": "datasets/nyu_v2/train_mask",
-    "depth_dir": null
-  },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",
     "mask_dir": "datasets/nyu_v2/train_mask",
@@ -27,7 +22,7 @@
     "classes": 41
   },
   "trainer": {
-    "num_epochs": 100,
+    "num_epochs": 50,
     "batch_size": 8,
     "verbose_training": true,
     "workers": 1,
