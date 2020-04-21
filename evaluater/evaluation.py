@@ -42,15 +42,15 @@ def qualitative(model, config, datagen):
 
 def evaluation(config, visualization=False):
     # dynamic model instanciation
-    model = factory.create(config.model.class_name)(config)
+    network = factory.create(config.model.class_name)(config)
 
     # Data generator creation
     datagen = SegmentationDataGenerator(config, is_training_set=False)
 
     # Load weight file in model
-    load_weights(model, config)
+    load_weights(network.model, config)
 
     if visualization:
-        qualitative(model, config, datagen)
+        qualitative(network.model, config, datagen)
     else:
-        quantitative(model, config, datagen)
+        quantitative(network.model, config, datagen)
