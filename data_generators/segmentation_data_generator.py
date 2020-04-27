@@ -43,6 +43,10 @@ class SegmentationDataGenerator(keras.utils.Sequence):
         return math.ceil(len(self.data_tuples) / self.batch_size)
         # return int(np.floor(len(self.data_tuples) / self.batch_size))
 
+    def on_epoch_end(self):
+        'shuffles the data tuples after each epoch'
+        random.shuffle(self.data_tuples)
+
     def __getitem__(self, index):
         # Retrieve the paths used in the current batch
         X, Y, Z = [], [], []
