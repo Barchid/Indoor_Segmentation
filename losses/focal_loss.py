@@ -21,6 +21,6 @@ class CategoricalFocalLoss(Loss):
         y_pred = K.clip(y_pred, K.epsilon(), 1.0 - K.epsilon())
 
         # Calculate focal loss
-        loss = - y_true * (alpha * K.pow((1 - y_pred), gamma) * K.log(y_pred))
+        loss = - y_true * (self.alpha * K.pow((1 - y_pred), self.gamma) * K.log(y_pred))
 
         return K.mean(loss)
