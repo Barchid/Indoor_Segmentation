@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import *
 from layers.utils_layers import resize_img
+from losses.focal_loss import CategoricalFocalLoss
 
 # define conv block
 
@@ -171,7 +172,13 @@ class FastScnnNyuv2(BaseModel):
         fast_scnn.summary()
         optimizer = self.build_optimizer()
         metrics = self.build_metrics_SUN()
-        fast_scnn.compile(loss='categorical_crossentropy',
+
+        loss = CategoricalFocalLoss(
+            gamma=self.config.model.gamma,
+            alpha=self.config.model.alpha
+        )
+
+        fast_scnn.compile(loss=loss,
                           optimizer=optimizer, metrics=metrics)
 
         return fast_scnn
