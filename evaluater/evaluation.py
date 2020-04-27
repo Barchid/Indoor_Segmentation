@@ -7,11 +7,11 @@ from data_generators.segmentation_data_generator import SegmentationDataGenerato
 def load_weights(model, config):
     """Load weights file if required by configuration
     """
-    if not hasattr(config, 'evaluation') or not hasattr(config.evaluation, 'weights_file'):
+    if not hasattr(config, 'validation') or not hasattr(config.validation, 'weights_file'):
         return
 
-    print('Load weight file : ', config.evaluation.weights_file)
-    model.load_weights(config.evaluation.weights_file)
+    print('Load weight file : ', config.validation.weights_file)
+    model.load_weights(config.validation.weights_file)
 
 
 def quantitative(model, config, datagen):
