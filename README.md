@@ -127,3 +127,52 @@ tensorboard --logdir=experiments/simple_mnist/logs
 ```
 - Training + evaluation
 - Load/Save weights file (Keras callback)
+
+
+## JSON configuration file's parameters
+You can see examples of parameters used in the config file at in the `configs/` directory. You can still add other parameters if you need them in your code.
+
+```json
+{
+  "exp": {
+    "name": "My_super_experience" # name of your experience (will be used to save your weight file after training)
+  },
+  "generator": {
+    "img_dir": "datasets/nyu_v2/train_rgb", # path of the RGB images directory for training
+    "mask_dir": "datasets/nyu_v2/train_mask", # path of the labels images directory for training
+    "depth_dir": null, # path of the depth images directory for the training
+    "use_data_augmentation": true, # flag that indicates whether data augmentation is used
+    "shuffle_seed": 9 # seed used for pseudo-random in data augmentation
+  },
+  "validation": { # parameters used in testing or in the validation set for training 
+    "img_dir": "datasets/nyu_v2/test_rgb", # RGB directory for testing
+    "mask_dir": "datasets/nyu_v2/test_mask", # labels directory for testing
+    "depth_dir": null, # depth directory for testing
+    "weights_file": "experiments/fast_scnn_adam_0_001-10.hdf5" # weight file to use in testing
+  },
+  "model": { # model information
+    "class_name": "models.fast_scnn_nyuv2.FastScnnNyuv2", # optionnal. Class name of the model to load in the testing process
+    "optimizer": "SGD", # the optimizer to use
+    "learning_rate": 0.045, # the learning rate
+    "momentum": 0.9, # optimizer's momentum
+    "width": 640, # width of the input image
+    "height": 480, # height of the input image
+    "classes": 41 # number of classes ('void' class included)
+  },
+  "trainer": { # parameters used in training
+    "num_epochs": 50, # number of epochs in training
+    "batch_size": 8, # batch size
+    "verbose_training": true, # verbose flag
+    "workers": 1, # number of threads used in the data generator
+    "checkpoint_weights": "experiments/new_fast_scnn_nyuv2-99-pute.hdf5" # weight file to load before starting the training
+  },
+  "callbacks": {
+    "checkpoint_monitor": "loss", # data to monitor in checkpoint
+    "checkpoint_mode": "min", # mode to choose if the checkpoint has made a better performance ('min' or 'max')
+    "checkpoint_save_best_only": true, # flag to save only the weight files that perform better than before
+    "checkpoint_save_weights_only": true, # flag to save only the weight file in checkpoint
+    "checkpoint_verbose": true, # verbose flag in checkpoint
+    "tensorboard_write_graph": true # flag to write the graph in tensorboard
+  }
+}
+```
