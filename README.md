@@ -157,7 +157,9 @@ You can see examples of parameters used in the config file at in the `configs/` 
     "momentum": 0.9, # optimizer's momentum
     "width": 640, # width of the input image
     "height": 480, # height of the input image
-    "classes": 41 # number of classes ('void' class included)
+    "classes": 41, # number of classes ('void' class included)
+    "gamma": 2.0, # gamma constant used in categorical focal loss
+    "alpha": 0.25 # alpha constant used in categorical focal loss
   },
   "trainer": { # parameters used in training
     "num_epochs": 50, # number of epochs in training
