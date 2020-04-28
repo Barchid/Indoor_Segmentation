@@ -108,8 +108,8 @@ class SegmentationDataGenerator(keras.utils.Sequence):
         # Choice between ".jpg" or ".png" extension in the depth images
         data_id = os.path.splitext(depth_path)[0]
         depth_path = data_id + \
-            ".png" if os.path.exists(
-                self.depth_dir, data_id + '.png') else data_id + ".jpg"
+            ".png" if os.path.exists(os.path.join(
+                self.depth_dir, data_id + '.png')) else data_id + ".jpg"
 
         depth = cv2.imread(os.path.join(
             self.depth_dir, depth_path), cv2.IMREAD_GRAYSCALE)
