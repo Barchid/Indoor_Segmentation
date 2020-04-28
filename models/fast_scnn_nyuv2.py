@@ -173,10 +173,13 @@ class FastScnnNyuv2(BaseModel):
         optimizer = self.build_optimizer()
         metrics = self.build_metrics_SUN()
 
-        loss = CategoricalFocalLoss(
-            gamma=self.config.model.gamma,
-            alpha=self.config.model.alpha
-        )
+        if self.config.model.loss == "focal_loss":
+            loss = CategoricalFocalLoss(
+                gamma=self.config.model.gamma,
+                alpha=self.config.model.alpha
+            )
+        else:
+            loss = 'categorical_crossentropy'
 
         fast_scnn.compile(loss=loss,
                           optimizer=optimizer, metrics=metrics)
