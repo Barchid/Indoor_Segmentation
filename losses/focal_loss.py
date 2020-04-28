@@ -2,17 +2,15 @@
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import backend as K
-from tensorflow.python.keras.utils import losses_utils
 
 
-class CategoricalFocalLoss(Loss):
+class CategoricalFocalLoss(keras.losses.Loss):
     """Implementation of categorical focal loss. Formula:
         loss = - gt * alpha * ((1 - pr)^gamma) * log(pr)
     """
 
-    def __init__(self, reduction=losses_utils.ReductionV2.AUTO, name=None, gamma=2.0, alpha=0.25):
-        super(CategoricalFocalLoss, self).__init__(
-            reduction=reduction, name=name)
+    def __init__(self, name=None, gamma=2.0, alpha=0.25):
+        super(CategoricalFocalLoss, self).__init__(name=name)
         self.gamma = gamma
         self.alpha = alpha
 
