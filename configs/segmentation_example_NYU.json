@@ -9,12 +9,6 @@
     "use_data_augmentation": true,
     "shuffle_seed": 9
   },
-  "validation": {
-    "img_dir": "datasets/nyu_v2/test_rgb",
-    "mask_dir": "datasets/nyu_v2/test_mask",
-    "depth_dir": null,
-    "weights_file": "experiments/fast_scnn_adam_0_001-10.hdf5"
-  },
   "model": {
     "class_name": "models.fast_scnn_nyuv2.FastScnnNyuv2",
     "optimizer": "SGD",
@@ -24,14 +18,13 @@
     "height": 480,
     "classes": 41,
     "alpha": 0.25,
-    "omega": 2.0
+    "gamma": 2.0
   },
   "trainer": {
     "num_epochs": 50,
     "batch_size": 8,
     "verbose_training": true,
-    "workers": 1,
-    "checkpoint_weights": "experiments/new_fast_scnn_nyuv2-99-pute.hdf5"
+    "workers": 1
   },
   "callbacks": {
     "checkpoint_monitor": "loss",
