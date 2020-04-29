@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "new_fast_scnn_nyuv2"
+    "name": "fast_scnn_baseline"
   },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",
@@ -19,11 +19,11 @@
     "classes": 41,
     "alpha": 0.25,
     "gamma": 2.0,
-    "loss": "focal_loss"
+    "loss": "CE"
   },
   "trainer": {
-    "num_epochs": 50,
-    "batch_size": 8,
+    "num_epochs": 100,
+    "batch_size": 12,
     "verbose_training": true,
     "workers": 1
   },
