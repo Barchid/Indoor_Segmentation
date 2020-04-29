@@ -129,6 +129,15 @@ def evaluate_accuracy(model, config, datagen):
     return Aiou, class_Aiou, pixel_acc, mean_pixel_acc
 
 
+def evaluate_acc(model, config, datagen):
+    """Evaluation using keras evaluate function
+    """
+    model.evaluate(
+        x=datagen,
+        verbose=1
+    )
+
+
 def evaluate_speed(model, config, datagen):
     total_time = 0
     for i in range(len(datagen)):
