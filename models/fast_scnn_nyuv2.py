@@ -171,7 +171,7 @@ class FastScnnNyuv2(BaseModel):
 
         fast_scnn.summary()
         optimizer = self.build_optimizer()
-        metrics = self.build_metrics_SUN()
+        metrics = self.build_metrics_NYU()
 
         if self.config.model.loss == "focal_loss":
             loss = CategoricalFocalLoss(
