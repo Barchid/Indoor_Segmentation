@@ -1,4 +1,4 @@
-from evaluater.quantitative import evaluate_accuracy, evaluate_speed
+from evaluater.quantitative import evaluate_accuracy, evaluate_speed, evaluate_acc
 from evaluater.qualitative import visualize_results
 from utils import factory
 from data_generators.segmentation_data_generator import SegmentationDataGenerator
@@ -18,19 +18,20 @@ def quantitative(model, config, datagen):
     """Quantitative evaluation 
     """
     print('################# PROCESSING METRICS FOR ACCURACY ###############')
-    Aiou, class_Aiou, pixel_acc, mean_pixel_acc = evaluate_accuracy(
-        model, config, datagen)
+    # Aiou, class_Aiou, pixel_acc, mean_pixel_acc = evaluate_accuracy(
+    #     model, config, datagen)
+    evaluate_acc(model, config, datagen)
 
     print('################# PROCESSING METRICS FOR INFERENCE TIME ###############')
-    total_time, fps = evaluate_speed(model, config, datagen)
+    # total_time, fps = evaluate_speed(model, config, datagen)
 
-    print('################# Results : ##################')
-    print('Pixel accuracy : ', pixel_acc)
-    print('Mean pixel accuracy : ', mean_pixel_acc)
-    print('Mean IoU : ', Aiou)
-    print('Per-class mIoUs : ', class_Aiou)
-    print('Total inference time :', total_time)
-    print('FPS :', fps)
+    # print('################# Results : ##################')
+    # print('Pixel accuracy : ', pixel_acc)
+    # print('Mean pixel accuracy : ', mean_pixel_acc)
+    # print('Mean IoU : ', Aiou)
+    # print('Per-class mIoUs : ', class_Aiou)
+    # print('Total inference time :', total_time)
+    # print('FPS :', fps)
 
 
 def qualitative(model, config, datagen):
