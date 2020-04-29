@@ -21,8 +21,7 @@
     "classes": 41,
     "alpha": 1.0,
     "gamma": 2.0,
-    "loss": "focal_loss",
-    "use_average": false
+    "loss": "focal_loss"
   },
   "trainer": {
     "num_epochs": 100,

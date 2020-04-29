@@ -9,17 +9,15 @@ class CategoricalFocalLoss(keras.losses.Loss):
         loss = - gt * alpha * ((1 - pr)^gamma) * log(pr)
     """
 
-    def __init__(self, name=None, gamma=2.0, alpha=0.25, use_average=True):
+    def __init__(self, name=None, gamma=2.0, alpha=0.25):
         """
         :param name: displayed name for loss function
         :param gamma: gamma constant used in focal loss. gamma > 0 reduces the relative loss for well-classified examples (p>0.5) putting more focus on hard misclassified example
         :param alpha: alpha constant used in focal loss equation. scalar factor to reduce the relative loss.
-        :param use_average: flag that indicates whether the loss values must be averaged over all batch or. If false, the loss values are summed up.
         """
         super(CategoricalFocalLoss, self).__init__(name=name)
         self.gamma = gamma
         self.alpha = alpha
-        self.use_average = use_average
 
     def call(self, y_true, y_pred):
         # clip to prevent NaN's and Inf's
@@ -29,7 +27,6 @@ class CategoricalFocalLoss(keras.losses.Loss):
         loss = - y_true * (self.alpha * K.pow((1 - y_pred),
                                               self.gamma) * K.log(y_pred))
 
-        if self.use_average:
-            return K.mean(loss)
-        else:
-            return K.sum(loss)
+        sum_loss = K.sum(loss, axis=[1, 2, 3])
+        result = K.mean(sum_loss)
+        return result
