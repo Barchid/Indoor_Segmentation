@@ -11,15 +11,18 @@
   },
   "model": {
     "class_name": "models.fast_scnn_nyuv2.FastScnnNyuv2",
-    "optimizer": "SGD",
-    "learning_rate": 0.045,
+    "optimizer": "Adam",
+    "learning_rate": 0.00001,
+    "beta_1": 0.9,
+    "beta_2": 0.999,
     "momentum": 0.9,
     "width": 640,
     "height": 480,
     "classes": 41,
-    "alpha": 0.25,
+    "alpha": 1.0,
     "gamma": 2.0,
-    "loss": "CE"
+    "loss": "focal_loss",
+    "use_average": false
   },
   "trainer": {
     "num_epochs": 100,

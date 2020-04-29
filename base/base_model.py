@@ -1,7 +1,7 @@
 from metrics.iou import build_iou_for, mean_iou
 import tensorflow as tf
 from tensorflow import keras
-from metrics.softmax_miou import SoftmaxMeanIoU
+from metrics.softmax_miou import SoftmaxMeanIoU, SoftmaxSingleMeanIoU
 
 
 class BaseModel(object):
@@ -36,7 +36,11 @@ class BaseModel(object):
         if hasattr(self.config.model, "optimizer") and self.config.model.optimizer == 'SGD':
             return keras.optimizers.SGD(momentum=self.config.model.momentum, lr=self.config.model.learning_rate)
         elif hasattr(self.config.model, "optimizer") and self.config.model.optimizer == 'Adam':
-            return keras.optimizers.Adam(learning_rate=self.config.model.learning_rate)
+            return keras.optimizers.Adam(
+                learning_rate=self.config.model.learning_rate,
+                beta_1=self.config.model.beta_1,
+                beta_2=self.config.model.beta_2
+            )
         else:
             raise Exception('No model.optimizer found in JSON config file')
 
@@ -149,4 +153,5 @@ class BaseModel(object):
         metrics.append(SoftmaxMeanIoU(
             num_classes=self.config.model.classes, name='Mean_IoU'))
         metrics.append('accuracy')
+        metrics.append(SoftmaxSingleMeanIoU(1, name="Wall_mIoU"))
         return metrics

@@ -176,7 +176,8 @@ class FastScnnNyuv2(BaseModel):
         if self.config.model.loss == "focal_loss":
             loss = CategoricalFocalLoss(
                 gamma=self.config.model.gamma,
-                alpha=self.config.model.alpha
+                alpha=self.config.model.alpha,
+                use_average=self.config.model.use_average
             )
         else:
             loss = 'categorical_crossentropy'
