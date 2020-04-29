@@ -19,7 +19,7 @@
     "classes": 41,
     "alpha": 0.25,
     "gamma": 2.0,
-    "loss": "CE"
+    "loss": "focal_loss"
   },
   "trainer": {
     "num_epochs": 50,

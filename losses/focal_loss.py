@@ -21,4 +21,4 @@ class CategoricalFocalLoss(keras.losses.Loss):
         # Calculate focal loss
         loss = - y_true * (self.alpha * K.pow((1 - y_pred), self.gamma) * K.log(y_pred))
 
-        return K.mean(loss)
+        return K.sum(loss)
