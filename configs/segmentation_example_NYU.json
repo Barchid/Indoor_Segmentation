@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "fast_scnn_baseline"
+    "name": "fast_scnn_focal"
   },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",
