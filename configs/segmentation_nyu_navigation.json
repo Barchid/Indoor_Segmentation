@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "fast_scnn_focal"
+    "name": "fast_scnn_navigation"
   },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",
@@ -10,7 +10,7 @@
     "shuffle_seed": 9
   },
   "model": {
-    "class_name": "models.fast_scnn_nyuv2.FastScnnNyuv2",
+    "class_name": "models.fast_scnn_nyuv2.FastScnnNyuNavigation",
     "optimizer": "Adam",
     "learning_rate": 0.001,
     "beta_1": 0.9,
