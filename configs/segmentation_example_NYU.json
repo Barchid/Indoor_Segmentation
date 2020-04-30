@@ -12,7 +12,7 @@
   "model": {
     "class_name": "models.fast_scnn_nyuv2.FastScnnNyuv2",
     "optimizer": "Adam",
-    "learning_rate": 0.00001,
+    "learning_rate": 0.001,
     "beta_1": 0.9,
     "beta_2": 0.999,
     "momentum": 0.9,
