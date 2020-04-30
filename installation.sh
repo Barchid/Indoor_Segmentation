@@ -64,3 +64,7 @@ cd ..
 
 cd ../..
 python nyu_v2_dataset_parser.py
+
+
+echo "\n########################################################################\nCreate navigation datasets\n########################################################################\n"
+python navigation_datasets_parser.py

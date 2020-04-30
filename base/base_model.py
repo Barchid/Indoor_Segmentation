@@ -147,11 +147,27 @@ class BaseModel(object):
         metrics.extend(ious)
         return metrics
 
+    def build_metrics_navigation(self):
+        """Generates the metrics for the NYU-v2 dataset
+        """
+        metrics = self._generate_metrics()
+        ious = build_iou_for(
+            label=[*range(5)],
+            name=[
+                "void",  # 0
+                "wall",  # 1
+                "floor",  # 2
+                "person",  # 3
+                "other"  # 4
+            ]
+        )
+        metrics.extend(ious)
+        return metrics
+
     def _generate_metrics(self):
         metrics = []
         # metrics.append(mean_iou)  # general mIoU
         metrics.append(SoftmaxMeanIoU(
             num_classes=self.config.model.classes, name='Mean_IoU'))
         metrics.append('accuracy')
-        metrics.append(SoftmaxSingleMeanIoU(1, name="Wall_mIoU"))
         return metrics
