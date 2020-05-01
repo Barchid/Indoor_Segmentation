@@ -38,7 +38,7 @@ if __name__ == "__main__":
     transfer_mask_dir('datasets/nyu_v2/test_mask',
                       'datasets/nyu_navigation/test_mask')
 
-    # transfer_mask_dir('datasets/sun_rgbd/train_labels',
-    #                   'datasets/sun_navigation/train_mask')
-    # transfer_mask_dir('datasets/sun_rgbd/test_labels',
-    #                   'datasets/sun_navigation/test_mask')
+    transfer_mask_dir('datasets/sun_rgbd/train_labels',
+                      'datasets/sun_navigation/train_mask')
+    transfer_mask_dir('datasets/sun_rgbd/test_labels',
+                      'datasets/sun_navigation/test_mask')
