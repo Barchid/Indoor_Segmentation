@@ -24,13 +24,13 @@
     "loss": "focal_loss"
   },
   "trainer": {
-    "num_epochs": 20,
+    "num_epochs": 100,
     "batch_size": 12,
     "verbose_training": true,
     "workers": 1
   },
   "callbacks": {
-    "checkpoint_monitor": "loss",
+    "checkpoint_monitor": "val_loss",
     "checkpoint_mode": "min",
     "checkpoint_save_best_only": true,
     "checkpoint_save_weights_only": true,
