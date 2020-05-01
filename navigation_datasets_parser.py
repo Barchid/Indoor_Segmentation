@@ -30,8 +30,8 @@ if __name__ == "__main__":
 
     mkdir('datasets/nyu_navigation/train_mask')
     mkdir('datasets/nyu_navigation/test_mask')
-    # mkdir('datasets/sun_navigation/train_mask')
-    # mkdir('datasets/sun_navigation/test_mask')
+    mkdir('datasets/sun_navigation/train_mask')
+    mkdir('datasets/sun_navigation/test_mask')
 
     transfer_mask_dir('datasets/nyu_v2/train_mask',
                       'datasets/nyu_navigation/train_mask')
