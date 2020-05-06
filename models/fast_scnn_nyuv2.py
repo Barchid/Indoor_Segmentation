@@ -117,9 +117,12 @@ class FastScnnNyuv2(BaseModel):
         super(FastScnnNyuv2, self).__init__(config)
 
     def build_model(self):
+        # channels in beginning
+        input_channels = 1 if self.config.model.img_type == 'grayscale' else 3
+
         # input layer
         input_layer = Input(shape=(self.config.model.height,
-                                   self.config.model.width, 3), name="input_layer")
+                                   self.config.model.width, input_channels), name="input_layer")
         print(input_layer.shape)
 
         # Learning to down-sample module
