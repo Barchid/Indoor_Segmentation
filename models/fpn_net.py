@@ -36,13 +36,10 @@ class FpnNet(BaseModel):
         # backbone encoder
         backbone, skips = self.get_backbone()
 
-        # input layer
-        input_layer = Input(shape=(self.config.model.height,
-                                   self.config.model.width, input_channels), name="input_layer")
-        print(input_layer.shape)
+        # decoder construction
 
         network = keras.Model(
-            inputs=input_layer, outputs=None, name="model_architecture")
+            inputs=backbone.input, outputs=None, name="FPN_NET")
 
         network.summary()
         optimizer = self.build_optimizer()
@@ -66,11 +63,11 @@ class FpnNet(BaseModel):
         Returns the backbone model and the outputs of the layers to use in skip connections.
         """
         # default network choice is mobilenet
-        network = self.config.backbone if type(
+        name = self.config.backbone if type(
             self.config.model.backbone) == str else 'mobilenet_v2'
 
         # constructor of backbone network
-        backbone_fn = self.get_backbone_constructor(network)
+        backbone_fn = self.get_backbone_constructor(name)
 
         # shape of the input tensor
         input_shape = (
@@ -80,7 +77,7 @@ class FpnNet(BaseModel):
         )
 
         # pretrain on imagenet or not
-        weights = 'imagenet' if self.config.model.imagenet_pretrain == 'imagenet' else None
+        weights = 'imagenet' if self.config.model.backbone_pretrain == 'imagenet' else None
 
         # instantiate the backbone network
         backbone = backbone_fn(
@@ -93,23 +90,23 @@ class FpnNet(BaseModel):
         # retrieve skip layer's output
         skips = [
             backbone.get_layer(layer_name).output
-            for layer_name in skip_connections[network]
+            for layer_name in skip_connections[name]
         ]
 
         return backbone, skips
 
-    def get_backbone_constructor(self, network):
+    def get_backbone_constructor(self, name):
         """Retrieves the constructor of the backbone chosen in config
         """
-        if network == 'mobilenet_v2':
+        if name == 'mobilenet_v2':
             backbone_fn = keras.applications.mobilenet_v2.MobileNetV2
 
-        elif network == 'resnet18':
+        elif name == 'resnet18':
             raise NotImplementedError('ResNet18 needs implementation.')
-        elif network == 'resnet50':
+        elif name == 'resnet50':
             backbone_fn = keras.applications.resnet.ResNet50
 
-        elif network == 'resnet101':
+        elif name == 'resnet101':
             backbone_fn = keras.applications.resnet.ResNet101
 
         return backbone_fn
