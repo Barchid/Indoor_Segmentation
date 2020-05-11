@@ -11,18 +11,20 @@
   },
   "model": {
     "class_name": "models.fpn_net.FpnNet",
-    "optimizer": "Adam",
-    "learning_rate": 0.001,
-    "beta_1": 0.9,
-    "beta_2": 0.999,
-    "momentum": 0.9,
+    "optimizer": {
+      "name": "SGD",
+      "momentum": 0.9
+    },
+    "lr": {
+      "initial": 0.01,
+      "power": 0.9,
+      "cycle": false
+    },
     "width": 640,
     "height": 480,
     "channels": 3,
     "classes": 41,
-    "alpha": 1.0,
-    "gamma": 2.0,
-    "loss": "focal_loss",
+    "loss": "categorical_crossentropy",
     "backbone_pretrain": "imagenet",
     "backbone": "mobilenet_v2"
   },

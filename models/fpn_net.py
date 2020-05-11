@@ -29,8 +29,9 @@ skip_connections = {
 
 
 class FpnNet(BaseModel):
-    def __init__(self, config):
+    def __init__(self, config, datagen):
         super(FpnNet, self).__init__(config)
+        self.datagen = datagen
 
     def build_model(self):
         # backbone encoder
@@ -42,7 +43,10 @@ class FpnNet(BaseModel):
             inputs=backbone.input, outputs=None, name="FPN_NET")
 
         network.summary()
+
+        # get the optimizer
         optimizer = self.build_optimizer()
+
         metrics = self.build_metrics_NYU()
 
         if self.config.model.loss == "focal_loss":
@@ -57,6 +61,31 @@ class FpnNet(BaseModel):
                         optimizer=optimizer, metrics=metrics)
 
         return network
+
+    def build_optimizer(self):
+        # retrieve params from config
+        momentum = self.config.model.optimizer.momentum
+        initial_learning_rate = self.config.model.lr.initial
+        power = self.config.model.lr.power
+        cycle = self.config.model.lr.cycle
+
+        # compute the total number of iterations through the epochs
+        total_iterations = self.config.trainer.num_epochs * self.datagen.__len__()
+
+        # poly learning rate policy
+        poly_lr_policy = keras.optimizers.schedules.PolynomialDecay(
+            initial_learning_rate=initial_learning_rate,
+            decay_steps=total_iterations,
+            power=power,
+            cycle=cycle
+        )
+
+        # SGD optimizer
+        sgd = keras.optimizers.SGD(
+            lr=poly_lr_policy,
+            momentum=momentum
+        )
+        return sgd
 
     def get_backbone(self):
         """Chooses the backbone model to use in the bottom-up pathway.
