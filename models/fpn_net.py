@@ -43,7 +43,7 @@ class FpnNet(BaseModel):
             inputs=backbone.input, outputs=None, name="FPN_NET")
 
         network.summary()
-
+        
         # get the optimizer
         optimizer = self.build_optimizer()
 
@@ -92,7 +92,7 @@ class FpnNet(BaseModel):
         Returns the backbone model and the outputs of the layers to use in skip connections.
         """
         # default network choice is mobilenet
-        name = self.config.backbone if type(
+        name = self.config.model.backbone if type(
             self.config.model.backbone) == str else 'mobilenet_v2'
 
         # constructor of backbone network
@@ -127,10 +127,10 @@ class FpnNet(BaseModel):
     def get_backbone_constructor(self, name):
         """Retrieves the constructor of the backbone chosen in config
         """
-        if name == 'mobilenet_v2':
-            backbone_fn = keras.applications.mobilenet_v2.MobileNetV2
+        # default is MobileNetV2
+        backbone_fn = keras.applications.mobilenet_v2.MobileNetV2
 
-        elif name == 'resnet18':
+        if name == 'resnet18':
             raise NotImplementedError('ResNet18 needs implementation.')
         elif name == 'resnet50':
             backbone_fn = keras.applications.resnet.ResNet50
