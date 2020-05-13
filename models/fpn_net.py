@@ -4,6 +4,7 @@ from tensorflow import keras
 from tensorflow.keras.layers import *
 from layers.utils_layers import resize_img
 from losses.focal_loss import CategoricalFocalLoss
+from keras import backend as K
 
 # name of the layers used for the skip connections in the top-down pathway
 skip_connections = {
@@ -43,7 +44,7 @@ class FpnNet(BaseModel):
             inputs=backbone.input, outputs=None, name="FPN_NET")
 
         network.summary()
-        
+
         # get the optimizer
         optimizer = self.build_optimizer()
 
@@ -139,3 +140,90 @@ class FpnNet(BaseModel):
             backbone_fn = keras.applications.resnet.ResNet101
 
         return backbone_fn
+
+    def create_decoder(self, backbone, skips):
+        stage5 = backbone.output  # resolution 1/32
+        stage4 = skips[2]  # resolution 1/16
+        stage3 = skips[1]  # resolution 1/8
+        stage2 = skips[0]  # resolution 1/4
+
+        # Pyramid pooling module for stage 5 tensor
+        stage5 = ppm_block(stage5, (1, 2, 3, 6), 256)
+
+        # channel controllers
+        skip4 = conv2d(stage4, 128, 1, 1, kernel_size=1, use_relu=True)
+        skip3 = conv2d(stage3, 64, 1, 1, kernel_size=1, use_relu=True)
+        skip2 = conv2d(stage2, self.config.model.classes,
+                       1, 1, kernel_size=1, use_relu=True)
+
+        # fusion nodes
+
+
+# Layer functions
+
+def ppm_block(input, bin_sizes, out_channels):
+    """
+    Pyramid pooling module with bins (1, 2, 3 and 6)
+    :param input: the feature map input
+    :param bin_sizes: list of sizes of pooling
+    :param out_channels: total number of channels of the output tensor
+    """
+    concat = [input]
+    H = K.int_shape(input)[1]
+    W = K.int_shape(input)[2]
+
+    # Number of channels for each pooled feature map
+    inter_channels = out_channels//len(bin_sizes)
+
+    for bin_size in bin_sizes:
+        x = AveragePooling2D(
+            pool_size=(W//bin_size, H//bin_size),
+            strides=(W//bin_size, H//bin_size)
+        )(input)
+        x = conv2d(x, inter_channels, 1, 1, kernel_size=1, use_relu=True)
+        x = Lambda(lambda x: tf.image.resize(x, (W, H)))(x)
+        concat.append(x)
+    return concatenate(concat)
+
+
+def fusion_node(low_res, high_res):
+    # channel depth of output is high_res feature map depth
+    out_channels = K.int_shape(high_res)[-1]
+
+    # upsample the deepest, low-resolution feature map
+    low_res = conv2d(low_res, out_channels, 1, 1, kernel_size=1, use_relu=True)
+    low_res = UpSampling2D(size=(2, 2))(low_res)
+
+    # fusion of two tensors
+    fusion = concatenate([low_res, high_res])
+    fusion = conv2d(fusion, out_channels, 1, 1, kernel_size=3, use_relu=True)
+
+    return fusion
+
+
+def ds_conv2d(input, filters, stride, n, kernel_size=3):
+    """Performs n times separable convolution + BN + relu operation
+    :param input: input tensor
+    :param filters: number of filters
+    :param stride: stride
+    :param n: number of times the operation is performed
+    :param kernel_size: dimension size of a filter. Default = 3x3.
+    """
+    x = input
+    for i in range(n):
+        x = SeparableConv2D(filters, (kernel_size, kernel_size),
+                            strides=(stride, stride), padding="same")(x)
+        x = BatchNormalization()(x)
+        x = keras.activations.relu(x)
+    return x
+
+
+def conv2d(input, filters, stride, n, kernel_size=3, use_relu=True):
+    x = input
+    for i in range(n):
+        x = Conv2D(filters, (kernel_size, kernel_size),
+                   strides=(stride, stride), padding="same")(x)
+        x = BatchNormalization()(x)
+        if use_relu:
+            x = keras.activations.relu(x)
+    return x
