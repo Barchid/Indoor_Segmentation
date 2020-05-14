@@ -29,12 +29,12 @@ skip_connections = {
     ),
     'DF1': (
         'tf_op_layer_Relu_13',  # stride 16
-        'tf_op_layer_Relu_7'  # stride 8
+        'tf_op_layer_Relu_7',  # stride 8
         'tf_op_layer_Relu_1',  # stride 4
     ),
     'DF2': (
         'tf_op_layer_Relu_29',  # stride 16
-        'tf_op_layer_Relu_7'  # stride 8
+        'tf_op_layer_Relu_7',  # stride 8
         'tf_op_layer_Relu_1',  # stride 4
     ),
 }
@@ -42,8 +42,8 @@ skip_connections = {
 
 class FpnNet(BaseModel):
     def __init__(self, config, datagen):
-        super(FpnNet, self).__init__(config)
         self.datagen = datagen
+        super(FpnNet, self).__init__(config)
 
     def build_model(self):
         # backbone encoder
@@ -97,7 +97,7 @@ class FpnNet(BaseModel):
 
         # SGD optimizer
         sgd = keras.optimizers.SGD(
-            lr=poly_lr_policy,
+            learning_rate=poly_lr_policy,
             momentum=momentum
         )
         return sgd
