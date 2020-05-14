@@ -26,7 +26,17 @@ skip_connections = {
         'conv4_block23_out',  # stride 16
         'conv3_block4_out',  # stride 8
         'conv2_block3_out'  # stride 4
-    )
+    ),
+    'DF1': (
+        'tf_op_layer_Relu_13',  # stride 16
+        'tf_op_layer_Relu_7'  # stride 8
+        'tf_op_layer_Relu_1',  # stride 4
+    ),
+    'DF2': (
+        'tf_op_layer_Relu_29',  # stride 16
+        'tf_op_layer_Relu_7'  # stride 8
+        'tf_op_layer_Relu_1',  # stride 4
+    ),
 }
 
 
@@ -156,7 +166,7 @@ class FpnNet(BaseModel):
         stage2 = skips[2]  # resolution 1/4
 
         # Pyramid pooling module for stage 5 tensor
-        stage5 = ppm_block(stage5, (1, 2, 3, 6), 256)
+        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 512)
 
         # channel controllers
         skip4 = conv2d(stage4, 128, 1, 1, kernel_size=1, use_relu=True)
@@ -179,19 +189,17 @@ class FpnNet(BaseModel):
 # Layer functions
 
 
-def ppm_block(input, bin_sizes, out_channels):
+def ppm_block(input, bin_sizes, inter_channels, out_channels):
     """
     Pyramid pooling module with bins (1, 2, 3 and 6)
     :param input: the feature map input
     :param bin_sizes: list of sizes of pooling
+    :param inter_channels: number of channels for each pooled bin
     :param out_channels: total number of channels of the output tensor
     """
     concat = [input]
     H = K.int_shape(input)[1]
     W = K.int_shape(input)[2]
-
-    # Number of channels for each pooled feature map
-    inter_channels = out_channels//len(bin_sizes)
 
     for bin_size in bin_sizes:
         x = AveragePooling2D(
@@ -201,7 +209,9 @@ def ppm_block(input, bin_sizes, out_channels):
         x = conv2d(x, inter_channels, 1, 1, kernel_size=1, use_relu=True)
         x = Lambda(lambda x: tf.image.resize(x, (H, W)))(x)
         concat.append(x)
-    return concatenate(concat)
+    x = concatenate(concat)
+    x = conv2d(x, out_channels, 1, 1, 3, use_relu=True)
+    return x
 
 
 def fusion_node(low_res, high_res):
