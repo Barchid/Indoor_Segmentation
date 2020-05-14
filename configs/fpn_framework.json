@@ -26,7 +26,7 @@
     "classes": 41,
     "loss": "categorical_crossentropy",
     "backbone_pretrain": "imagenet",
-    "backbone": "mobilenet_v2"
+    "backbone": "DF1"
   },
   "trainer": {
     "num_epochs": 100,
