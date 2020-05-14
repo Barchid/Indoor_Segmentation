@@ -5,6 +5,7 @@ from tensorflow.keras.layers import *
 from layers.utils_layers import resize_img
 from losses.focal_loss import CategoricalFocalLoss
 from keras import backend as K
+from models.backbones.df import DF1, DF2
 
 # name of the layers used for the skip connections in the top-down pathway
 skip_connections = {
@@ -39,9 +40,10 @@ class FpnNet(BaseModel):
         backbone, skips = self.get_backbone()
 
         # decoder construction
+        prediction = self.create_decoder(backbone, skips)
 
         network = keras.Model(
-            inputs=backbone.input, outputs=None, name="FPN_NET")
+            inputs=backbone.input, outputs=prediction, name="FPN_NET")
 
         network.summary()
 
@@ -60,6 +62,8 @@ class FpnNet(BaseModel):
 
         network.compile(loss=loss,
                         optimizer=optimizer, metrics=metrics)
+
+        exit()
 
         return network
 
@@ -138,14 +142,18 @@ class FpnNet(BaseModel):
 
         elif name == 'resnet101':
             backbone_fn = keras.applications.resnet.ResNet101
+        elif name == 'DF1':
+            backbone_fn = DF1
+        elif name == 'DF2':
+            backbone_fn = DF2
 
         return backbone_fn
 
     def create_decoder(self, backbone, skips):
         stage5 = backbone.output  # resolution 1/32
-        stage4 = skips[2]  # resolution 1/16
+        stage4 = skips[0]  # resolution 1/16
         stage3 = skips[1]  # resolution 1/8
-        stage2 = skips[0]  # resolution 1/4
+        stage2 = skips[2]  # resolution 1/4
 
         # Pyramid pooling module for stage 5 tensor
         stage5 = ppm_block(stage5, (1, 2, 3, 6), 256)
@@ -157,9 +165,19 @@ class FpnNet(BaseModel):
                        1, 1, kernel_size=1, use_relu=True)
 
         # fusion nodes
+        fusion = fusion_node(stage5, skip4)
+        fusion = fusion_node(fusion, skip3)
+        fusion = fusion_node(fusion, skip2)
+        print(fusion.shape)
 
+        # upsample to the right dimensions
+        upsampled = resize_img(
+            fusion, self.config.model.height, self.config.model.width)
+        prediction = keras.activations.softmax(upsampled)
+        return prediction
 
 # Layer functions
+
 
 def ppm_block(input, bin_sizes, out_channels):
     """
@@ -177,11 +195,11 @@ def ppm_block(input, bin_sizes, out_channels):
 
     for bin_size in bin_sizes:
         x = AveragePooling2D(
-            pool_size=(W//bin_size, H//bin_size),
-            strides=(W//bin_size, H//bin_size)
+            pool_size=(H//bin_size, W//bin_size),
+            strides=(H//bin_size, W//bin_size)
         )(input)
         x = conv2d(x, inter_channels, 1, 1, kernel_size=1, use_relu=True)
-        x = Lambda(lambda x: tf.image.resize(x, (W, H)))(x)
+        x = Lambda(lambda x: tf.image.resize(x, (H, W)))(x)
         concat.append(x)
     return concatenate(concat)
 
