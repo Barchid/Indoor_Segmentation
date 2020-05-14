@@ -63,16 +63,16 @@ def DF1(input_shape=(480, 640, 3), weights='imagenet', pooling=False, include_to
 
     # stage 1
     stage1 = Conv2D(32, (3, 3), strides=(2, 2), padding="same",
-                    name="stage1_conv_1")(input)
-    stage1 = BatchNormalization()(stage1)
+                    name="stage1_conv1")(input)
+    stage1 = BatchNormalization(name="stage1_conv1_bn")(stage1)
     stage1 = keras.activations.relu(stage1)
     print("STAGE 1")
     print(stage1.shape)
 
     # stage 2
     stage2 = Conv2D(64, (3, 3), strides=(2, 2), padding="same",
-                    name="stage1_conv_2")(stage1)
-    stage2 = BatchNormalization()(stage2)
+                    name="stage2_conv1")(stage1)
+    stage2 = BatchNormalization(name="stage2_conv1_bn")(stage2)
     stage2 = keras.activations.relu(stage2)
     print("STAGE 2")
     print(stage2.shape)
@@ -105,16 +105,16 @@ def DF2(input_shape=(480, 640, 3), weights='imagenet', pooling=False, include_to
     # stage 1
     print("STAGE 1")
     stage1 = Conv2D(32, (3, 3), strides=(2, 2), padding="same",
-                    name="stage1_conv_1")(input)
-    stage1 = BatchNormalization()(stage1)
+                    name="stage1_conv1")(input)
+    stage1 = BatchNormalization(name="stage1_conv1_bn")(stage1)
     stage1 = keras.activations.relu(stage1)
     print(stage1.shape)
 
     # stage 2
     print("STAGE 2")
     stage2 = Conv2D(64, (3, 3), strides=(2, 2), padding="same",
-                    name="stage1_conv_2")(stage1)
-    stage2 = BatchNormalization()(stage2)
+                    name="stage2_conv1")(stage1)
+    stage2 = BatchNormalization(name="stage2_conv1_bn")(stage2)
     stage2 = keras.activations.relu(stage2)
     print(stage2.shape)
 
