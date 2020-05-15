@@ -1,6 +1,7 @@
 {
   "exp": {
-    "name": "FPN_framework"
+    "name": "FPN_framework",
+    "mixed_precision": true
   },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",

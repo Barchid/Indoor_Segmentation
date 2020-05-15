@@ -5,6 +5,7 @@ from utils.config import process_config
 from utils.dirs import create_dirs
 from utils.utils import get_args
 import tensorflow as tf
+from tensorflow.keras.mixed_precision import experimental as mixed_precision
 
 tf.config.optimizer.set_jit(True)
 
@@ -18,6 +19,12 @@ def main():
     except:
         print("missing or invalid arguments")
         exit(0)
+
+    # use mixed precision for training
+    if config.exp.mixed_precision:
+        print('Use mixed precision training')
+        policy = mixed_precision.Policy('mixed_float16')
+        mixed_precision.set_policy(policy)
 
     # create the experiments dirs
     create_dirs([config.callbacks.tensorboard_log_dir,

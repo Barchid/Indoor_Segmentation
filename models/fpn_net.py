@@ -181,7 +181,7 @@ class FpnNet(BaseModel):
         # upsample to the right dimensions
         upsampled = resize_img(
             fusion, self.config.model.height, self.config.model.width)
-        prediction = keras.activations.softmax(upsampled)
+        prediction = Activation('softmax', dtype='float32')(upsampled)
         return prediction
 
 # Layer functions
