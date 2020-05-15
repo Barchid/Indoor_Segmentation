@@ -73,8 +73,6 @@ class FpnNet(BaseModel):
         network.compile(loss=loss,
                         optimizer=optimizer, metrics=metrics)
 
-        exit()
-
         return network
 
     def build_optimizer(self):

@@ -4,6 +4,9 @@ from data_generators.segmentation_data_generator import SegmentationDataGenerato
 from utils.config import process_config
 from utils.dirs import create_dirs
 from utils.utils import get_args
+import tensorflow as tf
+
+tf.config.optimizer.set_jit(True)
 
 
 def main():
