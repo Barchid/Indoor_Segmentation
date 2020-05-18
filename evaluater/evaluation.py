@@ -7,7 +7,7 @@ from data_generators.segmentation_data_generator import SegmentationDataGenerato
 def load_weights(model, config):
     """Load weights file if required by configuration
     """
-    if not hasattr(config, 'validation') or not hasattr(config.validation, 'weights_file'):
+    if not hasattr(config, 'validation') or type(config.validation.weights_file) != str:
         return
 
     print('Load weight file : ', config.validation.weights_file)
@@ -44,11 +44,15 @@ def qualitative(model, config, datagen):
 
 
 def evaluation(config, visualization=False):
-    # dynamic model instanciation
-    network = factory.create(config.model.class_name)(config)
-
     # Data generator creation
     datagen = SegmentationDataGenerator(config, is_training_set=False)
+
+    # dynamic model instanciation
+    network = None
+    if config.model.class_name == 'models.fpn_net.FpnNet':
+        network = factory.create(config.model.class_name)(config, datagen)
+    else:
+        network = factory.create(config.model.class_name)(config)
 
     # Load weight file in model
     load_weights(network.model, config)

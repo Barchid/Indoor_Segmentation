@@ -84,7 +84,7 @@ class FpnNet(BaseModel):
 
         # compute the total number of iterations through the epochs
         total_iterations = self.config.trainer.num_epochs * self.datagen.__len__()
-
+        print('total iter', total_iterations)
         # poly learning rate policy
         poly_lr_policy = keras.optimizers.schedules.PolynomialDecay(
             initial_learning_rate=initial_learning_rate,
