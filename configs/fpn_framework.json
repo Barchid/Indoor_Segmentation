@@ -10,6 +10,11 @@
     "use_data_augmentation": true,
     "shuffle_seed": 9
   },
+  "validation": {
+    "img_dir": "datasets/nyu_v2/test_rgb",
+    "mask_dir": "datasets/nyu_v2/test_mask",
+    "depth_dir": null
+  },
   "model": {
     "class_name": "models.fpn_net.FpnNet",
     "optimizer": {
@@ -30,8 +35,8 @@
     "backbone": "DF1"
   },
   "trainer": {
-    "num_epochs": 100,
-    "batch_size": 12,
+    "num_epochs": 200,
+    "batch_size": 16,
     "verbose_training": true,
     "workers": 1
   },

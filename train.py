@@ -6,13 +6,30 @@ from utils.dirs import create_dirs
 from utils.utils import get_args
 import tensorflow as tf
 from tensorflow.keras.mixed_precision import experimental as mixed_precision
+import os
+import pprint
 
 tf.config.optimizer.set_jit(True)
 
+# COLAB TPU USAGE
+is_tpu_colab = False
+if 'COLAB_TPU_ADDR' not in os.environ:
+    print('Not connected to a TPU runtime; please see the first cell in this notebook for instructions!')
+else:
+    tpu_address = 'grpc://' + os.environ['COLAB_TPU_ADDR']
+    print('TPU address is', tpu_address)
+    is_tpu_colab = True
+
+    with tf.Session(tpu_address) as session:
+        devices = session.list_devices()
+
+    print('TPU devices:')
+    pprint.pprint(devices)
+
 
 def main():
-    # capture the config path from the run arguments
-    # then process the json configuration file
+        # capture the config path from the run arguments
+        # then process the json configuration file
     try:
         args = get_args()
         config = process_config(args.config)
@@ -41,6 +58,16 @@ def main():
 
     print('Create the model.')
     model = FpnNet(config, train_data)
+
+    # use TPU from colab if available
+    if is_tpu_colab:
+        # This address identifies the TPU we'll use when configuring TensorFlow.
+        TPU_WORKER = 'grpc://' + os.environ['COLAB_TPU_ADDR']
+        tf.logging.set_verbosity(tf.logging.INFO)
+        model = tf.contrib.tpu.keras_to_tpu_model(
+            model,
+            strategy=tf.contrib.tpu.TPUDistributionStrategy(
+                tf.contrib.cluster_resolver.TPUClusterResolver(TPU_WORKER)))
 
     print('Create the trainer')
     trainer = SegmentationTrainer(
