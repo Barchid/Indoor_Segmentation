@@ -11,20 +11,18 @@ import pprint
 
 tf.config.optimizer.set_jit(True)
 
-# COLAB TPU USAGE
-is_tpu_colab = False
+# COLAB TPU USAGE if available
 if 'COLAB_TPU_ADDR' not in os.environ:
     print('Not connected to a TPU runtime; please see the first cell in this notebook for instructions!')
 else:
     tpu_address = 'grpc://' + os.environ['COLAB_TPU_ADDR']
     print('TPU address is', tpu_address)
-    is_tpu_colab = True
-
-    with tf.Session(tpu_address) as session:
-        devices = session.list_devices()
-
-    print('TPU devices:')
-    pprint.pprint(devices)
+    resolver = tf.distribute.cluster_resolver.TPUClusterResolver(
+        tpu=tpu_address)
+    tf.config.experimental_connect_to_cluster(resolver)
+    # This is the TPU initialization code that has to be at the beginning.
+    tf.tpu.experimental.initialize_tpu_system(resolver)
+    strategy = tf.distribute.experimental.TPUStrategy(resolver)
 
 
 def main():
@@ -58,16 +56,6 @@ def main():
 
     print('Create the model.')
     model = FpnNet(config, train_data)
-
-    # use TPU from colab if available
-    if is_tpu_colab:
-        # This address identifies the TPU we'll use when configuring TensorFlow.
-        TPU_WORKER = 'grpc://' + os.environ['COLAB_TPU_ADDR']
-        tf.logging.set_verbosity(tf.logging.INFO)
-        model = tf.contrib.tpu.keras_to_tpu_model(
-            model,
-            strategy=tf.contrib.tpu.TPUDistributionStrategy(
-                tf.contrib.cluster_resolver.TPUClusterResolver(TPU_WORKER)))
 
     print('Create the trainer')
     trainer = SegmentationTrainer(
