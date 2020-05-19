@@ -2,12 +2,33 @@ from metrics.iou import build_iou_for, mean_iou
 import tensorflow as tf
 from tensorflow import keras
 from metrics.softmax_miou import SoftmaxMeanIoU, SoftmaxSingleMeanIoU
+import os
 
 
 class BaseModel(object):
     def __init__(self, config):
         self.config = config
-        self.model = self.build_model()
+
+        # COLAB TPU USAGE if available
+        strategy = None
+        if 'COLAB_TPU_ADDR' not in os.environ:
+            print(
+                'Not connected to a TPU runtime; please see the first cell in this notebook for instructions!')
+        else:
+            tpu_address = 'grpc://' + os.environ['COLAB_TPU_ADDR']
+            print('TPU address is', tpu_address)
+            resolver = tf.distribute.cluster_resolver.TPUClusterResolver(
+                tpu=tpu_address)
+            tf.config.experimental_connect_to_cluster(resolver)
+            # This is the TPU initialization code that has to be at the beginning.
+            tf.tpu.experimental.initialize_tpu_system(resolver)
+            strategy = tf.distribute.experimental.TPUStrategy(resolver)
+
+        if strategy is None:
+            self.model = self.build_model()
+        else:
+            with strategy.scope():
+                self.model = self.build_model()
 
     # save function that saves the checkpoint in the path defined in the config file
     def save(self, checkpoint_path):

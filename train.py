@@ -11,20 +11,6 @@ import pprint
 
 tf.config.optimizer.set_jit(True)
 
-# COLAB TPU USAGE if available
-if 'COLAB_TPU_ADDR' not in os.environ:
-    print('Not connected to a TPU runtime; please see the first cell in this notebook for instructions!')
-else:
-    tpu_address = 'grpc://' + os.environ['COLAB_TPU_ADDR']
-    print('TPU address is', tpu_address)
-    resolver = tf.distribute.cluster_resolver.TPUClusterResolver(
-        tpu=tpu_address)
-    tf.config.experimental_connect_to_cluster(resolver)
-    # This is the TPU initialization code that has to be at the beginning.
-    tf.tpu.experimental.initialize_tpu_system(resolver)
-    strategy = tf.distribute.experimental.TPUStrategy(resolver)
-
-
 def main():
         # capture the config path from the run arguments
         # then process the json configuration file

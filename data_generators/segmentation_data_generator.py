@@ -34,6 +34,7 @@ class SegmentationDataGenerator(keras.utils.Sequence):
         self.n_classes = config.model.classes
         self.shuffle_seed = config.generator.shuffle_seed
         self.input_dimensions = (config.model.height, config.model.width)
+        self.config = config
 
         random.seed(self.shuffle_seed)
         self.data_tuples = self._get_data_tuples()
@@ -82,9 +83,16 @@ class SegmentationDataGenerator(keras.utils.Sequence):
     def _read_image(self, image_path):
         """Reads the image from the image directory and returns the associated numpy array
         """
-        img = cv2.imread(os.path.join(
-            self.img_dir, image_path), cv2.IMREAD_COLOR)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # converts to RGB
+        img = None
+        # COLOR mode
+        if self.config.generator.img_mode == 'color':
+            img = cv2.imread(os.path.join(
+                self.img_dir, image_path), cv2.IMREAD_COLOR)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # converts to RGB
+        # GRAYSCALE mode
+        else:
+            img = cv2.imread(os.path.join(
+                self.img_dir, image_path), cv2.IMREAD_GRAYSCALE)
         # Resize image
         img = cv2.resize(
             img, (self.input_dimensions[1], self.input_dimensions[0]), interpolation=cv2.INTER_NEAREST)
