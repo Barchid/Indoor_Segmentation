@@ -27,8 +27,8 @@
       "power": 0.9,
       "cycle": false
     },
-    "width": 640,
-    "height": 480,
+    "width": 320,
+    "height": 320,
     "channels": 3,
     "classes": 41,
     "loss": "categorical_crossentropy",

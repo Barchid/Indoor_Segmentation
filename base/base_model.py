@@ -4,7 +4,6 @@ from tensorflow import keras
 from metrics.softmax_miou import SoftmaxMeanIoU, SoftmaxSingleMeanIoU
 import os
 
-
 class BaseModel(object):
     def __init__(self, config):
         self.config = config
