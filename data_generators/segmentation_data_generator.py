@@ -188,8 +188,8 @@ if __name__ == "__main__":
             "optimizer": "SGD",
             "learning_rate": 0.045,
             "momentum": 0.9,
-            "width": 1024,
-            "height": 2048,
+            "width": 320,
+            "height": 320,
             "classes": 38
         },
         "trainer": {

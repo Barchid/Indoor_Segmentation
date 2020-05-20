@@ -17,13 +17,18 @@ def init_augmenter():
     """Initializes the augmenters used in the training dataset
     :param config: the config object that contains all the 
     """
-    ia.seed(1)
+    ia.seed(10)
     return iaa.Sequential([
         sometimes(iaa.Fliplr()),
-        sometimes(iaa.MultiplyBrightness((0.7, 1.3))),
+        iaa.MultiplyBrightness((0.7, 1.3)),
         # TODO: try no ChangeColor or Brightness
         sometimes(iaa.ChangeColorTemperature((5000, 7000))),
-        sometimes(iaa.Crop(percent=(0, 0.15)))
+        iaa.Crop(percent=(
+            (0, 0.40),
+            (0, 0.40),
+            (0, 0.40),
+            (0, 0.40)
+        ))
     ])
 
 
