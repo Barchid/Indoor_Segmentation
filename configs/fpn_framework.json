@@ -33,7 +33,7 @@
     "classes": 41,
     "loss": "categorical_crossentropy",
     "backbone_pretrain": "imagenet",
-    "backbone": "mobilenetv2"
+    "backbone": "mobilenet_v2"
   },
   "trainer": {
     "num_epochs": 100,
