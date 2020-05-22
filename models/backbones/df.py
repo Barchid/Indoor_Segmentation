@@ -53,11 +53,11 @@ def res_stage(input, out_channels, blocks, downsample_start=True):
     return stage
 
 
-def DF1(input_shape=(480, 640, 3), weights='imagenet', pooling=False, include_top=False):
+def DF1(input_tensor, weights='imagenet', pooling=False, include_top=False):
     """Builds the DF1 backbone network (without the flattened part)
     TODO: implement integration for all parameters
     """
-    input = Input(shape=input_shape, name="backbone_input")
+    input = input_tensor
     print("INPUT")
     print(input.shape)
 
@@ -97,9 +97,9 @@ def DF1(input_shape=(480, 640, 3), weights='imagenet', pooling=False, include_to
     return df1
 
 
-def DF2(input_shape=(480, 640, 3), weights='imagenet', pooling=False, include_top=False):
+def DF2(input_tensor, weights='imagenet', pooling=False, include_top=False):
     print("INPUT")
-    input = Input(shape=input_shape, name="backbone_input")
+    input = input_tensor
     print(input.shape)
 
     # stage 1

@@ -12,7 +12,8 @@ skip_connections = {
     'mobilenet_v2': (
         'block_13_expand_relu',  # stride 16
         'block_6_expand_relu',  # stride 8
-        'block_3_expand_relu'  # stride 4
+        'block_3_expand_relu',   # stride 4
+        'block_1_expand_relu'   # stride 2
     ),
     'resnet18': (
 
@@ -21,6 +22,7 @@ skip_connections = {
         'conv4_block6_out',  # stride 16
         'conv3_block4_out',  # stride 8
         'conv2_block3_out'  # stride 4
+        'conv1_relu'  # stride 2
     ),
     'resnet101': (
         'conv4_block23_out',  # stride 16
@@ -31,19 +33,21 @@ skip_connections = {
         'tf_op_layer_Relu_13',  # stride 16
         'tf_op_layer_Relu_7',  # stride 8
         'tf_op_layer_Relu_1',  # stride 4
+        'tf_op_layer_Relu'  # stride 2
     ),
     'DF2': (
         'tf_op_layer_Relu_29',  # stride 16
         'tf_op_layer_Relu_7',  # stride 8
         'tf_op_layer_Relu_1',  # stride 4
+        'tf_op_layer_Relu'  # stride 2
     ),
 }
 
 
-class FpnNet(BaseModel):
+class FpnDeep(BaseModel):
     def __init__(self, config, datagen):
         self.datagen = datagen
-        super(FpnNet, self).__init__(config)
+        super(FpnDeep, self).__init__(config)
 
     def build_model(self):
         # backbone encoder
@@ -162,20 +166,23 @@ class FpnNet(BaseModel):
         stage4 = skips[0]  # resolution 1/16
         stage3 = skips[1]  # resolution 1/8
         stage2 = skips[2]  # resolution 1/4
+        stage1 = skips[3]  # resolution 1/2
 
         # Pyramid pooling module for stage 5 tensor
         stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 512)
 
         # channel controllers
-        skip4 = conv2d(stage4, 128, 1, 1, kernel_size=1, use_relu=True)
-        skip3 = conv2d(stage3, 64, 1, 1, kernel_size=1, use_relu=True)
-        skip2 = conv2d(stage2, self.config.model.classes,
+        skip4 = conv2d(stage4, 254, 1, 1, kernel_size=1, use_relu=True)
+        skip3 = conv2d(stage3, 128, 1, 1, kernel_size=1, use_relu=True)
+        skip2 = conv2d(stage2, 64, 1, 1, kernel_size=1, use_relu=True)
+        skip1 = conv2d(stage1, self.config.model.classes,
                        1, 1, kernel_size=1, use_relu=True)
 
         # fusion nodes
         fusion = fusion_node(stage5, skip4)
         fusion = fusion_node(fusion, skip3)
         fusion = fusion_node(fusion, skip2)
+        fusion = fusion_node(fusion, skip1)
         print(fusion.shape)
 
         # upsample to the right dimensions
