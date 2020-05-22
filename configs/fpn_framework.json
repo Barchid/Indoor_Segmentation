@@ -4,15 +4,15 @@
     "mixed_precision": false
   },
   "generator": {
-    "img_dir": "datasets/nyu_v2/train_rgb",
+    "img_dir": "datasets/nyu_v2/train_depth",
     "mask_dir": "datasets/nyu_v2/train_mask",
     "depth_dir": null,
     "use_data_augmentation": true,
     "shuffle_seed": 9,
-    "img_mode": "color"
+    "img_mode": "grayscale"
   },
   "validation": {
-    "img_dir": "datasets/nyu_v2/test_rgb",
+    "img_dir": "datasets/nyu_v2/test_depth",
     "mask_dir": "datasets/nyu_v2/test_mask",
     "depth_dir": null
   },
@@ -29,11 +29,11 @@
     },
     "width": 224,
     "height": 224,
-    "channels": 3,
+    "channels": 1,
     "classes": 41,
     "loss": "categorical_crossentropy",
     "backbone_pretrain": "imagenet",
-    "backbone": "mobilenet_v2"
+    "backbone": "DF1"
   },
   "trainer": {
     "num_epochs": 100,

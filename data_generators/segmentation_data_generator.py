@@ -35,6 +35,8 @@ class SegmentationDataGenerator(keras.utils.Sequence):
         self.shuffle_seed = config.generator.shuffle_seed
         self.input_dimensions = (config.model.height, config.model.width)
         self.config = config
+        self.augmenter = augmentations.init_augmenter(
+            img_mode=self.config.generator.img_mode)
 
         random.seed(self.shuffle_seed)
         self.data_tuples = self._get_data_tuples()
@@ -68,7 +70,7 @@ class SegmentationDataGenerator(keras.utils.Sequence):
             # Launch data_augmentation if needed
             if self.use_data_augmentation:
                 img, mask, depth = augmentations.process_augmentation(
-                    img, mask, depth=depth)
+                    self.augmenter, img, mask, depth=depth)
 
             X.append(self._get_image_tensor(img))
             Y.append(self._get_mask_tensor(mask))
@@ -133,6 +135,10 @@ class SegmentationDataGenerator(keras.utils.Sequence):
         """
         img = img.astype(np.float32)
         img = img/255.  # normalize between 0 and 1
+
+        if self.config.generator.img_mode == 'grayscale':
+            img = np.expand_dims(img, 2)
+
         return img
 
     def _get_mask_tensor(self, raw_mask):

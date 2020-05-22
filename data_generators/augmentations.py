@@ -13,29 +13,38 @@ def sometimes(augmenter):
     return iaa.Sometimes(0.5, augmenter)
 
 
-def init_augmenter():
+def init_augmenter(img_mode="color"):
     """Initializes the augmenters used in the training dataset
     :param config: the config object that contains all the 
     """
     ia.seed(10)
-    return iaa.Sequential([
-        sometimes(iaa.Fliplr()),
-        iaa.MultiplyBrightness((0.7, 1.3)),
-        # TODO: try no ChangeColor or Brightness
-        sometimes(iaa.ChangeColorTemperature((5000, 7000))),
-        iaa.Crop(percent=(
-            (0, 0.40),
-            (0, 0.40),
-            (0, 0.40),
-            (0, 0.40)
-        ))
-    ])
+
+    if img_mode == 'color':
+        return iaa.Sequential([
+            sometimes(iaa.Fliplr()),
+            iaa.MultiplyBrightness((0.7, 1.3)),
+            # TODO: try no ChangeColor or Brightness
+            sometimes(iaa.ChangeColorTemperature((5000, 7000))),
+            iaa.Crop(percent=(
+                (0, 0.40),
+                (0, 0.40),
+                (0, 0.40),
+                (0, 0.40)
+            ))
+        ])
+    else:
+        return iaa.Sequential([
+            sometimes(iaa.Fliplr()),
+            iaa.Crop(percent=(
+                (0, 0.40),
+                (0, 0.40),
+                (0, 0.40),
+                (0, 0.40)
+            ))
+        ])
 
 
-augmenter = init_augmenter()
-
-
-def process_augmentation(image, mask, depth=None):
+def process_augmentation(augmenter, image, mask, depth=None):
     """
     processes data augmentation for the current image and the appropriate mask.
     """
