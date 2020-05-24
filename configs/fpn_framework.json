@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "FPN_framework",
+    "name": "FPN_framework_cross_mobilenet_deep",
     "mixed_precision": false
   },
   "generator": {
