@@ -49,7 +49,7 @@ def evaluation(config, visualization=False):
 
     # dynamic model instanciation
     network = None
-    if config.model.class_name == 'models.fpn_net.FpnNet':
+    if config.model.class_name == 'models.fpn_net.FpnNet' or config.model.class_name == 'models.fpn_deep.FpnDeep':
         network = factory.create(config.model.class_name)(config, datagen)
     else:
         network = factory.create(config.model.class_name)(config)
