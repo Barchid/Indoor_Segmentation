@@ -167,8 +167,8 @@ class FpnNet(BaseModel):
         stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 512)
 
         # channel controllers
-        skip4 = conv2d(stage4, 128, 1, 1, kernel_size=1, use_relu=True)
-        skip3 = conv2d(stage3, 64, 1, 1, kernel_size=1, use_relu=True)
+        skip4 = conv2d(stage4, 256, 1, 1, kernel_size=1, use_relu=True)
+        skip3 = conv2d(stage3, 128, 1, 1, kernel_size=1, use_relu=True)
         skip2 = conv2d(stage2, self.config.model.classes,
                        1, 1, kernel_size=1, use_relu=True)
 
