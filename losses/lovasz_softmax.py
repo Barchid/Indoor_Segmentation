@@ -24,8 +24,8 @@ class MultiClassLovaszSoftmaxLoss(keras.losses.Loss):
         super(MultiClassLovaszSoftmaxLoss, self).__init__(name=name)
         self.classes = classes
         self.per_image = per_image
-        self.ignore = self.ignore
-        self.order = self.order
+        self.ignore = ignore
+        self.order = order
 
     def call(self, y_true, y_pred):
         # Reshape y_true of shape (B,H,W,C) to a tensor of ground truth labels (B,H,W)

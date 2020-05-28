@@ -14,10 +14,11 @@
   "validation": {
     "img_dir": "datasets/nyu_v2/test_rgb",
     "mask_dir": "datasets/nyu_v2/test_mask",
-    "depth_dir": null
+    "depth_dir": null,
+    "weights_file": "tests/verifs/cross_deep_320px/FPN_framework_cross_mobilenet_deep_320px-100.hdf5"
   },
   "model": {
-    "class_name": "models.fpn_net.FpnNet",
+    "class_name": "models.fpn_deep.FpnDeep",
     "optimizer": {
       "name": "SGD",
       "momentum": 0.9
