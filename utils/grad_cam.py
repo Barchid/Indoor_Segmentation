@@ -72,7 +72,7 @@ class GradCam:
         # compute grad CAM
         mul = tf.multiply(weights, conv_outputs)
         print("mul", mul.shape)
-        cam = tf.reduce_sum(mul, axis=-1)
+        cam = tf.math.reduce_sum(mul, axis=-1)
         print("cam", cam.shape)
 
         # image dimensions
