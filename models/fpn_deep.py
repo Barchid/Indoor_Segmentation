@@ -4,6 +4,7 @@ from tensorflow import keras
 from tensorflow.keras.layers import *
 from layers.utils_layers import resize_img
 from losses.focal_loss import CategoricalFocalLoss
+from losses.lovasz_softmax import MultiClassLovaszSoftmaxLoss
 from keras import backend as K
 from models.backbones.df import DF1, DF2
 
@@ -71,6 +72,8 @@ class FpnDeep(BaseModel):
                 gamma=self.config.model.gamma,
                 alpha=self.config.model.alpha
             )
+        elif self.config.model.loss == "lovasz":
+            loss = MultiClassLovaszSoftmaxLoss()
         else:
             loss = 'categorical_crossentropy'
 
