@@ -22,7 +22,7 @@ skip_connections = {
     'resnet50': (
         'conv4_block6_out',  # stride 16
         'conv3_block4_out',  # stride 8
-        'conv2_block3_out'  # stride 4
+        'conv2_block3_out',  # stride 4
         'conv1_relu'  # stride 2
     ),
     'resnet101': (
