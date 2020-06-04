@@ -83,6 +83,8 @@ def create_visualization(image, y_pred, y_true, heatmap, overlay):
     y_pred = np.argmax(y_pred, axis=-1).astype(np.uint8)
     y_true = np.argmax(y_true, axis=-1).astype(np.uint8)
 
+    y_true_gray = cv2.cvtColor(y_true, cv2.COLOR_GRAY2RGB)
+
     # format raw image
     # put values between 0 and 255 (before it was between 0 and 1)
     image = image.astype(np.uint8)
@@ -97,7 +99,8 @@ def create_visualization(image, y_pred, y_true, heatmap, overlay):
         y_true.draw_on_image(image)[0],
         y_pred.draw_on_image(image)[0],
         heatmap,
-        overlay
+        overlay,
+        y_true_gray
     ], rows=2, cols=3)
 
     return grid_image
