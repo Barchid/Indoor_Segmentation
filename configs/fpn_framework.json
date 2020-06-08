@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "FPN_framework_cross_mobilenet_deep",
+    "name": "FPN_framework_cross_mobilenet_BASE",
     "mixed_precision": false
   },
   "generator": {
@@ -15,10 +15,10 @@
     "img_dir": "datasets/nyu_v2/test_rgb",
     "mask_dir": "datasets/nyu_v2/test_mask",
     "depth_dir": null,
-    "weights_file": "tests/verifs/cross_deep_320px/FPN_framework_cross_mobilenet_deep_320px-100.hdf5"
+    "weights_file": "tests/verifs/cross_deep_depth_2/FPN_framework_cross_mobilenet_deep_depth-100.hdf5"
   },
   "model": {
-    "class_name": "models.fpn_deep.FpnDeep",
+    "class_name": "models.fpn_base.FpnBase",
     "optimizer": {
       "name": "SGD",
       "momentum": 0.9
