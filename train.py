@@ -9,8 +9,6 @@ from utils.utils import get_args
 import tensorflow as tf
 from tensorflow.keras.mixed_precision import experimental as mixed_precision
 
-tf.config.optimizer.set_jit(True)
-
 
 def main():
         # capture the config path from the run arguments
@@ -27,6 +25,9 @@ def main():
         print('Use mixed precision training')
         policy = mixed_precision.Policy('mixed_float16')
         mixed_precision.set_policy(policy)
+
+    if config.exp.jpa_optimization:
+        tf.config.optimizer.set_jit(True)
 
     # create the experiments dirs
     create_dirs([config.callbacks.tensorboard_log_dir,

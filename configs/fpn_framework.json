@@ -1,7 +1,8 @@
 {
   "exp": {
     "name": "FPN_framework_cross_mobilenet_BASE",
-    "mixed_precision": false
+    "mixed_precision": false,
+    "jpa_optimization": true
   },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",
