@@ -9,13 +9,11 @@ from keras import backend as K
 from models.backbones.df import DF1, DF2
 
 # name of the layers used for the skip connections in the top-down pathway
-# name of the layers used for the skip connections in the top-down pathway
 skip_connections = {
     'mobilenet_v2': (
         'block_13_expand_relu',  # stride 16
         'block_6_expand_relu',  # stride 8
-        'block_3_expand_relu',   # stride 4
-        'block_1_expand_relu'   # stride 2
+        'block_3_expand_relu'   # stride 4
     ),
     'resnet18': (
 
@@ -23,8 +21,7 @@ skip_connections = {
     'resnet50': (
         'conv4_block6_out',  # stride 16
         'conv3_block4_out',  # stride 8
-        'conv2_block3_out',  # stride 4
-        'conv1_relu'  # stride 2
+        'conv2_block3_out'  # stride 4
     ),
     'resnet101': (
         'conv4_block23_out',  # stride 16
@@ -34,14 +31,12 @@ skip_connections = {
     'DF1': (
         'tf_op_layer_Relu_13',  # stride 16
         'tf_op_layer_Relu_7',  # stride 8
-        'tf_op_layer_Relu_1',  # stride 4
-        'tf_op_layer_Relu'  # stride 2
+        'tf_op_layer_Relu_1'  # stride 4
     ),
     'DF2': (
         'tf_op_layer_Relu_29',  # stride 16
         'tf_op_layer_Relu_7',  # stride 8
-        'tf_op_layer_Relu_1',  # stride 4
-        'tf_op_layer_Relu'  # stride 2
+        'tf_op_layer_Relu_1'  # stride 4
     ),
 }
 
@@ -170,26 +165,23 @@ class FpnBase(BaseModel):
         stage4 = skips[0]  # resolution 1/16
         stage3 = skips[1]  # resolution 1/8
         stage2 = skips[2]  # resolution 1/4
-        stage1 = skips[3]  # resolution 1/2
 
         # Pyramid pooling module for stage 5 tensor
-        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 1024)
+        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 512)
 
         # channel controllers
-        skip4 = conv2d(stage4, 512, 1, 1, kernel_size=1, use_relu=True)
-        skip3 = conv2d(stage3, 256, 1, 1, kernel_size=1, use_relu=True)
-        skip2 = conv2d(stage2, 128, 1, 1, kernel_size=1, use_relu=True)
-        skip1 = conv2d(stage1, 64, 1, 1, kernel_size=1, use_relu=True)
+        skip4 = conv2d(stage4, 256, 1, 1, kernel_size=1, use_relu=True)
+        skip3 = conv2d(stage3, 128, 1, 1, kernel_size=1, use_relu=True)
+        skip2 = conv2d(stage2, 64, 1, 1, kernel_size=1, use_relu=True)
 
         # fusion nodes
         fusion4 = fusion_node(stage5, skip4)
         fusion3 = fusion_node(fusion4, skip3)
         fusion2 = fusion_node(fusion3, skip2)
-        fusion1 = fusion_node(fusion2, skip1)
-        print(fusion1.shape)
+        print(fusion2.shape)
 
         # fusion nodes merging
-        merge = merge_block(fusion4, fusion3, fusion2, fusion1,
+        merge = merge_block(fusion4, fusion3, fusion2,
                             out_channels=self.config.model.classes)
         print(merge.shape)
 
@@ -202,31 +194,25 @@ class FpnBase(BaseModel):
 # Layer functions
 
 
-def merge_block(fusion4, fusion3, fusion2, fusion1, out_channels):
-    # get fusion1 channels number
-    inter_channels = K.int_shape(fusion1)[-1]
-
-    # fusion2 upsampling
-    fusion2 = conv2d(fusion2, inter_channels, 1, 1,
-                     kernel_size=1, use_relu=True)
-    fusion2 = UpSampling2D(size=(2, 2))(fusion2)
+def merge_block(fusion4, fusion3, fusion2, out_channels):
+    # get fusion2 channels number
+    inter_channels = K.int_shape(fusion2)[-1]
 
     # fusion3 upsampling
     fusion3 = conv2d(fusion3, inter_channels, 1, 1,
                      kernel_size=1, use_relu=True)
-    fusion3 = UpSampling2D(size=(4, 4))(fusion3)
+    fusion3 = UpSampling2D(size=(2, 2))(fusion3)
 
     # fusion4 upsampling
     fusion4 = conv2d(fusion4, inter_channels, 1, 1,
                      kernel_size=1, use_relu=True)
-    fusion4 = UpSampling2D(size=(8, 8))(fusion4)
+    fusion4 = UpSampling2D(size=(4, 4))(fusion4)
 
     # addition
     merge = Add()([
         fusion4,
         fusion3,
-        fusion2,
-        fusion1
+        fusion2
     ])
 
     # last conv layer
