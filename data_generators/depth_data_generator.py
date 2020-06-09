@@ -23,7 +23,7 @@ class DepthDataGenerator(keras.utils.Sequence):
         # ELSE [means the generator uses the validation set]
         else:
             self.img_dir = config.validation.img_dir
-            self.depth_dir = config.generator.depth_dir
+            self.depth_dir = config.validation.depth_dir
             self.use_data_augmentation = False
 
         self.batch_size = config.trainer.batch_size
