@@ -44,9 +44,9 @@ def init_augmenter(img_mode="color"):
         ])
 
 
-def process_augmentation(augmenter, image, mask, depth=None):
+def process_augmentation_segmentation(augmenter, image, mask, depth=None):
     """
-    processes data augmentation for the current image and the appropriate mask.
+    processes data augmentation for the current image and the appropriate mask for semantic segmentation.
     """
     segmap = SegmentationMapsOnImage(mask, shape=image.shape)
 
@@ -62,6 +62,18 @@ def process_augmentation(augmenter, image, mask, depth=None):
     else:
         aug_image, aug_seg = augmenter(image=image, segmentation_maps=segmap)
         return aug_image, aug_seg.get_arr(), None
+
+
+def process_augmentation_depth_estimation(augmenter, image, depth):
+    """
+    processes data augmentation for the current image and the appropriate mask 
+    """
+    # convert depth into heatmap to use it in imgaug
+    heatmap = HeatmapsOnImage(depth.astype(
+        np.float32), shape=image.shape, min_value=0.0, max_value=255.0)
+    aug_image, aug_depth = augmenter(
+        image=image, heatmaps=heatmap)
+    return aug_image, aug_depth.get_arr().astype(np.uint8)
 
 
 if __name__ == "__main__":
@@ -81,7 +93,8 @@ if __name__ == "__main__":
     cv2.imshow('', depth)
     cv2.waitKey()
 
-    aug_img, aug_seg, aug_depth = process_augmentation(image, mask)
+    aug_img, aug_seg, aug_depth = process_augmentation_segmentation(
+        image, mask)
     from tensorflow import keras
     print(keras.backend.one_hot(aug_seg, 38))
     exit()

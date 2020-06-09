@@ -69,7 +69,7 @@ class SegmentationDataGenerator(keras.utils.Sequence):
 
             # Launch data_augmentation if needed
             if self.use_data_augmentation:
-                img, mask, depth = augmentations.process_augmentation(
+                img, mask, depth = augmentations.process_augmentation_segmentation(
                     self.augmenter, img, mask, depth=depth)
 
             X.append(self._get_image_tensor(img))
