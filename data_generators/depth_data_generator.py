@@ -27,7 +27,6 @@ class DepthDataGenerator(keras.utils.Sequence):
             self.use_data_augmentation = False
 
         self.batch_size = config.trainer.batch_size
-        self.n_classes = config.model.classes
         self.shuffle_seed = config.generator.shuffle_seed
         self.input_dimensions = (config.model.height, config.model.width)
         self.config = config

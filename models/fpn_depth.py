@@ -9,7 +9,6 @@ from keras import backend as K
 from models.backbones.df import DF1, DF2
 
 # name of the layers used for the skip connections in the top-down pathway
-# name of the layers used for the skip connections in the top-down pathway
 skip_connections = {
     'mobilenet_v2': (
         'block_13_expand_relu',  # stride 16
@@ -66,7 +65,7 @@ class FpnDepth(BaseModel):
         # get the optimizer
         optimizer = self.build_optimizer()
 
-        network.compile(loss='mse',
+        network.compile(loss=tf.keras.losses.MeanSquaredError(),
                         optimizer=optimizer, metrics=[tf.keras.metrics.RootMeanSquaredError()])
 
         return network
@@ -161,65 +160,28 @@ class FpnDepth(BaseModel):
         stage1 = skips[3]  # resolution 1/2
 
         # Pyramid pooling module for stage 5 tensor
-        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 1024)
+        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 512)
 
         # channel controllers
-        skip4 = conv2d(stage4, 512, 1, 1, kernel_size=1, use_relu=True)
-        skip3 = conv2d(stage3, 256, 1, 1, kernel_size=1, use_relu=True)
-        skip2 = conv2d(stage2, 128, 1, 1, kernel_size=1, use_relu=True)
-        skip1 = conv2d(stage1, 64, 1, 1, kernel_size=1, use_relu=True)
+        skip4 = conv2d(stage4, 254, 1, 1, kernel_size=1, use_relu=True)
+        skip3 = conv2d(stage3, 128, 1, 1, kernel_size=1, use_relu=True)
+        skip2 = conv2d(stage2, 64, 1, 1, kernel_size=1, use_relu=True)
+        skip1 = conv2d(stage1, 1, 1, 1, kernel_size=1, use_relu=True)
 
         # fusion nodes
-        fusion4 = fusion_node(stage5, skip4)
-        fusion3 = fusion_node(fusion4, skip3)
-        fusion2 = fusion_node(fusion3, skip2)
-        fusion1 = fusion_node(fusion2, skip1)
-        print(fusion1.shape)
-
-        # fusion nodes merging
-        merge = merge_block(fusion4, fusion3, fusion2, fusion1,
-                            out_channels=self.config.model.classes)
-        print(merge.shape)
+        fusion = fusion_node(stage5, skip4)
+        fusion = fusion_node(fusion, skip3)
+        fusion = fusion_node(fusion, skip2)
+        fusion = fusion_node(fusion, skip1)
+        print(fusion.shape)
 
         # upsample to the right dimensions
         upsampled = resize_img(
-            merge, self.config.model.height, self.config.model.width)
+            fusion, self.config.model.height, self.config.model.width)
         prediction = Activation('softmax', dtype='float32')(upsampled)
         return prediction
 
 # Layer functions
-
-
-def merge_block(fusion4, fusion3, fusion2, fusion1, out_channels):
-    # get fusion1 channels number
-    inter_channels = K.int_shape(fusion1)[-1]
-
-    # fusion2 upsampling
-    fusion2 = conv2d(fusion2, inter_channels, 1, 1,
-                     kernel_size=1, use_relu=True)
-    fusion2 = UpSampling2D(size=(2, 2))(fusion2)
-
-    # fusion3 upsampling
-    fusion3 = conv2d(fusion3, inter_channels, 1, 1,
-                     kernel_size=1, use_relu=True)
-    fusion3 = UpSampling2D(size=(4, 4))(fusion3)
-
-    # fusion4 upsampling
-    fusion4 = conv2d(fusion4, inter_channels, 1, 1,
-                     kernel_size=1, use_relu=True)
-    fusion4 = UpSampling2D(size=(8, 8))(fusion4)
-
-    # addition
-    merge = Add()([
-        fusion4,
-        fusion3,
-        fusion2,
-        fusion1
-    ])
-
-    # last conv layer
-    merge = conv2d(merge, out_channels, 1, 1, kernel_size=3, use_relu=True)
-    return merge
 
 
 def ppm_block(input, bin_sizes, inter_channels, out_channels):
