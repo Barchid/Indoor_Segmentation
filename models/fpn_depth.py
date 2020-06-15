@@ -178,8 +178,7 @@ class FpnDepth(BaseModel):
         # upsample to the right dimensions
         upsampled = resize_img(
             fusion, self.config.model.height, self.config.model.width)
-        prediction = Activation('softmax', dtype='float32')(upsampled)
-        return prediction
+        return upsampled
 
 # Layer functions
 

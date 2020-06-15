@@ -14,7 +14,7 @@
   "validation": {
     "img_dir": "datasets/nyu_v2/test_rgb",
     "depth_dir": "datasets/nyu_v2/test_depth",
-    "weights_file": "tests/verifs/cross_deep_depth_2/FPN_framework_cross_mobilenet_deep_depth-100.hdf5"
+    "weights_file": "tests/depth/FPN_depth_224px_300epochs-231.hdf5"
   },
   "model": {
     "class_name": "models.fpn_depth.FpnDepth",
@@ -27,8 +27,8 @@
       "power": 0.9,
       "cycle": false
     },
-    "width": 320,
-    "height": 320,
+    "width": 224,
+    "height": 224,
     "channels": 3,
     "classes": 1,
     "loss": "mse",
