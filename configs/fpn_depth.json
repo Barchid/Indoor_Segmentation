@@ -15,7 +15,7 @@
     "img_dir": "datasets/nyu_v2/test_rgb",
     "depth_dir": "datasets/nyu_v2/test_depth",
     "weights_file": "tests/depth/FPN_depth_224px_300epochs-231.hdf5",
-    "layer_name": "tf_op_layer_Relu_11",
+    "layer_name": "tf_op_layer_Relu_8",
     "depth_range": {
       "start": 0.0,
       "end": 255.0

@@ -15,6 +15,7 @@ def create_visualization(pred, gt, img, heatmap, overlay):
     gt = cv2.cvtColor(gt, cv2.COLOR_GRAY2BGR)
     heatmap = heatmap.astype(np.float32)/255.
     overlay = overlay.astype(np.float32)/255.
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
     grid_image = ia.draw_grid([
         img,
