@@ -1,0 +1,54 @@
+{
+  "exp": {
+    "name": "FPN_framework_cross_mobilenet_BASE",
+    "mixed_precision": false,
+    "jpa_optimization": true
+  },
+  "generator": {
+    "img_dir": "datasets/nyu_v2/train_rgb",
+    "mask_dir": "datasets/nyu_v2/train_mask",
+    "depth_dir": "datasets/nyu_v2/train_depth",
+    "use_data_augmentation": true,
+    "shuffle_seed": 9,
+    "img_mode": "color"
+  },
+  "validation": {
+    "img_dir": "datasets/nyu_v2/test_rgb",
+    "mask_dir": "datasets/nyu_v2/test_mask",
+    "depth_dir": "datasets/nyu_v2/test_depth",
+    "weights_file": "tests/verifs/cross_deep_depth_2/FPN_framework_cross_mobilenet_deep_depth-100.hdf5"
+  },
+  "model": {
+    "class_name": "models.fpn_base.FpnBase",
+    "optimizer": {
+      "name": "SGD",
+      "momentum": 0.9
+    },
+    "lr": {
+      "initial": 0.01,
+      "power": 0.9,
+      "cycle": false
+    },
+    "width": 224,
+    "height": 224,
+    "channels": 3,
+    "classes": 41,
+    "loss": "categorical_crossentropy",
+    "backbone_pretrain": "imagenet",
+    "backbone": "mobilenet_v2"
+  },
+  "trainer": {
+    "num_epochs": 100,
+    "batch_size": 16,
+    "verbose_training": true,
+    "workers": 1
+  },
+  "callbacks": {
+    "checkpoint_monitor": "val_loss",
+    "checkpoint_mode": "min",
+    "checkpoint_save_best_only": true,
+    "checkpoint_save_weights_only": true,
+    "checkpoint_verbose": true,
+    "tensorboard_write_graph": true
+  }
+}
