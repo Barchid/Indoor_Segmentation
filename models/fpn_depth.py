@@ -193,7 +193,7 @@ def ppm_block(input, bin_sizes, inter_channels, out_channels):
     concat = [input]
     H = K.int_shape(input)[1]
     W = K.int_shape(input)[2]
-
+    
     for bin_size in bin_sizes:
         x = AveragePooling2D(
             pool_size=(H//bin_size, W//bin_size),

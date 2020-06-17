@@ -5,7 +5,7 @@ from tensorflow import keras
 from tensorflow.keras.layers import *
 
 
-def resize_img(x, H, W):
+def resize_img(x, H, W, name=None):
     """Resizes the input image tensor with heigh H and width W
     """
-    return Lambda(lambda x: tf.image.resize(x, (H, W)))(x)
+    return Lambda(lambda x: tf.image.resize(x, (H, W)), name=name)(x)
