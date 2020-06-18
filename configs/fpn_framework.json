@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "FPN_framework_cross_mobilenet_BASE",
+    "name": "FPN_rgb_focal_224px_400epochs",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -33,12 +33,14 @@
     "height": 224,
     "channels": 3,
     "classes": 41,
-    "loss": "categorical_crossentropy",
+    "loss": "focal_loss",
+    "gamma": 2.0,
+    "alpha": 0.25,
     "backbone_pretrain": "imagenet",
     "backbone": "mobilenet_v2"
   },
   "trainer": {
-    "num_epochs": 100,
+    "num_epochs": 400,
     "batch_size": 16,
     "verbose_training": true,
     "workers": 1
