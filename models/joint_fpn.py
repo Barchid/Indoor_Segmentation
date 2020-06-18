@@ -90,19 +90,19 @@ class JointFpn(BaseModel):
 
         # composed loss
         losses = {
-            "segmentation_output": seg_loss,
-            "depth_output": depth_loss
+            "seg_out": seg_loss,
+            "dep_out": depth_loss
         }
 
         loss_weights = {
-            "segmentation_output": self.config.model.loss_weights.seg_loss,
-            "depth_output": self.config.model.loss_weights.depth_loss
+            "seg_out": self.config.model.loss_weights.seg_loss,
+            "dep_out": self.config.model.loss_weights.depth_loss
         }
 
         # define metrics
         metrics = {
-            "segmentation_output": self._generate_metrics(),
-            "depth_output": [tf.keras.metrics.RootMeanSquaredError()]
+            "seg_out": self._generate_metrics(),
+            "dep_out": [tf.keras.metrics.RootMeanSquaredError()]
         }
 
         network.compile(
@@ -235,7 +235,7 @@ class JointFpn(BaseModel):
             features, self.config.model.height, self.config.model.width)
 
         segmentation_mask = Activation(
-            'softmax', name='segmentation_output')(upsampled)
+            'softmax', name='seg_out')(upsampled)
         return segmentation_mask
 
     def depth_head(self, features):
@@ -245,7 +245,7 @@ class JointFpn(BaseModel):
                           1, 1, kernel_size=1, use_relu=True, name="depth_head_1x1")
 
         upsampled = resize_img(
-            features, self.config.model.height, self.config.model.width, name="depth_output")
+            features, self.config.model.height, self.config.model.width, name="dep_out")
 
         return upsampled
 

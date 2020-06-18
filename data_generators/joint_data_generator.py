@@ -67,7 +67,7 @@ class JointDataGenerator(keras.utils.Sequence):
             Y.append(self._get_mask_tensor(mask))
             Z.append(self._get_depth_tensor(depth))
 
-        return np.array(X), np.array(Y), np.array(Z)
+        return np.array(X), [np.array(Y), np.array(Z)]
 
     def _read_image(self, image_path):
         """Reads the image from the image directory and returns the associated numpy array
