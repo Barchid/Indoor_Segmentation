@@ -50,34 +50,67 @@ class JointFpn(BaseModel):
         # backbone encoder
         backbone, skips = self.get_backbone()
 
-        # depth decoder
-        depth = self.depth_branch(backbone)
+        # joint decoder (resolution 1/4)
+        decoder = self.decoder(backbone, skips)
 
-        # segmentation decoder
-        prediction = self.segmentation_branch(backbone, skips)
+        # segmentation head
+        segmentation_mask = self.segmentation_head(decoder)
 
+        # depth estimation head
+        depth_estimation = self.depth_head(decoder)
+
+        # create model
         network = keras.Model(
-            inputs=backbone.input, outputs=prediction, name="JOINT_FPN")
+            inputs=backbone.input,
+            outputs=[
+                segmentation_mask,
+                depth_estimation
+            ],
+            name="JOINT_FPN"
+        )
 
         network.summary()
 
         # get the optimizer
         optimizer = self.build_optimizer()
 
-        metrics = self.build_metrics_NYU()
-
+        # define segmentation loss
         if self.config.model.loss == "focal_loss":
-            loss = CategoricalFocalLoss(
+            seg_loss = CategoricalFocalLoss(
                 gamma=self.config.model.gamma,
                 alpha=self.config.model.alpha
             )
         elif self.config.model.loss == "lovasz":
-            loss = MultiClassLovaszSoftmaxLoss()
+            seg_loss = MultiClassLovaszSoftmaxLoss()
         else:
-            loss = 'categorical_crossentropy'
+            seg_loss = 'categorical_crossentropy'
 
-        network.compile(loss=loss,
-                        optimizer=optimizer, metrics=metrics)
+        # define depth loss
+        depth_loss = tf.keras.losses.MeanSquaredError()
+
+        # composed loss
+        losses = {
+            "segmentation_output": seg_loss,
+            "depth_output": depth_loss
+        }
+
+        loss_weights = {
+            "segmentation_output": self.config.model.loss_weights.seg_loss,
+            "depth_output": self.config.model.loss_weights.depth_loss
+        }
+
+        # define metrics
+        metrics = {
+            "segmentation_output": self._generate_metrics(),
+            "depth_output": [tf.keras.metrics.RootMeanSquaredError()]
+        }
+
+        network.compile(
+            loss=losses,
+            loss_weights=loss_weights,
+            optimizer=optimizer,
+            metrics=metrics
+        )
 
         return network
 
@@ -163,53 +196,57 @@ class JointFpn(BaseModel):
 
         return backbone_fn
 
-    def segmentation_branch(self, backbone, skips):
+    def decoder(self, backbone, skips):
         stage5 = backbone.output  # resolution 1/32
         stage4 = skips[0]  # resolution 1/16
         stage3 = skips[1]  # resolution 1/8
         stage2 = skips[2]  # resolution 1/4
 
         # Pyramid pooling module for stage 5 tensor
-        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 512)
+        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 1024)
 
         # channel controllers
-        skip4 = conv2d(stage4, 256, 1, 1, kernel_size=1, use_relu=True)
-        skip3 = conv2d(stage3, 128, 1, 1, kernel_size=1, use_relu=True)
-        skip2 = conv2d(stage2, 64, 1, 1, kernel_size=1, use_relu=True)
+        skip4 = conv2d(stage4, 512, 1, 1, kernel_size=1,
+                       use_relu=True, name="decoder_skip4")
+        skip3 = conv2d(stage3, 256, 1, 1, kernel_size=1,
+                       use_relu=True, name="decoder_skip3")
+        skip2 = conv2d(stage2, 128, 1, 1, kernel_size=1,
+                       use_relu=True, name="decoder_skip2")
 
         # fusion nodes
-        fusion4 = fusion_node(stage5, skip4)
-        fusion3 = fusion_node(fusion4, skip3)
-        fusion2 = fusion_node(fusion3, skip2)
+        fusion4 = fusion_node(stage5, skip4, name="decoder_fusion4")
+        fusion3 = fusion_node(fusion4, skip3, name="decoder_fusion3")
+        fusion2 = fusion_node(fusion3, skip2, name="decoder_fusion2")
         print(fusion2.shape)
 
         # fusion nodes merging
         merge = merge_block(fusion4, fusion3, fusion2,
-                            out_channels=self.config.model.classes)
+                            out_channels=64)
         print(merge.shape)
+        return merge
 
-        # upsample to the right dimensions
+    def segmentation_head(self, features):
+        features = conv2d(features, 64, 1, 1, kernel_size=3,
+                          use_relu=True, name="segmentation_head_3x3")
+        features = conv2d(features, self.config.model.classes,
+                          1, 1, kernel_size=1, use_relu=True, name="segmentation_head_1x1")
+
         upsampled = resize_img(
-            merge, self.config.model.height, self.config.model.width)
-        prediction = Activation(
-            'softmax', name="segmentation_output")(upsampled)
-        return prediction
+            features, self.config.model.height, self.config.model.width)
 
-    def depth_branch(self, backbone):
-        stage5 = backbone.output  # resolution 1/32
+        segmentation_mask = Activation(
+            'softmax', name='segmentation_output')(upsampled)
+        return segmentation_mask
 
-        # Pyramid pooling module for stage 5 tensor
-        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 512)
+    def depth_head(self, features):
+        features = conv2d(features, 64, 1, 1, kernel_size=3,
+                          use_relu=True, name="depth_head_3x3")
+        features = conv2d(features, 1,
+                          1, 1, kernel_size=1, use_relu=True, name="depth_head_1x1")
 
-        decode = depth_decode_layer(stage5, 256)
-        decode = depth_decode_layer(decode, 128)
-        decode = depth_decode_layer(decode, 64)
-        decode = depth_decode_layer(decode, 1)
-        print(decode.shape)
-
-        # upsample to the right dimensions
         upsampled = resize_img(
-            decode, self.config.model.height, self.config.model.width, name="depth_output")
+            features, self.config.model.height, self.config.model.width, name="depth_output")
+
         return upsampled
 
 # Layer functions
@@ -266,53 +303,48 @@ def ppm_block(input, bin_sizes, inter_channels, out_channels):
     return x
 
 
-def fusion_node(low_res, high_res):
+def fusion_node(low_res, high_res, name=None):
+    # define names
+    if name is not None:
+        low_conv_name = name + "_low"
+        low_up_name = name + "_low_upsample"
+        fus_name = name + "_concat"
+        fus_conv_name = name + "_final"
+    else:
+        low_conv_name = low_up_name = fus_name = fus_conv_name = None
+
     # channel depth of output is high_res feature map depth
     out_channels = K.int_shape(high_res)[-1]
 
     # upsample the deepest, low-resolution feature map
-    low_res = conv2d(low_res, out_channels, 1, 1, kernel_size=1, use_relu=True)
-    low_res = UpSampling2D(size=(2, 2))(low_res)
+    low_res = conv2d(low_res, out_channels, 1, 1, kernel_size=1,
+                     use_relu=True, name=low_conv_name)
+    low_res = UpSampling2D(size=(2, 2), name=low_up_name)(low_res)
 
     # fusion of two tensors
-    fusion = concatenate([low_res, high_res])
-    fusion = conv2d(fusion, out_channels, 1, 1, kernel_size=3, use_relu=True)
+    fusion = concatenate([low_res, high_res], name=fus_name)
+    fusion = conv2d(fusion, out_channels, 1, 1, kernel_size=3,
+                    use_relu=True, name=fus_conv_name)
 
     return fusion
 
 
-def depth_decode_layer(features, out_channels):
-    features = conv2d(features, out_channels, 1, 1,
-                      kernel_size=1, use_relu=True)
-    features = UpSampling2D(size=(2, 2))(features)
-    features = conv2d(features, out_channels, 1, 1,
-                      kernel_size=3, use_relu=True)
-    return features
-
-
-def ds_conv2d(input, filters, stride, n, kernel_size=3):
-    """Performs n times separable convolution + BN + relu operation
-    :param input: input tensor
-    :param filters: number of filters
-    :param stride: stride
-    :param n: number of times the operation is performed
-    :param kernel_size: dimension size of a filter. Default = 3x3.
-    """
+def conv2d(input, filters, stride, n, kernel_size=3, use_relu=True, name=None):
     x = input
     for i in range(n):
-        x = SeparableConv2D(filters, (kernel_size, kernel_size),
-                            strides=(stride, stride), padding="same")(x)
-        x = BatchNormalization()(x)
-        x = keras.activations.relu(x)
-    return x
+        # define names for layers
+        if name is not None:
+            conv_name = name + "_conv_" + str(i)
+            bn_name = name + "_bn_" + str(i)
+            relu_name = name + "_relu_" + str(i)
+        else:
+            conv_name = bn_name = relu_name = None
 
+        x = Conv2D(filters, (kernel_size, kernel_size), strides=(
+            stride, stride), padding="same", name=conv_name)(x)
 
-def conv2d(input, filters, stride, n, kernel_size=3, use_relu=True):
-    x = input
-    for i in range(n):
-        x = Conv2D(filters, (kernel_size, kernel_size),
-                   strides=(stride, stride), padding="same")(x)
-        x = BatchNormalization()(x)
+        x = BatchNormalization(name=bn_name)(x)
+
         if use_relu:
-            x = keras.activations.relu(x)
+            x = Activation('relu', name=relu_name)(x)
     return x
