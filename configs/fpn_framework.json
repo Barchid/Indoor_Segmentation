@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "Stage2_Add_224px",
+    "name": "Stage2_concat_224px",
     "mixed_precision": false,
     "jpa_optimization": true
   },

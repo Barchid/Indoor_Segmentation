@@ -1,6 +1,7 @@
 from models.fpn_net import FpnNet
 from models.fpn_deep import FpnDeep
 from models.fpn_base import FpnBase
+from models.fun import Fun
 from models.fpn_base_stage2 import FpnBaseStage2
 from trainers.segmentation_trainer import SegmentationTrainer
 from data_generators.segmentation_data_generator import SegmentationDataGenerator
@@ -48,6 +49,7 @@ def main():
     #model = FpnDeep(config, train_data)
     #model = FpnBase(config, train_data)
     model = FpnBaseStage2(config, train_data)
+    #model = Fun(config, train_data)
 
     print('Create the trainer')
     trainer = SegmentationTrainer(

@@ -209,13 +209,14 @@ def merge_block(fusion4, fusion3, fusion2, stage2, out_channels):
     fusion4 = UpSampling2D(size=(4, 4))(fusion4)
 
     # addition
-    merge = Add()([
+    merge = concatenate()([
         fusion4,
         fusion3,
-        fusion2
+        fusion2,
+        stage2
     ])
 
-    merge = concatenate([merge, stage2])
+    #merge = concatenate([merge, stage2])
 
     # last conv layer
     merge = conv2d(merge, out_channels, 1, 1, kernel_size=3, use_relu=True)

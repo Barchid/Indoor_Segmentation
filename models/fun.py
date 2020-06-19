@@ -51,13 +51,13 @@ class Fun(BaseModel):
         backbone, skips = self.get_backbone()
 
         # decoder construction
-        prediction = self.create_decoder(backbone, skips)
+        prediction = self.create_decoder(backbone)
 
         network = keras.Model(
             inputs=backbone.input, outputs=prediction, name="FUN")
 
         network.summary()
-
+        exit()
         # get the optimizer
         optimizer = self.build_optimizer()
 
@@ -161,22 +161,39 @@ class Fun(BaseModel):
         return backbone_fn
 
     def create_decoder(self, backbone):
+        # reshape stage 5 to have convol filters
         stage5 = backbone.output  # resolution 1/32
+        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 1024)
+        filters = Reshape((3, 3, 32, -1), dtype=tf.float32)(stage5)
+
         input = backbone.input  # resolution 1/1
+        input = conv2d(input, 32, 2, 1, kernel_size=1, use_relu=True)
 
-        def convolve_features(x):
-            (img, feat) = x
-            print(img)
-            
-            return (img, feat)
+        # convolception = tf.map_fn(
+        #     lambda x: tf.nn.conv2d(x[0], x[1], 1, padding="SAME"),
+        #     (input, filters),
+        #     dtype=(tf.float32, tf.float32)
+        # )
+        convolception = tf.map_fn(
+            lambda x: x,
+            filters,
+            dtype=tf.float32
+        )
 
-        tf.map_fn(convolve_features, (input, stage5),
-                  dtype=(tf.float32, tf.float32))
+        print(convolception.shape)
+        exit()
+
+        # convolception = tf.nn.conv2d(
+        #     input, filters, strides=1, padding="SAME", name="convolception")
+
+        prediction = conv2d(
+            convolception, self.config.model.classes, 1, 1, kernel_size=1, use_relu=True)
 
         # upsample to the right dimensions
-        # upsampled = resize_img(
-        #     merge, self.config.model.height, self.config.model.width)
-        # prediction = Activation('softmax', dtype='float32')(upsampled)
+        prediction = resize_img(
+            prediction, self.config.model.height, self.config.model.width)
+
+        prediction = Activation('softmax', dtype='float32')(prediction)
         return prediction
 
 # Layer functions
