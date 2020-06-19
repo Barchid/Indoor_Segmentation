@@ -209,7 +209,7 @@ def merge_block(fusion4, fusion3, fusion2, stage2, out_channels):
     fusion4 = UpSampling2D(size=(4, 4))(fusion4)
 
     # addition
-    merge = concatenate()([
+    merge = concatenate([
         fusion4,
         fusion3,
         fusion2,
