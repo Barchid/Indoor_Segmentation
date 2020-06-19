@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "FPN_rgb_focal_224px_400epochs",
+    "name": "Stage2_Add_224px",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -33,14 +33,14 @@
     "height": 224,
     "channels": 3,
     "classes": 41,
-    "loss": "focal_loss",
+    "loss": "categorical_crossentropy",
     "gamma": 2.0,
     "alpha": 0.25,
     "backbone_pretrain": "imagenet",
     "backbone": "mobilenet_v2"
   },
   "trainer": {
-    "num_epochs": 400,
+    "num_epochs": 100,
     "batch_size": 16,
     "verbose_training": true,
     "workers": 1
