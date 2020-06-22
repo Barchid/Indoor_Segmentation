@@ -75,18 +75,21 @@ class JointFpn(BaseModel):
         optimizer = self.build_optimizer()
 
         # define segmentation loss
-        if self.config.model.loss == "focal_loss":
+        if self.config.model.seg_loss == "focal_loss":
             seg_loss = CategoricalFocalLoss(
                 gamma=self.config.model.gamma,
                 alpha=self.config.model.alpha
             )
-        elif self.config.model.loss == "lovasz":
+        elif self.config.model.seg_loss == "lovasz":
             seg_loss = MultiClassLovaszSoftmaxLoss()
         else:
             seg_loss = 'categorical_crossentropy'
 
         # define depth loss
-        depth_loss = tf.keras.losses.MeanSquaredError()
+        if self.config.model.depth_loss == "Huber":
+            depth_loss = tf.keras.losses.Huber()
+        else:
+            depth_loss = tf.keras.losses.MeanSquaredError()
 
         # composed loss
         losses = {

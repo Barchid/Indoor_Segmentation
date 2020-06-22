@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "joint_fpn_base1_320px",
+    "name": "joint_fpn_base1_320px_Huber",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -16,7 +16,7 @@
     "img_dir": "datasets/nyu_v2/test_rgb",
     "mask_dir": "datasets/nyu_v2/test_mask",
     "depth_dir": "datasets/nyu_v2/test_depth",
-    "weights_file": "tests/verifs/cross_deep_depth_2/FPN_framework_cross_mobilenet_deep_depth-100.hdf5"
+    "weights_file": "tests/verifs/joint_fpn_base1_320px/joint_fpn_base1_320px-100.hdf5"
   },
   "model": {
     "class_name": "models.joint_fpn.JointFpn",
@@ -33,7 +33,8 @@
     "height": 320,
     "channels": 3,
     "classes": 41,
-    "loss": "categorical_crossentropy",
+    "seg_loss": "categorical_crossentropy",
+    "depth_loss": "Huber",
     "backbone_pretrain": "imagenet",
     "backbone": "mobilenet_v2",
     "loss_weights": {
