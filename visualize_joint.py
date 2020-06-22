@@ -12,10 +12,15 @@ from imgaug.augmentables.segmaps import SegmentationMapsOnImage
 
 def create_visualization(pred_dep, gt_dep, pred_seg, gt_seg, img):
     pred_dep = cv2.cvtColor(pred_dep, cv2.COLOR_GRAY2BGR)
+    pred_dep = (pred_dep*255).astype(np.uint8)
+
     gt_dep = cv2.cvtColor(gt_dep, cv2.COLOR_GRAY2BGR)
+    gt_dep = (gt_dep*255).astype(np.uint8)
+
     # dep_heatmap = dep_heatmap.astype(np.float32)/255.
     # dep_overlay = dep_overlay.astype(np.float32)/255.
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    img = (img * 255).astype(np.uint8)
 
     # generate segmaps
     pred_seg = np.argmax(pred_seg, axis=-1).astype(np.uint8)
@@ -43,8 +48,9 @@ def visualize_results(model, config, datagen):
         print('Processing sample n°', i, '...')
         # IF there is no depth data
         X, [Y, Z] = datagen[i]
-        prediction = model.predict(X, batch_size=1, verbose=1)
-        prediction = np.clip(prediction[0], 0., 1.)
+        pred_seg, pred_dep = model.predict(X, batch_size=1, verbose=1)
+        pred_dep = np.clip(pred_dep[0], 0., 1.)
+        pred_seg = pred_seg[0]
 
         # depth_gradcam = DepthGradCam(model, depth_range=(
         #     config.validation.depth_range.start, config.validation.depth_range.end),
@@ -55,7 +61,7 @@ def visualize_results(model, config, datagen):
         #     dep_heatmap, X[0].copy())
 
         visualization = create_visualization(
-            prediction, Y[0], X[0], dep_heatmap, overlay)
+            pred_dep, Z[0], pred_seg, Y[0], X[0])
 
         # display
         cv2.imshow('Image - Ground truth - Prediction', visualization)
