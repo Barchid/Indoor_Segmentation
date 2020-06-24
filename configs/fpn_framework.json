@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "Stage2_concat_224px",
+    "name": "Bi_FPN_224px",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -19,7 +19,7 @@
     "weights_file": "tests/verifs/cross_deep_depth_2/FPN_framework_cross_mobilenet_deep_depth-100.hdf5"
   },
   "model": {
-    "class_name": "models.fpn_base.FpnBase",
+    "class_name": "models.bifpn_base.BiFpnBase",
     "optimizer": {
       "name": "SGD",
       "momentum": 0.9
