@@ -91,22 +91,21 @@ def BiFpnLayer(P2, P3, P4, P5, filters=64, conv_input=True, name=None):
     return P2_out, P3_out, P4_out, P5_out
 
 
-def conv2d(input, filters, stride, n, kernel_size=3, use_relu=True, name=None):
+def conv2d(input, filters, stride, n, kernel_size=3, name=None):
     x = input
     for i in range(n):
         # define names for layers
         if name is not None:
             conv_name = name + "_conv_" + str(i)
             bn_name = name + "_bn_" + str(i)
-            relu_name = name + "_relu_" + str(i)
+            swish_name = name + "_swish_" + str(i)
         else:
-            conv_name = bn_name = relu_name = None
+            conv_name = bn_name = swish_name = None
 
         x = Conv2D(filters, (kernel_size, kernel_size), strides=(
             stride, stride), padding="same", name=conv_name)(x)
 
         x = BatchNormalization(name=bn_name)(x)
 
-        if use_relu:
-            x = Activation('relu', name=relu_name)(x)
+        x = Activation('swish', name=swish_name)(x)
     return x
