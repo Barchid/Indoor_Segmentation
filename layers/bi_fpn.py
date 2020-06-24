@@ -30,9 +30,10 @@ class FastNormalizedFusion(keras.layers.Layer):
         return input_shape[0]
 
 
-def BiFpnLayer(P2, P3, P4, P5, filters=64, conv_input=True, name=None):
+def BiFpnLayer(P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup=True, name=None):
     """Implementation of BiFPN layer
     :param conv_input: True if the input features (P1,P2,etc) must be convoluted before applying BiFPN layer 
+    :param has_bottomup: indicates whether there is a bottom-up pathway
     """
     P2_in = P2
     P3_in = P3
@@ -67,6 +68,9 @@ def BiFpnLayer(P2, P3, P4, P5, filters=64, conv_input=True, name=None):
     P2_out = FastNormalizedFusion(name="P2_out_add")([P2_in, P3_td_up])
     P2_out = conv2d(P2_out, filters=filters, stride=1,
                     n=1, kernel_size=3, name="P2_out_conv")
+
+    if not has_bottomup:
+        return P2_out
 
     # compute P3_out
     P2_out_down = MaxPooling2D(padding="same", name="P2_out_down")(P2_out)
