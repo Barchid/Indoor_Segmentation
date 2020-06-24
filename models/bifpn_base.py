@@ -172,20 +172,20 @@ class BiFpnBase(BaseModel):
 
         # 3x BI_FPN blocks
         P2, P3, P4, P5 = BiFpnLayer(
-            stage2, stage3, stage4, stage5, filters=64, conv_input=True)
+            stage2, stage3, stage4, stage5, filters=64, conv_input=True, name="BiFpn_0_")
         P2, P3, P4, P5 = BiFpnLayer(
-            P2, P3, P4, P5, filters=64, conv_input=True)
+            P2, P3, P4, P5, filters=64, conv_input=True, name="BiFpn_1_")
         P2 = BiFpnLayer(
-            P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup=False)
+            P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup=False, name="BiFpn_2_")
 
         prediction = self.segmentation_head(P2)
         return prediction
 
     def segmentation_head(self, features):
         features = conv2d(features, 64, 1, 1, kernel_size=3,
-                          use_relu=True, name="segmentation_head_3x3")
+                          name="segmentation_head_3x3")
         features = conv2d(features, self.config.model.classes,
-                          1, 1, kernel_size=1, use_relu=True, name="segmentation_head_1x1")
+                          1, 1, kernel_size=1, name="segmentation_head_1x1")
 
         upsampled = resize_img(
             features, self.config.model.height, self.config.model.width)
@@ -202,13 +202,11 @@ def merge_block(stage4, stage3, stage2, out_channels):
     inter_channels = K.int_shape(stage2)[-1]
 
     # fusion3 upsampling
-    stage3 = conv2d(stage3, inter_channels, 1, 1,
-                    kernel_size=1, use_relu=True)
+    stage3 = conv2d(stage3, inter_channels, 1, 1, kernel_size=1)
     stage3 = UpSampling2D(size=(2, 2))(stage3)
 
     # fusion4 upsampling
-    stage4 = conv2d(stage4, inter_channels, 1, 1,
-                    kernel_size=1, use_relu=True)
+    stage4 = conv2d(stage4, inter_channels, 1, 1, kernel_size=1)
     stage4 = UpSampling2D(size=(4, 4))(stage4)
 
     # addition
@@ -240,20 +238,29 @@ def ppm_block(input, bin_sizes, inter_channels, out_channels):
             pool_size=(H//bin_size, W//bin_size),
             strides=(H//bin_size, W//bin_size)
         )(input)
-        x = conv2d(x, inter_channels, 1, 1, kernel_size=1, use_relu=True)
+        x = conv2d(x, inter_channels, 1, 1, kernel_size=1)
         x = Lambda(lambda x: tf.image.resize(x, (H, W)))(x)
         concat.append(x)
     x = concatenate(concat)
-    x = conv2d(x, out_channels, 1, 1, 3, use_relu=True)
+    x = conv2d(x, out_channels, 1, 1, 3)
     return x
 
 
-def conv2d(input, filters, stride, n, kernel_size=3, use_relu=True):
+def conv2d(input, filters, stride, n, kernel_size=3, name=None):
     x = input
     for i in range(n):
-        x = Conv2D(filters, (kernel_size, kernel_size),
-                   strides=(stride, stride), padding="same")(x)
-        x = BatchNormalization()(x)
-        if use_relu:
-            x = keras.activations.relu(x)
+        # define names for layers
+        if name is not None:
+            conv_name = name + "_conv_" + str(i)
+            bn_name = name + "_bn_" + str(i)
+            swish_name = name + "_swish_" + str(i)
+        else:
+            conv_name = bn_name = swish_name = None
+
+        x = Conv2D(filters, (kernel_size, kernel_size), strides=(
+            stride, stride), padding="same", name=conv_name)(x)
+
+        x = BatchNormalization(name=bn_name)(x)
+
+        x = Activation('swish', name=swish_name)(x)
     return x
