@@ -177,11 +177,11 @@ class BiFpnDeep(BaseModel):
 
         # 3x BI_FPN blocks
         P1, P2, P3, P4, P5 = BiFpnDeepLayer(
-            stage1, stage2, stage3, stage4, stage5, filters=128, conv_input=True, name="BiFpn_0_")
+            stage1, stage2, stage3, stage4, stage5, filters=256, conv_input=True, name="BiFpn_0_")
         P1, P2, P3, P4, P5 = BiFpnDeepLayer(
-            P1, P2, P3, P4, P5, filters=128, conv_input=True, name="BiFpn_1_")
+            P1, P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_1_")
         P1 = BiFpnDeepLayer(
-            P1, P2, P3, P4, P5, filters=128, conv_input=True, has_bottomup=False, name="BiFpn_2_")
+            P1, P2, P3, P4, P5, filters=256, conv_input=True, has_bottomup=False, name="BiFpn_2_")
 
         prediction = self.segmentation_head(P1)
         return prediction
