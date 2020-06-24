@@ -1,8 +1,3 @@
-from models.fpn_net import FpnNet
-from models.fpn_deep import FpnDeep
-from models.fpn_base import FpnBase
-from models.fun import Fun
-from models.fpn_base_stage2 import FpnBaseStage2
 from trainers.segmentation_trainer import SegmentationTrainer
 from data_generators.segmentation_data_generator import SegmentationDataGenerator
 from utils.config import process_config
@@ -10,6 +5,7 @@ from utils.dirs import create_dirs
 from utils.utils import get_args
 import tensorflow as tf
 from tensorflow.keras.mixed_precision import experimental as mixed_precision
+from utils import factory
 
 
 def main():
@@ -45,11 +41,7 @@ def main():
             config, is_training_set=False)
 
     print('Create the model.')
-    #model = FpnNet(config, train_data)
-    #model = FpnDeep(config, train_data)
-    #model = FpnBase(config, train_data)
-    model = FpnBaseStage2(config, train_data)
-    #model = Fun(config, train_data)
+    model = factory.create(config.model.class_name)(config, train_data)
 
     print('Create the trainer')
     trainer = SegmentationTrainer(
