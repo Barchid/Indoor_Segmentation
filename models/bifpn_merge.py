@@ -172,11 +172,11 @@ class BiFpnMerge(BaseModel):
 
         # 3x BI_FPN blocks
         P2, P3, P4, P5 = BiFpnLayer(
-            stage2, stage3, stage4, stage5, filters=64, conv_input=True, name="BiFpn_0_")
+            stage2, stage3, stage4, stage5, filters=256, conv_input=True, name="BiFpn_0_")
         P2, P3, P4, P5 = BiFpnLayer(
-            P2, P3, P4, P5, filters=64, conv_input=True, name="BiFpn_1_")
+            P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_1_")
         P2, P3, P4, P5 = BiFpnLayer(
-            P2, P3, P4, P5, filters=64, conv_input=True, name="BiFpn_2_")
+            P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_2_")
 
         merge = merge_block(P5, P4, P3, P2, 64)
         prediction = self.segmentation_head(merge)
