@@ -7,7 +7,7 @@ from losses.focal_loss import CategoricalFocalLoss
 from losses.lovasz_softmax import MultiClassLovaszSoftmaxLoss
 from keras import backend as K
 from models.backbones.df import DF1, DF2
-from layers.bi_fpn import BiFpnDeepLayer
+from layers.bi_fpn import BiFpnDeepLayer, FastNormalizedFusion
 
 # name of the layers used for the skip connections in the top-down pathway
 skip_connections = {
@@ -180,10 +180,12 @@ class BiFpnDeep(BaseModel):
             stage1, stage2, stage3, stage4, stage5, filters=256, conv_input=True, name="BiFpn_0_")
         P1, P2, P3, P4, P5 = BiFpnDeepLayer(
             P1, P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_1_")
-        P1 = BiFpnDeepLayer(
-            P1, P2, P3, P4, P5, filters=256, conv_input=True, has_bottomup=False, name="BiFpn_2_")
+        P1, P2, P3, P4, P5 = BiFpnDeepLayer(
+            P1, P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_2_")
 
-        prediction = self.segmentation_head(P1)
+        merge = merge_block(P5, P4, P3, P2, P1, 64)
+
+        prediction = self.segmentation_head(merge)
         return prediction
 
     def segmentation_head(self, features):
@@ -202,27 +204,24 @@ class BiFpnDeep(BaseModel):
 # Layer functions
 
 
-def merge_block(stage4, stage3, stage2, out_channels):
-    # get fusion2 channels number
-    inter_channels = K.int_shape(stage2)[-1]
-
-    # fusion3 upsampling
-    stage3 = conv2d(stage3, inter_channels, 1, 1, kernel_size=1)
-    stage3 = UpSampling2D(size=(2, 2))(stage3)
-
-    # fusion4 upsampling
-    stage4 = conv2d(stage4, inter_channels, 1, 1, kernel_size=1)
-    stage4 = UpSampling2D(size=(4, 4))(stage4)
+def merge_block(P5, P4, P3, P2, P1, out_channels):
+    # Upsamplings
+    P2 = UpSampling2D(size=(2, 2))(P2)
+    P3 = UpSampling2D(size=(4, 4))(P3)
+    P4 = UpSampling2D(size=(8, 8))(P4)
+    P5 = UpSampling2D(size=(16, 16))(P5)
 
     # addition
-    merge = Add()([
-        stage4,
-        stage3,
-        stage2
+    merge = FastNormalizedFusion()([
+        P1,
+        P2,
+        P3,
+        P4,
+        P5
     ])
 
     # last conv layer
-    merge = conv2d(merge, out_channels, 1, 1, kernel_size=3, use_relu=True)
+    merge = conv2d(merge, out_channels, 1, 1, kernel_size=3)
     return merge
 
 
