@@ -5,6 +5,7 @@ from utils.config import process_config
 from utils.dirs import create_dirs
 from utils.utils import get_args
 import tensorflow as tf
+from utils import factory
 from tensorflow.keras.mixed_precision import experimental as mixed_precision
 
 
@@ -41,7 +42,7 @@ def main():
             config, is_training_set=False)
 
     print('Create the model.')
-    model = JointFpn(config, train_data)
+    model = factory.create(config.model.class_name)(config, train_data)
 
     print('Create the trainer')
     trainer = SegmentationTrainer(
