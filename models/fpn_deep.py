@@ -5,7 +5,7 @@ from tensorflow.keras.layers import *
 from layers.utils_layers import resize_img
 from losses.focal_loss import CategoricalFocalLoss
 from losses.lovasz_softmax import MultiClassLovaszSoftmaxLoss
-from keras import backend as K
+from tensorflow.keras import backend as K
 from models.backbones.df import DF1, DF2
 
 # name of the layers used for the skip connections in the top-down pathway

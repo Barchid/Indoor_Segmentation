@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.layers import *
-from keras import backend as K
+from tensorflow.keras import backend as K
 
 
 def res_block(input, out_channels, downsample_start=False, use_skip_conv=False):
