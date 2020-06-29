@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "Bi_FPN_deep_224px",
+    "name": "Bi_FPN_merge_640px",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -19,7 +19,7 @@
     "weights_file": "tests/verifs/cross_deep_depth_2/FPN_framework_cross_mobilenet_deep_depth-100.hdf5"
   },
   "model": {
-    "class_name": "models.bifpn_deep.BiFpnDeep",
+    "class_name": "models.bifpn_merge.BiFpnMerge",
     "optimizer": {
       "name": "SGD",
       "momentum": 0.9
@@ -29,8 +29,8 @@
       "power": 0.9,
       "cycle": false
     },
-    "width": 224,
-    "height": 224,
+    "width": 640,
+    "height": 480,
     "channels": 3,
     "classes": 41,
     "loss": "categorical_crossentropy",
@@ -40,8 +40,8 @@
     "backbone": "mobilenet_v2"
   },
   "trainer": {
-    "num_epochs": 100,
-    "batch_size": 8,
+    "num_epochs": 400,
+    "batch_size": 16,
     "verbose_training": true,
     "workers": 1
   },
