@@ -192,14 +192,14 @@ def conv2d(input, filters, stride, n, kernel_size=3, name=None):
         if name is not None:
             conv_name = name + "_conv_" + str(i)
             bn_name = name + "_bn_" + str(i)
-            swish_name = name + "_swish_" + str(i)
+            relu_name = name + "_relu_" + str(i)
         else:
-            conv_name = bn_name = swish_name = None
+            conv_name = bn_name = relu_name = None
 
         x = Conv2D(filters, (kernel_size, kernel_size), strides=(
             stride, stride), padding="same", name=conv_name)(x)
 
         x = BatchNormalization(name=bn_name)(x)
 
-        x = Activation(lambda a: tf.nn.swish(a), name=swish_name)(x)
+        x = Activation(lambda a: tf.nn.relu(a), name=relu_name)(x)
     return x
