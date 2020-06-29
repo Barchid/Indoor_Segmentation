@@ -25,7 +25,7 @@
       "momentum": 0.9
     },
     "lr": {
-      "initial": 0.01,
+      "initial": 0.001,
       "power": 0.9,
       "cycle": false
     },
@@ -41,7 +41,7 @@
   },
   "trainer": {
     "num_epochs": 400,
-    "batch_size": 4,
+    "batch_size": 1,
     "verbose_training": true,
     "workers": 1
   },
