@@ -41,7 +41,7 @@
   },
   "trainer": {
     "num_epochs": 400,
-    "batch_size": 1,
+    "batch_size": 2,
     "verbose_training": true,
     "workers": 1
   },
