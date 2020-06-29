@@ -33,14 +33,14 @@
     "height": 224,
     "channels": 3,
     "classes": 41,
-    "seg_loss": "focal_loss",
+    "seg_loss": "categorical_crossentropy",
     "alpha": 0.25,
     "gamma": 2.0,
     "depth_loss": "mse",
     "backbone_pretrain": "imagenet",
     "backbone": "mobilenet_v2",
     "loss_weights": {
-      "seg_loss": 10.0,
+      "seg_loss": 1.0,
       "depth_loss": 1.0
     }
   },
