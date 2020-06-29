@@ -309,5 +309,5 @@ def conv2d(input, filters, stride, n, kernel_size=3, name=None):
 
         x = BatchNormalization(name=bn_name)(x)
 
-        x = Activation('swish', name=swish_name)(x)
+        x = Activation(lambda a: tf.nn.swish(a), name=swish_name)(x)
     return x
