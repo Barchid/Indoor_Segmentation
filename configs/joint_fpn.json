@@ -1,7 +1,7 @@
 {
   "exp": {
     "name": "JointBiFpn_224px",
-    "mixed_precision": false,
+    "mixed_precision": true,
     "jpa_optimization": true
   },
   "generator": {
