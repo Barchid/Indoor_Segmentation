@@ -73,7 +73,7 @@ def BiFpnLayer(P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup=True, n
         return P2_out
 
     # compute P3_out
-    P2_out_down = MaxPooling2D(
+    P2_out_down = AveragePooling2D(
         padding="same", name=name + "P2_out_down")(P2_out)
     P3_out = FastNormalizedFusion(name=name + "P3_out_add")(
         [P3_in, P3_td, P2_out_down])
@@ -81,7 +81,7 @@ def BiFpnLayer(P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup=True, n
                     n=1, kernel_size=3, name=name + "P3_out_conv")
 
     # compute P4_out
-    P3_out_down = MaxPooling2D(
+    P3_out_down = AveragePooling2D(
         padding="same", name=name + "P3_out_down")(P3_out)
     P4_out = FastNormalizedFusion(name=name + "P4_out_add")(
         [P4_in, P4_td, P3_out_down])
@@ -89,7 +89,7 @@ def BiFpnLayer(P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup=True, n
                     n=1, kernel_size=3, name=name + "P4_out_conv")
 
     # compute P5_out
-    P4_out_down = MaxPooling2D(
+    P4_out_down = AveragePooling2D(
         padding="same", name=name + "P4_out_down")(P4_out)
     P5_out = FastNormalizedFusion(
         name=name + "P5_out_add")([P4_out_down, P5_in])
@@ -151,7 +151,7 @@ def BiFpnDeepLayer(P1, P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup
         return P1_out
 
     # compute P2_out
-    P1_out_down = MaxPooling2D(
+    P1_out_down = AveragePooling2D(
         padding="same", name=name + "P1_out_down")(P1_out)
     P2_out = FastNormalizedFusion(name=name + "P2_out_add")(
         [P2_in, P2_td, P1_out_down])
@@ -159,7 +159,7 @@ def BiFpnDeepLayer(P1, P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup
                     n=1, kernel_size=3, name=name + "P2_out_conv")
 
     # compute P3_out
-    P2_out_down = MaxPooling2D(
+    P2_out_down = AveragePooling2D(
         padding="same", name=name + "P2_out_down")(P2_out)
     P3_out = FastNormalizedFusion(name=name + "P3_out_add")(
         [P3_in, P3_td, P2_out_down])
@@ -167,7 +167,7 @@ def BiFpnDeepLayer(P1, P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup
                     n=1, kernel_size=3, name=name + "P3_out_conv")
 
     # compute P4_out
-    P3_out_down = MaxPooling2D(
+    P3_out_down = AveragePooling2D(
         padding="same", name=name + "P3_out_down")(P3_out)
     P4_out = FastNormalizedFusion(name=name + "P4_out_add")(
         [P4_in, P4_td, P3_out_down])
@@ -175,7 +175,7 @@ def BiFpnDeepLayer(P1, P2, P3, P4, P5, filters=64, conv_input=True, has_bottomup
                     n=1, kernel_size=3, name=name + "P4_out_conv")
 
     # compute P5_out
-    P4_out_down = MaxPooling2D(
+    P4_out_down = AveragePooling2D(
         padding="same", name=name + "P4_out_down")(P4_out)
     P5_out = FastNormalizedFusion(
         name=name + "P5_out_add")([P4_out_down, P5_in])
