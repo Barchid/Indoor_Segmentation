@@ -25,7 +25,7 @@
       "momentum": 0.9
     },
     "lr": {
-      "initial": 0.001,
+      "initial": 0.01,
       "power": 0.9,
       "cycle": false
     },
