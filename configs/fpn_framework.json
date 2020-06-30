@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "Bi_FPN_merge_640px",
+    "name": "Bi_FPN_merge_320x240px_400epochs",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -16,7 +16,7 @@
     "img_dir": "datasets/nyu_v2/test_rgb",
     "mask_dir": "datasets/nyu_v2/test_mask",
     "depth_dir": null,
-    "weights_file": "tests/verifs/cross_deep_depth_2/FPN_framework_cross_mobilenet_deep_depth-100.hdf5"
+    "weights_file": "tests/verifs/bifpn_merge_224px/Bi_FPN_merge_224px-99.hdf5"
   },
   "model": {
     "class_name": "models.bifpn_merge.BiFpnMerge",
@@ -29,8 +29,8 @@
       "power": 0.9,
       "cycle": false
     },
-    "width": 640,
-    "height": 480,
+    "width": 320,
+    "height": 240,
     "channels": 3,
     "classes": 41,
     "loss": "categorical_crossentropy",
@@ -41,7 +41,7 @@
   },
   "trainer": {
     "num_epochs": 400,
-    "batch_size": 4,
+    "batch_size": 16,
     "verbose_training": true,
     "workers": 1
   },
