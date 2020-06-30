@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "Bi_FPN_merge_320x256px_400epochs",
+    "name": "Bi_FPN_merge_320x256px_400epochs_lr005",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -25,7 +25,7 @@
       "momentum": 0.9
     },
     "lr": {
-      "initial": 0.01,
+      "initial": 0.005,
       "power": 0.9,
       "cycle": false
     },
