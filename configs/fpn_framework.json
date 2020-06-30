@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "Bi_FPN_merge_320x248px_400epochs",
+    "name": "Bi_FPN_merge_320x256px_400epochs",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -30,7 +30,7 @@
       "cycle": false
     },
     "width": 320,
-    "height": 248,
+    "height": 256,
     "channels": 3,
     "classes": 41,
     "loss": "categorical_crossentropy",
