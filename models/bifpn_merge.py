@@ -177,6 +177,8 @@ class BiFpnMerge(BaseModel):
             P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_1_")
         P2, P3, P4, P5 = BiFpnLayer(
             P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_2_")
+        P2, P3, P4, P5 = BiFpnLayer(
+            P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_3_")
 
         merge = merge_block(P5, P4, P3, P2, 64)
         prediction = self.segmentation_head(merge)
