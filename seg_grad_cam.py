@@ -68,10 +68,7 @@ def eval_seg_grad_cam(config, args):
 
 def setup_model(config, datagen):
     """load model & load weights"""
-    if config.model.class_name == 'models.fpn_net.FpnNet' or config.model.class_name == 'models.fpn_deep.FpnDeep':
-        network = factory.create(config.model.class_name)(config, datagen)
-    else:
-        network = factory.create(config.model.class_name)(config)
+    network = factory.create(config.model.class_name)(config, datagen)
     network.model.load_weights(config.validation.weights_file)
     return network.model
 
