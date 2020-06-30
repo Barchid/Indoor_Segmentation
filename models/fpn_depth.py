@@ -162,21 +162,22 @@ class FpnDepth(BaseModel):
         # Pyramid pooling module for stage 5 tensor
         stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 512)
 
-        # # channel controllers
-        # skip4 = conv2d(stage4, 254, 1, 1, kernel_size=1, use_relu=True)
-        # skip3 = conv2d(stage3, 128, 1, 1, kernel_size=1, use_relu=True)
-        # skip2 = conv2d(stage2, 64, 1, 1, kernel_size=1, use_relu=True)
-        # skip1 = conv2d(stage1, 1, 1, 1, kernel_size=1, use_relu=True)
+        # channel controllers
+        skip4 = conv2d(stage4, 254, 1, 1, kernel_size=1, use_relu=True)
+        skip3 = conv2d(stage3, 128, 1, 1, kernel_size=1, use_relu=True)
+        skip2 = conv2d(stage2, 64, 1, 1, kernel_size=1, use_relu=True)
+        skip1 = conv2d(stage1, 1, 1, 1, kernel_size=1, use_relu=True)
 
-        decode = decode_layer(stage5, 256)
-        decode = decode_layer(decode, 128)
-        decode = decode_layer(decode, 64)
-        decode = decode_layer(decode, 1)
-        print(decode.shape)
+        # fusion nodes
+        fusion = fusion_node(stage5, skip4)
+        fusion = fusion_node(fusion, skip3)
+        fusion = fusion_node(fusion, skip2)
+        fusion = fusion_node(fusion, skip1)
+        print(fusion.shape)
 
         # upsample to the right dimensions
         upsampled = resize_img(
-            decode, self.config.model.height, self.config.model.width)
+            fusion, self.config.model.height, self.config.model.width)
         return upsampled
 
 # Layer functions
@@ -193,7 +194,7 @@ def ppm_block(input, bin_sizes, inter_channels, out_channels):
     concat = [input]
     H = K.int_shape(input)[1]
     W = K.int_shape(input)[2]
-    
+
     for bin_size in bin_sizes:
         x = AveragePooling2D(
             pool_size=(H//bin_size, W//bin_size),
@@ -205,15 +206,6 @@ def ppm_block(input, bin_sizes, inter_channels, out_channels):
     x = concatenate(concat)
     x = conv2d(x, out_channels, 1, 1, 3, use_relu=True)
     return x
-
-
-def decode_layer(features, out_channels):
-    features = conv2d(features, out_channels, 1, 1,
-                      kernel_size=1, use_relu=True)
-    features = UpSampling2D(size=(2, 2))(features)
-    features = conv2d(features, out_channels, 1, 1,
-                      kernel_size=3, use_relu=True)
-    return features
 
 
 def fusion_node(low_res, high_res):
