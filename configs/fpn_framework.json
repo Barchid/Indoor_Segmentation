@@ -1,7 +1,7 @@
 {
   "exp": {
     "name": "Bi_FPN_merge_640px",
-    "mixed_precision": true,
+    "mixed_precision": false,
     "jpa_optimization": true
   },
   "generator": {
@@ -25,7 +25,7 @@
       "momentum": 0.9
     },
     "lr": {
-      "initial": 0.01,
+      "initial": 0.005,
       "power": 0.9,
       "cycle": false
     },
