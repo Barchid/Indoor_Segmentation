@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "Bi_FPN_merge_320px_400epochs_lr005_DF1",
+    "name": "Bi_FPN_merge_320px_400epochs_lr001_DF1",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -25,7 +25,7 @@
       "momentum": 0.9
     },
     "lr": {
-      "initial": 0.005,
+      "initial": 0.001,
       "power": 0.9,
       "cycle": false
     },
@@ -41,7 +41,7 @@
   },
   "trainer": {
     "num_epochs": 400,
-    "batch_size": 16,
+    "batch_size": 8,
     "verbose_training": true,
     "workers": 1
   },
