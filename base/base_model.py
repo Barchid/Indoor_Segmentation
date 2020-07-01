@@ -58,21 +58,31 @@ class BaseModel(object):
         initial_learning_rate = self.config.model.lr.initial
         power = self.config.model.lr.power
         cycle = self.config.model.lr.cycle
+        policy = self.config.model.lr.policy
 
         # compute the total number of iterations through the epochs
         total_iterations = self.config.trainer.num_epochs * self.datagen.__len__()
         print('total iter', total_iterations)
+
+        lr_policy = initial_learning_rate
         # poly learning rate policy
-        poly_lr_policy = keras.optimizers.schedules.PolynomialDecay(
-            initial_learning_rate=initial_learning_rate,
-            decay_steps=total_iterations,
-            power=power,
-            cycle=cycle
-        )
+        if policy == "polynomial":
+            lr_policy = keras.optimizers.schedules.PolynomialDecay(
+                initial_learning_rate=initial_learning_rate,
+                decay_steps=total_iterations,
+                power=power,
+                cycle=cycle
+            )
+        elif policy == "cyclic":
+            pass
+        elif policy == "triangular_cyclic":
+            pass
+        elif policy == "triangular2_cyclic":
+            pass
 
         # SGD optimizer
         sgd = keras.optimizers.SGD(
-            learning_rate=poly_lr_policy,
+            learning_rate=lr_policy,
             momentum=momentum
         )
         return sgd

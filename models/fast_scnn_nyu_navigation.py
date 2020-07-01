@@ -91,7 +91,7 @@ def ffm_block(low_resolution, high_resolution, c):
     low = UpSampling2D(size=(4, 4))(low_resolution)
 
     low = DepthwiseConv2D((3, 3), strides=(
-        1, 1), padding="same", dilation_rate=(4, 4))(low)
+        1, 1), padding="same", dilatlr_policy))(low)
     low = BatchNormalization()(low)
     low = keras.activations.relu(low)
 
@@ -100,7 +100,7 @@ def ffm_block(low_resolution, high_resolution, c):
     # resize feature if needed
     high_shape = keras.backend.int_shape(high)
     low_shape = keras.backend.int_shape(low)
-    if(high_shape[1] != low_shape[1] or high_shape[2] != low_shape[2]):
+    if(high_shape[1] !=lr_policyor high_shape[2] != low_shape[2]):
         print('WRONG SHAPE')
         high = resize_img(
             high, low_shape[1], low_shape[2])

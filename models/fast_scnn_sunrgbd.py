@@ -91,8 +91,7 @@ def ffm_block(low_resolution, high_resolution, c):
 
     low = DepthwiseConv2D((3, 3), strides=(
         1, 1), padding="same", dilation_rate=(4, 4))(low)
-    low = BatchNormalization()(low)
-    low = keras.activations.relu(low)
+    low = BatchNormalization(lr_policy = keras.activations.relu(low)
 
     low = conv2d(low, c, 1, 1, kernel_size=1, use_relu=False)
 
@@ -100,7 +99,7 @@ def ffm_block(low_resolution, high_resolution, c):
     high_shape = keras.backend.int_shape(high)
     low_shape = keras.backend.int_shape(low)
     if(high_shape[1] != low_shape[1] or high_shape[2] != low_shape[2]):
-        high = resize_img(
+  lr_policyesize_img(
             high, low_shape[1], low_shape[2])
 
     # "add" fusion of both low and high features

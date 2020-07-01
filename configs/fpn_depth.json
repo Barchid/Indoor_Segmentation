@@ -29,6 +29,7 @@
     },
     "lr": {
       "initial": 0.01,
+      "policy": "polynomial",
       "power": 0.9,
       "cycle": false
     },
