@@ -43,8 +43,7 @@ skip_connections = {
 
 class JointFpnDeep(BaseModel):
     def __init__(self, config, datagen):
-        self.datagen = datagen
-        super(JointFpnDeep, self).__init__(config)
+        super(JointFpnDeep, self).__init__(config, datagen)
 
     def build_model(self):
         # backbone encoder

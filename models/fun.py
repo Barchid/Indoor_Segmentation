@@ -43,8 +43,7 @@ skip_connections = {
 
 class Fun(BaseModel):
     def __init__(self, config, datagen):
-        self.datagen = datagen
-        super(Fun, self).__init__(config)
+        super(Fun, self).__init__(config, datagen)
 
     def build_model(self):
         # backbone encoder

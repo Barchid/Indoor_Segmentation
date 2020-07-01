@@ -4,7 +4,7 @@ from keras.layers import Input, Dense, Conv2D, MaxPooling2D, Dropout, Flatten
 
 class ConvMnistModel(BaseModel):
     def __init__(self, config):
-        super(ConvMnistModel, self).__init__(config)
+        super(ConvMnistModel, self).__init__(config, datagen)
         self.build_model()
 
     def build_model(self):

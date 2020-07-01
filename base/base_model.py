@@ -6,7 +6,8 @@ import os
 
 
 class BaseModel(object):
-    def __init__(self, config):
+    def __init__(self, config, datagen):
+        self.datagen = datagen
         self.config = config
 
         # COLAB TPU USAGE if available
@@ -52,18 +53,29 @@ class BaseModel(object):
         raise NotImplementedError
 
     def build_optimizer(self):
-        """Builds the optimizer according to the config file
-        """
-        if hasattr(self.config.model, "optimizer") and self.config.model.optimizer == 'SGD':
-            return keras.optimizers.SGD(momentum=self.config.model.momentum, lr=self.config.model.learning_rate)
-        elif hasattr(self.config.model, "optimizer") and self.config.model.optimizer == 'Adam':
-            return keras.optimizers.Adam(
-                learning_rate=self.config.model.learning_rate,
-                beta_1=self.config.model.beta_1,
-                beta_2=self.config.model.beta_2
-            )
-        else:
-            raise Exception('No model.optimizer found in JSON config file')
+        # retrieve params from config
+        momentum = self.config.model.optimizer.momentum
+        initial_learning_rate = self.config.model.lr.initial
+        power = self.config.model.lr.power
+        cycle = self.config.model.lr.cycle
+
+        # compute the total number of iterations through the epochs
+        total_iterations = self.config.trainer.num_epochs * self.datagen.__len__()
+        print('total iter', total_iterations)
+        # poly learning rate policy
+        poly_lr_policy = keras.optimizers.schedules.PolynomialDecay(
+            initial_learning_rate=initial_learning_rate,
+            decay_steps=total_iterations,
+            power=power,
+            cycle=cycle
+        )
+
+        # SGD optimizer
+        sgd = keras.optimizers.SGD(
+            learning_rate=poly_lr_policy,
+            momentum=momentum
+        )
+        return sgd
 
     def build_metrics_SUN(self):
         """Generates the list of metrics to evaluate with SUN RGB-D.

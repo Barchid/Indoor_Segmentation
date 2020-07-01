@@ -114,7 +114,7 @@ def ffm_block(low_resolution, high_resolution, c):
 
 class FastScnnSunNavigation(BaseModel):
     def __init__(self, config):
-        super(FastScnnSunNavigation, self).__init__(config)
+        super(FastScnnSunNavigation, self).__init__(config, datagen)
 
     def build_model(self):
         # input layer

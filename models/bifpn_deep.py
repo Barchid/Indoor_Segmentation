@@ -48,8 +48,7 @@ skip_connections = {
 
 class BiFpnDeep(BaseModel):
     def __init__(self, config, datagen):
-        self.datagen = datagen
-        super(BiFpnDeep, self).__init__(config)
+        super(BiFpnDeep, self).__init__(config, datagen)
 
     def build_model(self):
         # backbone encoder

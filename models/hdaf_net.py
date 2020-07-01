@@ -42,9 +42,10 @@ skip_connections = {
 }
 
 
-class JointBiFpn(BaseModel):
+class HdafNet(BaseModel):
+    # Hierarchical Depth-Aware Fusion
     def __init__(self, config, datagen):
-        super(JointBiFpn, self).__init__(config, datagen)
+        super(HdafNet, self).__init__(config, datagen)
 
     def build_model(self):
         # backbone encoder
@@ -200,59 +201,91 @@ class JointBiFpn(BaseModel):
         return backbone_fn
 
     def decoder(self, backbone, skips):
-        stage5 = backbone.output  # resolution 1/32
-        stage4 = skips[0]  # resolution 1/16
-        stage3 = skips[1]  # resolution 1/8
-        stage2 = skips[2]  # resolution 1/4
+        P5 = backbone.output  # resolution 1/32
+        P4 = skips[0]  # resolution 1/16
+        P3 = skips[1]  # resolution 1/8
+        P2 = skips[2]  # resolution 1/4
 
         # Pyramid pooling module for stage 5 tensor
-        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 1024)
+        P5 = ppm_block(P5, (1, 2, 3, 6), 128, 512)
 
-        # 3x BI_FPN blocks
-        P2, P3, P4, P5 = BiFpnLayer(
-            stage2, stage3, stage4, stage5, filters=256, conv_input=True, name="BiFpn_0_")
-        P2, P3, P4, P5 = BiFpnLayer(
-            P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_1_")
-        P2, P3, P4, P5 = BiFpnLayer(
-            P2, P3, P4, P5, filters=256, conv_input=True, name="BiFpn_2_")
+        # HDAF modules
+        P2, P3, P4, P5 = self.HierarchicalDepthAwareFusion(
+            P2, P3, P4, P5, filters=256, u=2, v=2, name="HDF_0_")
 
-        # fusion nodes merging
-        merge = merge_block(P5, P4, P3, P2, 64)
-        print(merge.shape)
-        return merge
+        # segmentation head
+        seg_out = self.segmentation_head(P5, P4, P3, P2, 64,
+                                         name="decoder_seg_head_")
+        return seg_out
 
-    def segmentation_head(self, features):
-        features = conv2d(features, 64, 1, 1, kernel_size=3,
-                          name="segmentation_head_3x3")
+    def HierarchicalDepthAwareFusion(self, P2, P3, P4, P5, u=1, v=1, filters=64, conv_input=True, name="HDF_"):
+        # segmentation submodule
+        P2_seg, P3_seg, P4_seg, P5_seg = BiFpnLayer(
+            P2, P3, P4, P5, filters=filters, conv_input=conv_input, name=name + "BiFpn_seg_0_")
+        for i in range(u-1):
+            P2_seg, P3_seg, P4_seg, P5_seg = BiFpnLayer(
+                P2_seg, P3_seg, P4_seg, P5_seg, filters=filters, conv_input=False, name=name + "BiFpn_seg_" + str(i+1) + "_")
+
+        # deep supervision
+        seg_tmp = self.segmentation_head(
+            P2_seg, P3_seg, P4_seg, P5_seg, name=name + "seg_head_")
+
+        # depth submodule
+        P2_dep, P3_dep, P4_dep, P5_dep = BiFpnLayer(
+            P2, P3, P4, P5, filters=filters, conv_input=conv_input, name=name + "BiFpn_dep_0_")
+        for i in range(u-1):
+            P2_dep, P3_dep, P4_dep, P5_dep = BiFpnLayer(
+                P2_dep, P3_dep, P4_dep, P5_dep, filters=filters, conv_input=False, name=name + "BiFpn_dep_" + str(i+1) + "_")
+
+        # deep supervision
+        dep_tmp = self.depth_head(
+            P2_dep, P3_dep, P4_dep, P5_dep, name=name+"dep_head_")
+
+        # hierarchically concatenate depth and seg feature
+        P2 = concatenate([P2_seg, P2_dep], name=name + "concatenate_P2")
+        P3 = concatenate([P3_seg, P3_dep], name=name + "concatenate_P3")
+        P4 = concatenate([P4_seg, P4_dep], name=name + "concatenate_P4")
+        P5 = concatenate([P5_seg, P5_dep], name=name + "concatenate_P5")
+
+        # hierarchical fusion
+        P2, P3, P4, P5 = BiFpnLayer(
+            P2, P3, P4, P5, filters=filters, conv_input=True, name=name + "BiFpn_fusion_0_")
+        for i in range(v-1):
+            P2, P3, P4, P5 = BiFpnLayer(
+                P2, P3, P4, P5, filters=filters, conv_input=False, name=name + "BiFpn_fusion_" + str(i+1) + "_")
+
+        return P2, P3, P4, P5
+
+    def segmentation_head(self, P2, P3, P4, P5, name="seg_head_"):
+        features = merge_block(P5, P4, P3, P2, 64, name=name+"merge_block_")
         features = conv2d(features, self.config.model.classes,
-                          1, 1, kernel_size=1, name="segmentation_head_1x1")
+                          1, 1, kernel_size=1, name=name + "conv1x1")
 
         upsampled = resize_img(
             features, self.config.model.height, self.config.model.width)
 
         segmentation_mask = Activation(
-            'softmax', name='seg_out')(upsampled)
+            'softmax', name=name + "out")(upsampled)
         return segmentation_mask
 
-    def depth_head(self, features):
-        features = conv2d(features, 64, 1, 1, kernel_size=3,
-                          name="depth_head_3x3")
-        features = conv2d(features, 1, 1, 1, kernel_size=1,
-                          name="depth_head_1x1")
+    def depth_head(self, P2, P3, P4, P5, name="dep_head_"):
+        features = merge_block(P5, P4, P3, P2, 64, name=name+"merge_block_")
+        features = conv2d(features, self.config.model.classes,
+                          1, 1, kernel_size=1, name=name + "conv1x1")
 
         upsampled = resize_img(
-            features, self.config.model.height, self.config.model.width, name="dep_out")
+            features, self.config.model.height, self.config.model.width, name="out")
 
         return upsampled
 
 # Layer functions
 
 
-def merge_block(P5, P4, P3, P2, out_channels):
+def merge_block(P5, P4, P3, P2, out_channels, name="merge_block_"):
     # Upsamplings
-    P3 = UpSampling2D(size=(2, 2))(P3)
-    P4 = UpSampling2D(size=(4, 4))(P4)
-    P5 = UpSampling2D(size=(8, 8))(P5)
+    P3 = UpSampling2D(size=(2, 2), name=name+"P3_up")(P3)
+    P4 = UpSampling2D(size=(4, 4), name=name+"P4_up")(P4)
+    P5 = UpSampling2D(size=(8, 8), name=name+"P5_up")(P5)
 
     # addition
     merge = FastNormalizedFusion()([
@@ -260,10 +293,11 @@ def merge_block(P5, P4, P3, P2, out_channels):
         P3,
         P4,
         P5
-    ])
+    ], name=name+"add")
 
     # last conv layer
-    merge = conv2d(merge, out_channels, 1, 1, kernel_size=3)
+    merge = conv2d(merge, out_channels, 1, 1,
+                   kernel_size=3, name=name+"conv3x3")
     return merge
 
 

@@ -114,7 +114,7 @@ def ffm_block(low_resolution, high_resolution, c):
 
 class FastScnnNyuv2(BaseModel):
     def __init__(self, config):
-        super(FastScnnNyuv2, self).__init__(config)
+        super(FastScnnNyuv2, self).__init__(config, datagen)
 
     def build_model(self):
         # channels in beginning

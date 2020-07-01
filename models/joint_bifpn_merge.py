@@ -44,8 +44,7 @@ skip_connections = {
 
 class JointBiFpnMerge(BaseModel):
     def __init__(self, config, datagen):
-        self.datagen = datagen
-        super(JointBiFpnMerge, self).__init__(config)
+        super(JointBiFpnMerge, self).__init__(config, datagen)
 
     def build_model(self):
         # backbone encoder

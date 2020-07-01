@@ -114,7 +114,7 @@ def ffm_block(low_resolution, high_resolution, c):
 
 class FastScnnNyuNavigation(BaseModel):
     def __init__(self, config):
-        super(FastScnnNyuNavigation, self).__init__(config)
+        super(FastScnnNyuNavigation, self).__init__(config, datagen)
 
     def build_model(self):
         # input layer
