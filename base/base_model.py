@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 from metrics.softmax_miou import SoftmaxMeanIoU, SoftmaxSingleMeanIoU
 import os
+import tensorflow_addons as tfa
 
 
 class BaseModel(object):
@@ -74,11 +75,39 @@ class BaseModel(object):
                 cycle=cycle
             )
         elif policy == "cyclic":
-            pass
+            lr_policy = tfa.optimizers.CyclicalLearningRate(
+                initial_learning_rate=initial_learning_rate,
+                maximal_learning_rate=self.config.model.lr.maximal_learning_rate,
+                step_size=self.config.model.lr.step_size,
+                scale_fn=lambda x: 1.,
+                scale_mode="cycle",
+                name="CyclicalLearningRate"
+            )
         elif policy == "triangular_cyclic":
-            pass
+            lr_policy = tfa.optimizers.TriangularCyclicalLearningRate(
+                initial_learning_rate=initial_learning_rate,
+                maximal_learning_rate=self.config.model.lr.maximal_learning_rate,
+                step_size=self.config.model.lr.step_size,
+                scale_mode='cycle',
+                name='TriangularCyclicalLearningRate'
+            )
         elif policy == "triangular2_cyclic":
-            pass
+            lr_policy = tfa.optimizers.Triangular2CyclicalLearningRate(
+                initial_learning_rate=initial_learning_rate,
+                maximal_learning_rate=self.config.model.lr.maximal_learning_rate,
+                step_size=self.config.model.lr.step_size,
+                scale_mode='cycle',
+                name='Triangular2CyclicalLearningRate'
+            )
+        elif policy == "exp_cyclic":
+            lr_policy = tfa.optimizers.ExponentialCyclicalLearningRate(
+                initial_learning_rate=initial_learning_rate,
+                maximal_learning_rate=self.config.model.lr.maximal_learning_rate,
+                step_size=self.config.model.lr.step_size,
+                scale_mode='cycle',
+                gamma=self.config.model.lr.gamma,
+                name='ExponentialCyclicalLearningRate'
+            )
 
         # SGD optimizer
         sgd = keras.optimizers.SGD(
