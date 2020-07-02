@@ -23,7 +23,7 @@ except:
 
 MIN_LR = 1e-10
 MAX_LR = 1.
-NUM_EPOCHS = 40
+NUM_EPOCHS = 50
 MODEL_TASK = "RGB"
 
 datagen = None
@@ -53,6 +53,7 @@ lrf.find(
 # resulting plot to disk
 lrf.plot_loss()
 plt.savefig("lr_finder.png")
+plt.show()
 
 print("[INFO] learning rate finder complete")
 print("[INFO] examine plot and adjust learning rates before training")
