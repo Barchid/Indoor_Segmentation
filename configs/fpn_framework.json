@@ -30,8 +30,8 @@
       "power": 0.9,
       "cycle": false
     },
-    "width": 320,
-    "height": 320,
+    "width": 224,
+    "height": 224,
     "channels": 3,
     "classes": 41,
     "loss": "categorical_crossentropy",
@@ -42,7 +42,7 @@
   },
   "trainer": {
     "num_epochs": 400,
-    "batch_size": 8,
+    "batch_size": 12,
     "verbose_training": true,
     "workers": 1
   },
