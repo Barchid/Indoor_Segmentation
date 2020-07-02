@@ -23,7 +23,7 @@ except:
 
 MIN_LR = 1e-10
 MAX_LR = 1.
-NUM_EPOCHS = 48
+NUM_EPOCHS = 40
 MODEL_TASK = "RGB"
 
 datagen = None
