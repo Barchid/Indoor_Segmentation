@@ -65,31 +65,14 @@ class LearningRateFinder:
         lr *= self.lrMult
         K.set_value(self.model.optimizer.lr, lr)
 
-    def is_data_iter(self, data):
-        # define the set of class types we will check for
-        iterClasses = ["NumpyArrayIterator", "DirectoryIterator",
-                       "DataFrameIterator", "Iterator", "Sequence"]
-        # return whether our data is an iterator
-        return data.__class__.__name__ in iterClasses
-
     def find(self, trainData, startLR, endLR, epochs=None, stepsPerEpoch=None, batchSize=32, sampleSize=2048, verbose=1):
         # reset our class-specific variables
         self.reset()
-        # determine if we are using a data generator or not
-        useGen = self.is_data_iter(trainData)
-        # if we're using a generator and the steps per epoch is not
-        # supplied, raise an error
-        if useGen and stepsPerEpoch is None:
+
+        # As we use a data generator, we must use stepsPerEpoch param
+        if stepsPerEpoch is None:
             msg = "Using generator without supplying stepsPerEpoch"
             raise Exception(msg)
-
-        # if we're not using a generator then our entire dataset must
-        # already be in memory
-        elif not useGen:
-            # grab the number of samples in the training data and
-            # then derive the number of steps per epoch
-            numSamples = len(trainData[0])
-            stepsPerEpoch = np.ceil(numSamples / float(batchSize))
 
         # if no number of training epochs are supplied, compute the
         # training epochs based on a default sample size
@@ -122,23 +105,15 @@ class LearningRateFinder:
         # progresses
         callback = LambdaCallback(on_batch_end=lambda batch, logs:
                                   self.on_batch_end(batch, logs))
+
         # check to see if we are using a data iterator
-        if useGen:
-            self.model.fit(
-                x=trainData,
-                steps_per_epoch=stepsPerEpoch,
-                epochs=epochs,
-                verbose=verbose,
-                callbacks=[callback])
-        # otherwise, our entire training data is already in memory
-        else:
-            # train our model using Keras' fit method
-            self.model.fit(
-                x=trainData[0], y=trainData[1],
-                batch_size=batchSize,
-                epochs=epochs,
-                callbacks=[callback],
-                verbose=verbose)
+        self.model.fit(
+            x=trainData,
+            steps_per_epoch=stepsPerEpoch,
+            epochs=epochs,
+            verbose=verbose,
+            callbacks=[callback])
+
         # restore the original model weights and learning rate
         self.model.load_weights(self.weightsFile)
         K.set_value(self.model.optimizer.lr, origLR)
