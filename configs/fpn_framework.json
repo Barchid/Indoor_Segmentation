@@ -25,8 +25,8 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "polynomial",
-      "initial": 0.001,
+      "policy": "mdr",
+      "initial": 0.01,
       "power": 0.9,
       "cycle": false
     },

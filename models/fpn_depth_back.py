@@ -69,31 +69,6 @@ class FpnDepth(BaseModel):
 
         return network
 
-    def build_optimizer(self):
-        # retrieve params from config
-        momentum = self.config.model.optimizer.momentum
-        initial_learning_rate = self.config.model.lr.initial
-        power = self.config.model.lr.power
-        cycle = self.config.model.lr.cycle
-
-        # compute the total number of iterations through the epochs
-        total_iterations = self.config.trainer.num_epochs * self.datagen.__len__()
-        print('total iter', total_iterations)
-        # poly learning rate policy
-        poly_lr_policy = keras.optimizers.schedules.PolynomialDecay(
-            initial_learning_rate=initial_learning_rate,
-            decay_steps=total_iterations,
-            power=power,
-            cycle=cycle
-        )
-
-        # SGD optimizer
-        sgd = keras.optimizers.SGD(
-            learning_rate=poly_lr_policy,
-            momentum=momentum
-        )
-        return sgd
-
     def get_backbone(self):
         """Chooses the backbone model to use in the bottom-up pathway.
         Returns the backbone model and the outputs of the layers to use in skip connections.
@@ -192,7 +167,7 @@ def ppm_block(input, bin_sizes, inter_channels, out_channels):
     concat = [input]
     H = K.int_shape(input)[1]
     W = K.int_shape(input)[2]
-    
+
     for bin_size in bin_sizes:
         x = AveragePooling2D(
             pool_size=(H//bin_size, W//bin_size),
