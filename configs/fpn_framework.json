@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "Bi_FPN_merge_320px_400epochs_lr001_DF1",
+    "name": "Bi_FPN_merge_320px_200epochs_triangular2_DF1",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -25,8 +25,10 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "mdr",
-      "initial": 0.01,
+      "policy": "triangular2_cyclic",
+      "initial": 10e-5,
+      "maximal_learning_rate": 10e-1,
+      "step_size": 8,
       "power": 0.9,
       "cycle": false
     },
@@ -41,7 +43,7 @@
     "backbone": "DF1"
   },
   "trainer": {
-    "num_epochs": 400,
+    "num_epochs": 200,
     "batch_size": 12,
     "verbose_training": true,
     "workers": 1

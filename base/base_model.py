@@ -4,6 +4,8 @@ from tensorflow import keras
 from metrics.softmax_miou import SoftmaxMeanIoU, SoftmaxSingleMeanIoU
 import os
 import tensorflow_addons as tfa
+from losses.focal_loss import CategoricalFocalLoss
+from losses.lovasz_softmax import MultiClassLovaszSoftmaxLoss
 
 
 class BaseModel(object):
@@ -243,3 +245,26 @@ class BaseModel(object):
             num_classes=self.config.model.classes, name='Mean_IoU'))
         metrics.append('accuracy')
         return metrics
+
+    def segmentation_loss(self):
+        # define segmentation loss
+        if self.config.model.seg_loss == "focal_loss":
+            seg_loss = CategoricalFocalLoss(
+                gamma=self.config.model.gamma,
+                alpha=self.config.model.alpha
+            )
+        elif self.config.model.seg_loss == "lovasz":
+            seg_loss = MultiClassLovaszSoftmaxLoss()
+        else:
+            seg_loss = 'categorical_crossentropy'
+
+        return seg_loss
+
+    def depth_loss(self):
+        # define depth loss
+        if self.config.model.depth_loss == "Huber":
+            depth_loss = tf.keras.losses.Huber()
+        else:
+            depth_loss = tf.keras.losses.MeanSquaredError()
+
+        return depth_loss
