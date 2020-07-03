@@ -19,7 +19,7 @@
     "weights_file": "tests/verifs/joint_fpn_base1_320px/joint_fpn_base1_320px-100.hdf5"
   },
   "hdaf": {
-    "s": 2,
+    "s": 1,
     "u": 3,
     "v": 1
   },
