@@ -53,17 +53,39 @@ class HdafNet(BaseModel):
 
         # joint decoder (resolution 1/4)
         seg_output, seg_tmps, dep_tmps = self.decoder(backbone, skips)
-        print(seg_tmps, dep_tmps)
 
-        # create outputs list
-        outputs = [
-            seg_output
-        ]
-        outputs.extend([seg_tmp for seg_tmp in seg_tmps])
-        outputs.extend([dep_tmp for dep_tmp in dep_tmps])
+        # create outputs, losses & loss_weights to compile the model
+        outputs = [seg_output]
+        losses = {
+            fix_output_name(seg_output.name): self.segmentation_loss()
+        }
+        loss_weights = {
+            fix_output_name(seg_output.name): self.config.model.loss_weights.main_segmentation
+        }
+        # define metrics
+        metrics = {
+            fix_output_name(seg_output.name): self._generate_metrics()
+        }
+        # handle the auxiliary outputs in segmentation
+        for seg_tmp in seg_tmps:
+            outputs.append(seg_tmp)
+            losses[fix_output_name(seg_tmp.name)] = self.segmentation_loss()
+            loss_weights[fix_output_name(
+                seg_tmp.name)] = self.config.model.loss_weights.deep_segmentation
+            metrics[fix_output_name(seg_tmp.name)] = self._generate_metrics()
 
-        print(outputs)
-        exit()
+        # handle the auxiliary outputs in depth estimation
+        for dep_tmp in dep_tmps:
+            outputs.append(dep_tmp)
+            losses[fix_output_name(dep_tmp.name)] = self.depth_loss()
+            loss_weights[fix_output_name(
+                dep_tmp.name)] = self.config.model.loss_weights.deep_depth
+            metrics[fix_output_name(dep_tmp.name)] = [
+                tf.keras.metrics.RootMeanSquaredError()]
+
+        # the last depth output is the main depth output (so use the appropriate weight)
+        loss_weights[fix_output_name(
+            dep_tmps[-1].name)] = self.config.model.loss_weights.main_depth
 
         # create model
         network = keras.Model(
@@ -76,40 +98,6 @@ class HdafNet(BaseModel):
 
         # get the optimizer
         optimizer = self.build_optimizer()
-
-        # define segmentation loss
-        if self.config.model.seg_loss == "focal_loss":
-            seg_loss = CategoricalFocalLoss(
-                gamma=self.config.model.gamma,
-                alpha=self.config.model.alpha
-            )
-        elif self.config.model.seg_loss == "lovasz":
-            seg_loss = MultiClassLovaszSoftmaxLoss()
-        else:
-            seg_loss = 'categorical_crossentropy'
-
-        # define depth loss
-        if self.config.model.depth_loss == "Huber":
-            depth_loss = tf.keras.losses.Huber()
-        else:
-            depth_loss = tf.keras.losses.MeanSquaredError()
-
-        # composed loss
-        losses = {
-            "seg_out": seg_loss,
-            "dep_out": depth_loss
-        }
-
-        loss_weights = {
-            "seg_out": self.config.model.loss_weights.seg_loss,
-            "dep_out": self.config.model.loss_weights.depth_loss
-        }
-
-        # define metrics
-        metrics = {
-            "seg_out": self._generate_metrics(),
-            "dep_out": [tf.keras.metrics.RootMeanSquaredError()]
-        }
 
         network.compile(
             loss=losses,
@@ -186,13 +174,22 @@ class HdafNet(BaseModel):
         # Pyramid pooling module for stage 5 tensor
         P5 = ppm_block(P5, (1, 2, 3, 6), 128, 512)
 
-        # HDAF modules
-        P2, P3, P4, P5, seg_tmp0, dep_tmp0 = self.HierarchicalDepthAwareFusion(
-            P2, P3, P4, P5, filters=256, u=3, v=1, name="HDF_0_")
+        # define parameters of HDAF modules
+        s = self.config.hdaf.s  # number of HDAF modules
+        u = self.config.hdaf.u  # number of chained BiFPN blocks in depth & seg branches
+        v = self.config.hdaf.v  # number of chained BiFPN blocks in fusion branch
+        seg_tmps, dep_tmps = [], []  # list of auxiliary outputs
+
+        for i in range(s):
+            # HDAF modules
+            P2, P3, P4, P5, seg_tmp, dep_tmp = self.HierarchicalDepthAwareFusion(
+                P2, P3, P4, P5, filters=256, u=u, v=v, name="HDF_" + str(i) + "_")
+            seg_tmps.append(seg_tmp)
+            dep_tmps.append(dep_tmp)
 
         # segmentation head
-        seg_out = self.segmentation_head(P2, P3, P4, P5, name="seg_output")
-        return seg_out, (seg_tmp0), (dep_tmp0)
+        seg_out = self.segmentation_head(P2, P3, P4, P5, name="main_seg_")
+        return seg_out, seg_tmps, dep_tmps
 
     def HierarchicalDepthAwareFusion(self, P2, P3, P4, P5, u=1, v=1, filters=64, conv_input=True, name="HDF_"):
         # segmentation submodule
@@ -250,7 +247,7 @@ class HdafNet(BaseModel):
                           1, 1, kernel_size=1, name=name + "conv1x1")
 
         upsampled = resize_img(
-            features, self.config.model.height, self.config.model.width, name="out")
+            features, self.config.model.height, self.config.model.width, name=name+"out")
 
         return upsampled
 
@@ -320,3 +317,8 @@ def conv2d(input, filters, stride, n, kernel_size=3, name=None):
 
         x = Activation(lambda a: tf.nn.relu(a), name=relu_name)(x)
     return x
+
+
+def fix_output_name(name: str):
+    """Removes the "Identity:0" of a tensor's name if it exists"""
+    return name.replace("/Identity:0", "", 1)

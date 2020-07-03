@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAFNet_320px_u3_v1",
+    "name": "HDAFNet_320px_u3_v1_s2",
     "mixed_precision": true,
     "jpa_optimization": true
   },
@@ -18,6 +18,11 @@
     "depth_dir": "datasets/nyu_v2/test_depth",
     "weights_file": "tests/verifs/joint_fpn_base1_320px/joint_fpn_base1_320px-100.hdf5"
   },
+  "hdaf": {
+    "s": 2,
+    "u": 3,
+    "v": 1
+  },
   "model": {
     "class_name": "models.hdaf_net.HdafNet",
     "optimizer": {
@@ -25,8 +30,8 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "triangular_cyclic",
-      "initial": 0.01,
+      "policy": "mdr",
+      "initial": 1e-10,
       "power": 0.9,
       "cycle": false
     },
@@ -38,16 +43,18 @@
     "alpha": 0.25,
     "gamma": 2.0,
     "depth_loss": "mse",
-    "backbone_pretrain": "imagenet",
-    "backbone": "mobilenet_v2",
+    "backbone_pretrain": "non",
+    "backbone": "resnet50",
     "loss_weights": {
-      "seg_loss": 1.0,
-      "depth_loss": 1.0
+      "main_segmentation": 1.0,
+      "main_depth": 1.0,
+      "deep_segmentation": 0.4,
+      "deep_depth": 0.4
     }
   },
   "trainer": {
     "num_epochs": 100,
-    "batch_size": 16,
+    "batch_size": 8,
     "verbose_training": true,
     "workers": 1
   },

@@ -67,7 +67,22 @@ class JointDataGenerator(keras.utils.Sequence):
             Y.append(self._get_mask_tensor(mask))
             Z.append(self._get_depth_tensor(depth))
 
-        return np.array(X), [np.array(Y), np.array(Z)]
+            # create the ground truth of data generator
+            Y_array = np.array(Y)
+            Z_array = np.array(Z)
+            ground_truth = [Y_array]
+            s = self.config.hdaf.s if isinstance(
+                self.config.hdaf.s, int) else 1
+
+            # add Y_array for each auxiliary seg output
+            for i in range(s):
+                ground_truth.append(Y_array)
+
+            # add Z_array for each auxiliary depth output
+            for i in range(s):
+                ground_truth.append(Z_array)
+
+        return np.array(X), ground_truth
 
     def _read_image(self, image_path):
         """Reads the image from the image directory and returns the associated numpy array
