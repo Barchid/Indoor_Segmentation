@@ -10,7 +10,6 @@ import os
 import numpy as np
 # set the matplotlib backend so figures can be saved in the background
 import matplotlib
-matplotlib.use("Agg")
 
 # capture the config path from the run arguments
 # then process the json configuration file
@@ -22,8 +21,8 @@ except:
     exit(0)
 
 MIN_LR = 1e-10
-MAX_LR = 1.
-NUM_EPOCHS = 50
+MAX_LR = 10.
+NUM_EPOCHS = 100
 MODEL_TASK = "RGB"
 
 datagen = None
@@ -52,8 +51,8 @@ lrf.find(
 # plot the loss for the various learning rates and save the
 # resulting plot to disk
 lrf.plot_loss()
-plt.savefig("lr_finder.png")
 plt.show()
+plt.savefig("lr_finder.png")
 
 print("[INFO] learning rate finder complete")
 print("[INFO] examine plot and adjust learning rates before training")

@@ -52,22 +52,24 @@ class HdafNet(BaseModel):
         backbone, skips = self.get_backbone()
 
         # joint decoder (resolution 1/4)
-        decoder = self.decoder(backbone, skips)
+        seg_output, seg_tmps, dep_tmps = self.decoder(backbone, skips)
+        print(seg_tmps, dep_tmps)
 
-        # segmentation head
-        segmentation_mask = self.segmentation_head(decoder)
+        # create outputs list
+        outputs = [
+            seg_output
+        ]
+        outputs.extend([seg_tmp for seg_tmp in seg_tmps])
+        outputs.extend([dep_tmp for dep_tmp in dep_tmps])
 
-        # depth estimation head
-        depth_estimation = self.depth_head(decoder)
+        print(outputs)
+        exit()
 
         # create model
         network = keras.Model(
             inputs=backbone.input,
-            outputs=[
-                segmentation_mask,
-                depth_estimation
-            ],
-            name="JOINT_BI_FPN"
+            outputs=outputs,
+            name="HDAFNET"
         )
 
         network.summary()
@@ -185,13 +187,12 @@ class HdafNet(BaseModel):
         P5 = ppm_block(P5, (1, 2, 3, 6), 128, 512)
 
         # HDAF modules
-        P2, P3, P4, P5 = self.HierarchicalDepthAwareFusion(
-            P2, P3, P4, P5, filters=256, u=2, v=2, name="HDF_0_")
+        P2, P3, P4, P5, seg_tmp0, dep_tmp0 = self.HierarchicalDepthAwareFusion(
+            P2, P3, P4, P5, filters=256, u=3, v=1, name="HDF_0_")
 
         # segmentation head
-        seg_out = self.segmentation_head(P5, P4, P3, P2, 64,
-                                         name="decoder_seg_head_")
-        return seg_out
+        seg_out = self.segmentation_head(P2, P3, P4, P5, name="seg_output")
+        return seg_out, (seg_tmp0), (dep_tmp0)
 
     def HierarchicalDepthAwareFusion(self, P2, P3, P4, P5, u=1, v=1, filters=64, conv_input=True, name="HDF_"):
         # segmentation submodule
@@ -229,7 +230,7 @@ class HdafNet(BaseModel):
             P2, P3, P4, P5 = BiFpnLayer(
                 P2, P3, P4, P5, filters=filters, conv_input=False, name=name + "BiFpn_fusion_" + str(i+1) + "_")
 
-        return P2, P3, P4, P5
+        return P2, P3, P4, P5, seg_tmp, dep_tmp
 
     def segmentation_head(self, P2, P3, P4, P5, name="seg_head_"):
         features = merge_block(P5, P4, P3, P2, 64, name=name+"merge_block_")
