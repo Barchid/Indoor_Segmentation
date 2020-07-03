@@ -25,10 +25,10 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "triangular2_cyclic",
+      "policy": "triangular_cyclic",
       "initial": 10e-5,
       "maximal_learning_rate": 10e-1,
-      "step_size": 8,
+      "step_size": 80400,
       "power": 0.9,
       "cycle": false
     },
