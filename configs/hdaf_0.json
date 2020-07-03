@@ -36,7 +36,7 @@
       "cycle": false
     },
     "width": 320,
-    "height": 256,
+    "height": 240,
     "channels": 3,
     "classes": 41,
     "seg_loss": "categorical_crossentropy",
@@ -44,7 +44,7 @@
     "gamma": 2.0,
     "depth_loss": "mse",
     "backbone_pretrain": "non",
-    "backbone": "resnet50",
+    "backbone": "mobilenet_v2",
     "loss_weights": {
       "main_segmentation": 1.0,
       "main_depth": 1.0,
@@ -54,7 +54,7 @@
   },
   "trainer": {
     "num_epochs": 100,
-    "batch_size": 4,
+    "batch_size": 8,
     "verbose_training": true,
     "workers": 1
   },
