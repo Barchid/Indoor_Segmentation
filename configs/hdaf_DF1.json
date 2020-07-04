@@ -1,8 +1,8 @@
 {
   "exp": {
-    "name": "HDAFNet_resnet50_320px_u3_v1_s2",
+    "name": "HDAFNet_DF1_320px_u1_v1_s1",
     "mixed_precision": false,
-    "jpa_optimization": true
+    "jpa_optimization": false
   },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",
@@ -19,8 +19,8 @@
     "weights_file": "tests/verifs/joint_fpn_base1_320px/joint_fpn_base1_320px-100.hdf5"
   },
   "hdaf": {
-    "s": 2,
-    "u": 3,
+    "s": 1,
+    "u": 1,
     "v": 1
   },
   "model": {
@@ -39,12 +39,12 @@
     "height": 256,
     "channels": 3,
     "classes": 41,
-    "seg_loss": "categorical_crossentropy",
+    "seg_loss": "focal_tversky",
     "alpha": 0.25,
     "gamma": 2.0,
     "depth_loss": "mse",
     "backbone_pretrain": "imagenet",
-    "backbone": "resnet50",
+    "backbone": "DF1",
     "loss_weights": {
       "main_segmentation": 1.0,
       "main_depth": 1.0,

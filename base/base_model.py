@@ -6,6 +6,7 @@ import os
 import tensorflow_addons as tfa
 from losses.focal_loss import CategoricalFocalLoss
 from losses.lovasz_softmax import MultiClassLovaszSoftmaxLoss
+from losses.focal_tversky_loss import focal_tversky_loss, class_tversky
 
 
 class BaseModel(object):
@@ -255,6 +256,10 @@ class BaseModel(object):
             )
         elif self.config.model.seg_loss == "lovasz":
             seg_loss = MultiClassLovaszSoftmaxLoss()
+        elif self.config.model.seg_loss == "focal_tversky":
+            seg_loss = focal_tversky_loss
+        elif self.config.model.seg_loss == "tversky":
+            seg_loss = class_tversky
         else:
             seg_loss = 'categorical_crossentropy'
 

@@ -51,7 +51,7 @@ lrf.find(
 # plot the loss for the various learning rates and save the
 # resulting plot to disk
 lrf.plot_loss()
-plt.show()
+#plt.show()
 plt.savefig("lr_finder.png")
 
 print("[INFO] learning rate finder complete")
