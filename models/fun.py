@@ -137,31 +137,41 @@ class Fun(BaseModel):
     def create_decoder(self, backbone):
         # reshape stage 5 to have convol filters
         stage5 = backbone.output  # resolution 1/32
-        stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 1024)
-        filters = Reshape((3, 3, 32, -1), dtype=tf.float32)(stage5)
+        print(stage5.shape)
+        stage5 = Reshape((
+            self.config.model.height//4,
+            self.config.model.width//4,
+            20
+        ))(stage5)
+        print(stage5.shape)
+        stage5 = conv2d(stage5, 256, 1, 1)
+        stage5 = conv2d(stage5, 128, 1, 1)
+        stage5 = conv2d(stage5, 64, 1, 1)
+        # stage5 = ppm_block(stage5, (1, 2, 3, 6), 128, 1024)
+        # filters = Reshape((3, 3, 32, -1), dtype=tf.float32)(stage5)
 
-        input = backbone.input  # resolution 1/1
-        input = conv2d(input, 32, 2, 1, kernel_size=1, use_relu=True)
+        # input = backbone.input  # resolution 1/1
+        # input = conv2d(input, 32, 2, 1, kernel_size=1, use_relu=True)
 
         # convolception = tf.map_fn(
         #     lambda x: tf.nn.conv2d(x[0], x[1], 1, padding="SAME"),
         #     (input, filters),
         #     dtype=(tf.float32, tf.float32)
         # )
-        convolception = tf.map_fn(
-            lambda x: x,
-            filters,
-            dtype=tf.float32
-        )
+        # convolception = tf.map_fn(
+        #     lambda x: x,
+        #     filters,
+        #     dtype=tf.float32
+        # )
 
-        print(convolception.shape)
-        exit()
+        # print(convolception.shape)
+        # exit()
 
         # convolception = tf.nn.conv2d(
         #     input, filters, strides=1, padding="SAME", name="convolception")
 
         prediction = conv2d(
-            convolception, self.config.model.classes, 1, 1, kernel_size=1, use_relu=True)
+            stage5, self.config.model.classes, 1, 1, kernel_size=1, use_relu=True)
 
         # upsample to the right dimensions
         prediction = resize_img(
