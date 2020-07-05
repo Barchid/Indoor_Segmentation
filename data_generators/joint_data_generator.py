@@ -131,6 +131,10 @@ class JointDataGenerator(keras.utils.Sequence):
         """
         depth = depth.astype(np.float32)
         depth = depth/255.  # normalize between 0 and 1
+
+        # expand dimension if depth tensor has only 2 dims (and not 3)
+        if depth.ndim == 2:
+            depth = np.expand_dims(depth, 2)
         return depth
 
     def _get_mask_tensor(self, raw_mask):

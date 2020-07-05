@@ -4,9 +4,9 @@ from tensorflow import keras
 from metrics.softmax_miou import SoftmaxMeanIoU, SoftmaxSingleMeanIoU
 import os
 import tensorflow_addons as tfa
-from losses.focal_loss import CategoricalFocalLoss
+#from losses.focal_loss import CategoricalFocalLoss
 from losses.lovasz_softmax import MultiClassLovaszSoftmaxLoss
-from losses.focal_tversky_loss import focal_tversky_loss, class_tversky
+from losses.focal_tversky_loss import focal_tversky_loss, class_tversky, tversky_loss
 
 
 class BaseModel(object):
@@ -250,16 +250,17 @@ class BaseModel(object):
     def segmentation_loss(self):
         # define segmentation loss
         if self.config.model.seg_loss == "focal_loss":
-            seg_loss = CategoricalFocalLoss(
-                gamma=self.config.model.gamma,
-                alpha=self.config.model.alpha
+            seg_loss = tfa.losses.SigmoidFocalCrossEntropy(
+                from_logits=True,
+                alpha=self.config.model.alpha,
+                gamma=self.config.model.gamma
             )
         elif self.config.model.seg_loss == "lovasz":
             seg_loss = MultiClassLovaszSoftmaxLoss()
         elif self.config.model.seg_loss == "focal_tversky":
             seg_loss = focal_tversky_loss
         elif self.config.model.seg_loss == "tversky":
-            seg_loss = class_tversky
+            seg_loss = tversky_loss
         else:
             seg_loss = 'categorical_crossentropy'
 

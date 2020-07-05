@@ -2,7 +2,7 @@
   "exp": {
     "name": "HDAFNet_DF1_320px_u1_v1_s1",
     "mixed_precision": false,
-    "jpa_optimization": false
+    "jpa_optimization": true
   },
   "generator": {
     "img_dir": "datasets/nyu_v2/train_rgb",
@@ -30,8 +30,10 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "mdr",
-      "initial": 1e-10,
+      "policy": "triangular_cyclic",
+      "initial": 1e-3,
+      "maximal_learning_rate": 1e-2,
+      "step_size": 3975,
       "power": 0.9,
       "cycle": false
     },
@@ -53,7 +55,7 @@
     }
   },
   "trainer": {
-    "num_epochs": 100,
+    "num_epochs": 200,
     "batch_size": 1,
     "verbose_training": true,
     "workers": 1

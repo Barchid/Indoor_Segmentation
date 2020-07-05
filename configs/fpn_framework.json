@@ -36,7 +36,7 @@
     "height": 224,
     "channels": 3,
     "classes": 41,
-    "loss": "categorical_crossentropy",
+    "loss": "focal_loss",
     "gamma": 2.0,
     "alpha": 0.25,
     "backbone_pretrain": "imagenet",

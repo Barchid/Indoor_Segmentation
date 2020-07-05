@@ -49,10 +49,7 @@ def evaluation(config, visualization=False):
 
     # dynamic model instanciation
     network = None
-    if config.model.class_name == 'models.fpn_net.FpnNet' or config.model.class_name == 'models.fpn_deep.FpnDeep':
-        network = factory.create(config.model.class_name)(config, datagen)
-    else:
-        network = factory.create(config.model.class_name)(config)
+    network = factory.create(config.model.class_name)(config, datagen)
 
     # Load weight file in model
     load_weights(network.model, config)
