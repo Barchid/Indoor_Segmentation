@@ -30,8 +30,8 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "triangular_cyclic",
-      "initial": 1e-3,
+      "policy": "mdr",
+      "initial": 1e-10,
       "maximal_learning_rate": 1e-2,
       "step_size": 3975,
       "power": 0.9,
@@ -41,7 +41,7 @@
     "height": 256,
     "channels": 3,
     "classes": 41,
-    "seg_loss": "focal_tversky",
+    "seg_loss": "tversky",
     "alpha": 0.25,
     "gamma": 2.0,
     "depth_loss": "mse",
