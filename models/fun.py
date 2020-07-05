@@ -56,7 +56,7 @@ class Fun(BaseModel):
             inputs=backbone.input, outputs=prediction, name="FUN")
 
         network.summary()
-        exit()
+        
         # get the optimizer
         optimizer = self.build_optimizer()
 
