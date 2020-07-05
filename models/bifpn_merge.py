@@ -63,15 +63,7 @@ class BiFpnMerge(BaseModel):
 
         metrics = self.build_metrics_NYU()
 
-        if self.config.model.loss == "focal_loss":
-            loss = CategoricalFocalLoss(
-                gamma=self.config.model.gamma,
-                alpha=self.config.model.alpha
-            )
-        elif self.config.model.loss == "lovasz":
-            loss = MultiClassLovaszSoftmaxLoss()
-        else:
-            loss = 'categorical_crossentropy'
+        loss = self.segmentation_loss()
 
         network.compile(loss=loss,
                         optimizer=optimizer, metrics=metrics)
