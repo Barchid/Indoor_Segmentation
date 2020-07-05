@@ -23,7 +23,7 @@ except:
 MIN_LR = 1e-10
 MAX_LR = 10.
 NUM_EPOCHS = 50
-MODEL_TASK = "RGBD"
+MODEL_TASK = "RGB"
 
 datagen = None
 if MODEL_TASK == "RGB":
