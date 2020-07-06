@@ -21,7 +21,7 @@ except:
     exit(0)
 
 MIN_LR = 1e-15
-MAX_LR = 1e-5.
+MAX_LR = 1e-5
 NUM_EPOCHS = 30
 MODEL_TASK = "RGBD"
 
