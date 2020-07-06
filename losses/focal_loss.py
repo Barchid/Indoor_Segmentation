@@ -20,11 +20,24 @@ class CategoricalFocalLoss(keras.losses.Loss):
         self.alpha = alpha
 
     def call(self, y_true, y_pred):
-        # clip to prevent NaN's and Inf's
-        y_pred = K.clip(y_pred, K.epsilon(), 1.0 - K.epsilon())
+        # # clip to prevent NaN's and Inf's
+        # y_pred = K.clip(y_pred, K.epsilon(), 1.0 - K.epsilon())
 
-        # Calculate focal loss
-        loss = - y_true * (self.alpha * K.pow((1 - y_pred),
-                                              self.gamma) * K.log(y_pred))
+        # # Calculate focal loss
+        # loss = - y_true * (self.alpha * K.pow((1 - y_pred),
+        #                                       self.gamma) * K.log(y_pred))
+        # Scale predictions so that the class probas of each sample sum to 1
+        y_pred /= K.sum(y_pred, axis=-1, keepdims=True)
 
-        return tf.reduce_sum(loss)
+        # Clip the prediction value to prevent NaN's and Inf's
+        epsilon = K.epsilon()
+        y_pred = K.clip(y_pred, epsilon, 1. - epsilon)
+
+        # Calculate Cross Entropy
+        cross_entropy = -y_true * K.log(y_pred)
+
+        # Calculate Focal Loss
+        loss = self.alpha * K.pow(1 - y_pred, self.gamma) * cross_entropy
+
+        # Compute mean loss in mini_batch
+        return K.mean(K.sum(loss, axis=-1))
