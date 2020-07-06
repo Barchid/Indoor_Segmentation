@@ -20,9 +20,9 @@ except:
     print("missing or invalid arguments")
     exit(0)
 
-MIN_LR = 1e-15
-MAX_LR = 1e-5
-NUM_EPOCHS = 30
+MIN_LR = 1e-10
+MAX_LR = 10
+NUM_EPOCHS = 50
 MODEL_TASK = "RGBD"
 
 datagen = None
