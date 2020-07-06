@@ -260,8 +260,6 @@ class BaseModel(object):
             seg_loss = focal_tversky_loss
         elif self.config.model.seg_loss == "tversky":
             seg_loss = class_tversky
-        elif self.config.model.seg_loss == "mse":
-            seg_loss = tf.keras.losses.MeanSquaredError()
         else:
             seg_loss = 'categorical_crossentropy'
 
