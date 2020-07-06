@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAFNet_DF1_320px_u1_v1_s1",
+    "name": "HDAFNet_DF1_320px_u1_v1_s1_focal_berhu",
     "mixed_precision": false,
     "jpa_optimization": true
   },
