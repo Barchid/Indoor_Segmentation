@@ -24,7 +24,7 @@ MIN_LR = 1e-10
 MAX_LR = 10
 NUM_EPOCHS = 50
 MODEL_TASK = "RGBD"
-
+config.generator.use_data_augmentation = False  # force no data augmentation
 datagen = None
 if MODEL_TASK == "RGB":
     datagen = SegmentationDataGenerator(config)
@@ -51,7 +51,7 @@ lrf.find(
 # plot the loss for the various learning rates and save the
 # resulting plot to disk
 lrf.plot_loss()
-#plt.show()
+# plt.show()
 plt.savefig("lr_finder.png")
 
 print("[INFO] learning rate finder complete")
