@@ -27,4 +27,4 @@ class CategoricalFocalLoss(keras.losses.Loss):
         loss = - y_true * (self.alpha * K.pow((1 - y_pred),
                                               self.gamma) * K.log(y_pred))
 
-        return K.mean(loss)
+        return tf.reduce_sum(loss)

@@ -243,7 +243,7 @@ class HdafNet(BaseModel):
 
     def depth_head(self, P2, P3, P4, P5, name="dep_head_"):
         features = merge_block(P5, P4, P3, P2, 64, name=name+"merge_block_")
-        features = conv2d(features, self.config.model.classes,
+        features = conv2d(features, 1,
                           1, 1, kernel_size=1, name=name + "conv1x1")
 
         upsampled = resize_img(

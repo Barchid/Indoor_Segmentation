@@ -7,6 +7,7 @@ import tensorflow_addons as tfa
 from losses.focal_loss import CategoricalFocalLoss
 from losses.lovasz_softmax import MultiClassLovaszSoftmaxLoss
 from losses.focal_tversky_loss import focal_tversky_loss, class_tversky
+from losses.berhu import BerHuLoss
 
 
 class BaseModel(object):
@@ -269,6 +270,8 @@ class BaseModel(object):
         # define depth loss
         if self.config.model.depth_loss == "Huber":
             depth_loss = tf.keras.losses.Huber()
+        elif self.config.model.depth_loss == "berHu":
+            depth_loss = BerHuLoss()
         else:
             depth_loss = tf.keras.losses.MeanSquaredError()
 
