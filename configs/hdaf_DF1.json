@@ -41,7 +41,7 @@
     "height": 256,
     "channels": 3,
     "classes": 41,
-    "seg_loss": "categorical_crossentropy",
+    "seg_loss": "mse",
     "alpha": 0.25,
     "gamma": 2.0,
     "depth_loss": "mse",
@@ -50,8 +50,8 @@
     "loss_weights": {
       "main_segmentation": 1.0,
       "main_depth": 1.0,
-      "deep_segmentation": 0.4,
-      "deep_depth": 0.4
+      "deep_segmentation": 1.0,
+      "deep_depth": 1.0
     }
   },
   "trainer": {

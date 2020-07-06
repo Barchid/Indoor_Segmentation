@@ -36,7 +36,7 @@
     "height": 224,
     "channels": 3,
     "classes": 41,
-    "loss": "focal_tversky",
+    "seg°loss": "focal_tversky",
     "gamma": 2.0,
     "alpha": 0.25,
     "backbone_pretrain": "imagenet",
