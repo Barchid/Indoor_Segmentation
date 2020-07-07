@@ -185,10 +185,16 @@ class HdafNet(BaseModel):
 
         if self.config.hdaf.use_depth:
             for i in range(s):
+                # add deep supervised seg head if the HDAF module is not the last one
+                use_seg_head = True if i != (s-1) else False
+
                 # HDAF modules
                 P2, P3, P4, P5, seg_tmp, dep_tmp = self.HierarchicalDepthAwareFusion(
-                    P2, P3, P4, P5, filters=f, u=u, v=v, name="HDF_" + str(i) + "_")
-                seg_tmps.append(seg_tmp)
+                    P2, P3, P4, P5, filters=f, u=u, v=v, use_seg_head=use_seg_head, name="HDF_" + str(i) + "_")
+
+                if seg_tmp is not None:
+                    seg_tmps.append(seg_tmp)
+
                 dep_tmps.append(dep_tmp)
         else:
             for i in range(s):
@@ -201,7 +207,7 @@ class HdafNet(BaseModel):
         seg_out = self.segmentation_head(P2, P3, P4, P5, name="main_seg_")
         return seg_out, seg_tmps, dep_tmps
 
-    def HierarchicalDepthAwareFusion(self, P2, P3, P4, P5, u=1, v=1, filters=64, conv_input=True, name="HDF_"):
+    def HierarchicalDepthAwareFusion(self, P2, P3, P4, P5, u=1, v=1, filters=64, conv_input=True, use_seg_head=True, name="HDF_"):
         # segmentation submodule
         P2_seg, P3_seg, P4_seg, P5_seg = BiFpnLayer(
             P2, P3, P4, P5, filters=filters, conv_input=conv_input, name=name + "BiFpn_seg_0_")
@@ -209,9 +215,12 @@ class HdafNet(BaseModel):
             P2_seg, P3_seg, P4_seg, P5_seg = BiFpnLayer(
                 P2_seg, P3_seg, P4_seg, P5_seg, filters=filters, conv_input=False, name=name + "BiFpn_seg_" + str(i+1) + "_")
 
-        # deep supervision
-        seg_tmp = self.segmentation_head(
-            P2_seg, P3_seg, P4_seg, P5_seg, name=name + "seg_head_")
+        # deep supervision of seg output if enabled
+        if use_seg_head:
+            seg_tmp = self.segmentation_head(
+                P2_seg, P3_seg, P4_seg, P5_seg, name=name + "seg_head_")
+        else:
+            seg_tmp = None
 
         # depth submodule
         P2_dep, P3_dep, P4_dep, P5_dep = BiFpnLayer(
