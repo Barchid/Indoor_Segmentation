@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAF_mobilenetv2_cross_berhu_rgb_100ep",
+    "name": "HDAF_mobilenetv2_cross_berhu_rgbd_100ep",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -23,7 +23,7 @@
     "u": 1,
     "v": 1,
     "f": 256,
-    "use_depth": false
+    "use_depth": true
   },
   "model": {
     "class_name": "models.hdaf_net.HdafNet",

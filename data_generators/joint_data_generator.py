@@ -74,8 +74,8 @@ class JointDataGenerator(keras.utils.Sequence):
             s = self.config.hdaf.s if isinstance(
                 self.config.hdaf.s, int) else 1
 
-            # add Y_array for each auxiliary seg output
-            for i in range(s):
+            # add Y_array for each auxiliary seg output (one for each hdaf module but the last one)
+            for i in range(s-1):
                 ground_truth.append(Y_array)
 
             # add Z_array for each auxiliary depth output

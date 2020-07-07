@@ -22,7 +22,7 @@ except:
 
 MIN_LR = 1e-10
 MAX_LR = 10
-NUM_EPOCHS = 50
+NUM_EPOCHS = 30
 MODEL_TASK = "RGBD"
 config.generator.use_data_augmentation = False  # force no data augmentation
 datagen = None
