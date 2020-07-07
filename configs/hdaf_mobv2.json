@@ -32,7 +32,7 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "polynomial",
+      "policy": "mdr",
       "initial": 1e-2,
       "maximal_learning_rate": 1e-1,
       "step_size": 500,
