@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAFNet_DF1_320px_u1_v1_s1_focal_berhu_200ep_triancycl",
+    "name": "HDAF_mobilenetv2_cross_berhu",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -22,7 +22,7 @@
     "s": 1,
     "u": 1,
     "v": 1,
-    "f": 256
+    "f": 512
   },
   "model": {
     "class_name": "models.hdaf_net.HdafNet",
@@ -31,7 +31,7 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "triangular_cyclic",
+      "policy": "mdr",
       "initial": 1e-5,
       "maximal_learning_rate": 1e-1,
       "step_size": 500,
@@ -47,7 +47,7 @@
     "gamma": 2.0,
     "depth_loss": "berHu",
     "backbone_pretrain": "imagenet",
-    "backbone": "DF1",
+    "backbone": "mobilenet_v2",
     "loss_weights": {
       "main_segmentation": 1.0,
       "main_depth": 1.0,

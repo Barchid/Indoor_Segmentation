@@ -178,12 +178,13 @@ class HdafNet(BaseModel):
         s = self.config.hdaf.s  # number of HDAF modules
         u = self.config.hdaf.u  # number of chained BiFPN blocks in depth & seg branches
         v = self.config.hdaf.v  # number of chained BiFPN blocks in fusion branch
+        f = self.config.hdaf.f  # number of filters for an HDAF module
         seg_tmps, dep_tmps = [], []  # list of auxiliary outputs
 
         for i in range(s):
             # HDAF modules
             P2, P3, P4, P5, seg_tmp, dep_tmp = self.HierarchicalDepthAwareFusion(
-                P2, P3, P4, P5, filters=256, u=u, v=v, name="HDF_" + str(i) + "_")
+                P2, P3, P4, P5, filters=f, u=u, v=v, name="HDF_" + str(i) + "_")
             seg_tmps.append(seg_tmp)
             dep_tmps.append(dep_tmp)
 
