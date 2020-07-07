@@ -16,13 +16,14 @@
     "img_dir": "datasets/nyu_v2/test_rgb",
     "mask_dir": "datasets/nyu_v2/test_mask",
     "depth_dir": "datasets/nyu_v2/test_depth",
-    "weights_file": "tests/verifs/joint_fpn_base1_320px/joint_fpn_base1_320px-100.hdf5"
+    "weights_file": "tests/hdaf/HDAFNet_DF1_320px_u1_v1_s1_focal_berhu_200ep_triancycl-62.hdf5"
   },
   "hdaf": {
     "s": 1,
     "u": 1,
     "v": 1,
-    "f": 256
+    "f": 256,
+    "use_depth": true
   },
   "model": {
     "class_name": "models.hdaf_net.HdafNet",

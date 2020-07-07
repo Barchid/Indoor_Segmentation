@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAF_mobilenetv2_cross_berhu",
+    "name": "HDAF_mobilenetv2_cross_berhu_wodepth",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -22,7 +22,8 @@
     "s": 1,
     "u": 1,
     "v": 1,
-    "f": 512
+    "f": 256,
+    "use_depth": false
   },
   "model": {
     "class_name": "models.hdaf_net.HdafNet",

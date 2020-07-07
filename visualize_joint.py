@@ -40,6 +40,24 @@ def create_visualization(pred_dep, gt_dep, pred_seg, gt_seg, img):
     return grid_image
 
 
+def create_visualization_rgb(pred_seg, gt_seg, img):
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    img = (img * 255).astype(np.uint8)
+
+    # generate segmaps
+    pred_seg = np.argmax(pred_seg, axis=-1).astype(np.uint8)
+    gt_seg = np.argmax(gt_seg, axis=-1).astype(np.uint8)
+    pred_seg = SegmentationMapsOnImage(pred_seg, shape=img.shape)
+    gt_seg = SegmentationMapsOnImage(gt_seg, shape=img.shape)
+
+    grid_image = ia.draw_grid([
+        img,
+        pred_seg.draw_on_image(img)[0],
+        gt_seg.draw_on_image(img)[0],
+    ], cols=3)
+    return grid_image
+
+
 def visualize_results(model, config, datagen):
     """Visualization of predictions
     """
@@ -47,8 +65,14 @@ def visualize_results(model, config, datagen):
     for i in range(len(datagen)):
         print('Processing sample n°', i, '...')
         # IF there is no depth data
-        X, [Y, Z] = datagen[i]
-        pred_seg, pred_dep = model.predict(X, batch_size=1, verbose=1)
+        X, gts = datagen[i]
+        gt_seg = gts[0]
+        gt_dep = gts[-1]
+
+        preds = model.predict(X, batch_size=1, verbose=1)
+        pred_seg = preds[0]
+        pred_dep = preds[-1]
+
         pred_dep = np.clip(pred_dep[0], 0., 1.)
         pred_seg = pred_seg[0]
 
@@ -60,8 +84,11 @@ def visualize_results(model, config, datagen):
         # dep_heatmap, overlay = depth_gradcam.overlay_heatmap(
         #     dep_heatmap, X[0].copy())
 
-        visualization = create_visualization(
-            pred_dep, Z[0], pred_seg, Y[0], X[0])
+        if config.hdaf.use_depth:
+            visualization = create_visualization(
+                pred_dep, gt_dep[0], pred_seg, gt_seg[0], X[0])
+        else:
+            visualization = create_visualization_rgb(pred_seg, gt_seg[0], X[0])
 
         # display
         cv2.imshow('Image - Ground truth - Prediction', visualization)

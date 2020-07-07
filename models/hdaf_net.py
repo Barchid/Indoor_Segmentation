@@ -83,9 +83,11 @@ class HdafNet(BaseModel):
             metrics[fix_output_name(dep_tmp.name)] = [
                 tf.keras.metrics.RootMeanSquaredError()]
 
-        # the last depth output is the main depth output (so use the appropriate weight)
-        loss_weights[fix_output_name(
-            dep_tmps[-1].name)] = self.config.model.loss_weights.main_depth
+        # check if list of depth predictions is not empty
+        if dep_tmps:
+            # the last depth output is the main depth output (so use the appropriate weight)
+            loss_weights[fix_output_name(
+                dep_tmps[-1].name)] = self.config.model.loss_weights.main_depth
 
         # create model
         network = keras.Model(
@@ -181,12 +183,19 @@ class HdafNet(BaseModel):
         f = self.config.hdaf.f  # number of filters for an HDAF module
         seg_tmps, dep_tmps = [], []  # list of auxiliary outputs
 
-        for i in range(s):
-            # HDAF modules
-            P2, P3, P4, P5, seg_tmp, dep_tmp = self.HierarchicalDepthAwareFusion(
-                P2, P3, P4, P5, filters=f, u=u, v=v, name="HDF_" + str(i) + "_")
-            seg_tmps.append(seg_tmp)
-            dep_tmps.append(dep_tmp)
+        if self.config.hdaf.use_depth:
+            for i in range(s):
+                # HDAF modules
+                P2, P3, P4, P5, seg_tmp, dep_tmp = self.HierarchicalDepthAwareFusion(
+                    P2, P3, P4, P5, filters=f, u=u, v=v, name="HDF_" + str(i) + "_")
+                seg_tmps.append(seg_tmp)
+                dep_tmps.append(dep_tmp)
+        else:
+            for i in range(s):
+                # HDAF modules
+                P2, P3, P4, P5, seg_tmp = self.SegmentationSupervision(
+                    P2, P3, P4, P5, filters=f, u=u, v=v, name="HDF_" + str(i) + "_")
+                seg_tmps.append(seg_tmp)
 
         # segmentation head
         seg_out = self.segmentation_head(P2, P3, P4, P5, name="main_seg_")
@@ -229,6 +238,20 @@ class HdafNet(BaseModel):
                 P2, P3, P4, P5, filters=filters, conv_input=False, name=name + "BiFpn_fusion_" + str(i+1) + "_")
 
         return P2, P3, P4, P5, seg_tmp, dep_tmp
+
+    def SegmentationSupervision(self, P2, P3, P4, P5, u=1, v=1, filters=64, conv_input=True, name="HDF_"):
+        # segmentation submodule
+        P2_seg, P3_seg, P4_seg, P5_seg = BiFpnLayer(
+            P2, P3, P4, P5, filters=filters, conv_input=conv_input, name=name + "BiFpn_seg_0_")
+        for i in range(u-1):
+            P2_seg, P3_seg, P4_seg, P5_seg = BiFpnLayer(
+                P2_seg, P3_seg, P4_seg, P5_seg, filters=filters, conv_input=False, name=name + "BiFpn_seg_" + str(i+1) + "_")
+
+        # deep supervision
+        seg_tmp = self.segmentation_head(
+            P2_seg, P3_seg, P4_seg, P5_seg, name=name + "seg_head_")
+
+        return P2_seg, P3_seg, P4_seg, P5_seg, seg_tmp
 
     def segmentation_head(self, P2, P3, P4, P5, name="seg_head_"):
         features = merge_block(P5, P4, P3, P2, 64, name=name+"merge_block_")

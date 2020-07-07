@@ -79,8 +79,9 @@ class JointDataGenerator(keras.utils.Sequence):
                 ground_truth.append(Y_array)
 
             # add Z_array for each auxiliary depth output
-            for i in range(s):
-                ground_truth.append(Z_array)
+            if self.config.hdaf.use_depth:
+                for i in range(s):
+                    ground_truth.append(Z_array)
 
         return np.array(X), ground_truth
 

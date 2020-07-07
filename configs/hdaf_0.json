@@ -22,7 +22,8 @@
     "s": 2,
     "u": 3,
     "v": 1,
-    "f": 512
+    "f": 512,
+    "use_depth": true
   },
   "model": {
     "class_name": "models.hdaf_net.HdafNet",
