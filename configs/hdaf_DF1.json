@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAFNet_DF1_320px_u1_v1_s1_focal_berhu",
+    "name": "HDAFNet_DF1_320px_u1_v1_s1_focal_berhu_200ep_triancycl",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -30,9 +30,9 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "mdr",
-      "initial": 1e-7,
-      "maximal_learning_rate": 1e-2,
+      "policy": "triangular_cyclic",
+      "initial": 1e-5,
+      "maximal_learning_rate": 1e-1,
       "step_size": 500,
       "power": 0.9,
       "cycle": false
@@ -55,7 +55,7 @@
     }
   },
   "trainer": {
-    "num_epochs": 400,
+    "num_epochs": 200,
     "batch_size": 8,
     "verbose_training": true,
     "workers": 1
