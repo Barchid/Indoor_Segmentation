@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAFNet_resnet50_320px_u3_v1_s2",
+    "name": "HDAFNet_resnet50_320px_u3_v1_s2_polynomial",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -30,8 +30,10 @@
       "momentum": 0.9
     },
     "lr": {
-      "policy": "mdr",
-      "initial": 1e-10,
+      "policy": "polynomial",
+      "initial": 5e-3,
+      "maximal_learning_rate": 1e-6,
+      "step_size": 500,
       "power": 0.9,
       "cycle": false
     },
@@ -53,7 +55,7 @@
     }
   },
   "trainer": {
-    "num_epochs": 100,
+    "num_epochs": 400,
     "batch_size": 1,
     "verbose_training": true,
     "workers": 1
