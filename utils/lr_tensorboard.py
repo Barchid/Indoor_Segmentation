@@ -8,5 +8,5 @@ class LRTensorBoard(TensorBoard):
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
-        logs.update({'lr': K.eval(self.model.optimizer.lr)})
+        logs.update({'lr': K.get_value(self.model.optimizer.lr)})
         super().on_epoch_end(epoch, logs)
