@@ -1,6 +1,7 @@
 from base.base_trainer import BaseTrain
 import os
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
+from utils.lr_tensorboard import LRTensorBoard
 
 
 class SegmentationTrainer(BaseTrain):
@@ -33,13 +34,18 @@ class SegmentationTrainer(BaseTrain):
                 verbose=self.config.callbacks.checkpoint_verbose,
             )
         )
-
         self.callbacks.append(
-            TensorBoard(
+            LRTensorBoard(
                 log_dir=self.config.callbacks.tensorboard_log_dir,
-                write_graph=self.config.callbacks.tensorboard_write_graph,
+                write_graph=self.config.callbacks.tensorboard_write_graph
             )
         )
+        # self.callbacks.append(
+        #     TensorBoard(
+        #         log_dir=self.config.callbacks.tensorboard_log_dir,
+        #         write_graph=self.config.callbacks.tensorboard_write_graph,
+        #     )
+        # )
 
     def train(self):
         # load weights if weight file exists
