@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAF_mobilenetv2_cross_berhu_rgbd_300ep",
+    "name": "HDAF_mobilenetv2_cross_berhu_rgbd_100ep",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -57,7 +57,7 @@
     }
   },
   "trainer": {
-    "num_epochs": 300,
+    "num_epochs": 100,
     "batch_size": 8,
     "verbose_training": true,
     "workers": 1
