@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAF_mobilenetv2_focal_berhu_rgbd_f128_u2",
+    "name": "HDAF_mobilenetv2_focal_berhu_rgbd_f128_u2_400ep",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -57,7 +57,7 @@
     }
   },
   "trainer": {
-    "num_epochs": 100,
+    "num_epochs": 400,
     "batch_size": 8,
     "verbose_training": true,
     "workers": 1

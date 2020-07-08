@@ -16,7 +16,7 @@
     "img_dir": "datasets/nyu_v2/test_rgb",
     "mask_dir": "datasets/nyu_v2/test_mask",
     "depth_dir": "datasets/nyu_v2/test_depth",
-    "weights_file": "tests/verifs/joint_fpn_base1_320px/joint_fpn_base1_320px-100.hdf5"
+    "weights_file": "tests/hdaf/mobv2_light_cross_cutout/HDAF_mobilenetv2_cross_berhu_rgbd_100ep-100.hdf5"
   },
   "hdaf": {
     "s": 1,
