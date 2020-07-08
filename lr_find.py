@@ -25,6 +25,7 @@ MAX_LR = 10
 NUM_EPOCHS = 30
 MODEL_TASK = "RGBD"
 config.generator.use_data_augmentation = False  # force no data augmentation
+config.model.lr.policy = "mdr"  # force no special lr scheduler
 datagen = None
 if MODEL_TASK == "RGB":
     datagen = SegmentationDataGenerator(config)
