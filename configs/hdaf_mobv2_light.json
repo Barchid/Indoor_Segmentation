@@ -43,7 +43,7 @@
     "height": 256,
     "channels": 3,
     "classes": 41,
-    "seg_loss": "focal_loss",
+    "seg_loss": "categorical_crossentropy",
     "alpha": 0.25,
     "gamma": 2.0,
     "depth_loss": "berHu",
