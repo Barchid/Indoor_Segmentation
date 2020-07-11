@@ -55,15 +55,16 @@ class ScenenetRGBDDataGenerator(keras.utils.Sequence):
                                  self.batch_size: (index+1) * self.batch_size]
 
         for directory, filename in batch:
-            img = self._read_image(
-                os.path.join(directory, 'photo', filename + ".jpg")
-            )
-            mask = self._read_mask(
-                os.path.join(directory, 'class40', filename + ".png")
-            )
-            depth = self._read_depth(
-                os.path.join(directory, 'depth', filename + ".png")
-            )
+            img_path = os.path.join(
+                directory, 'photo', filename + ".jpg").replace('\\\\', '\\')
+            mask_path = os.path.join(
+                directory, 'class40', filename + ".png").replace('\\\\', '\\')
+            depth_path = os.path.join(
+                directory, 'depth', filename + ".png").replace('\\\\', '\\')
+
+            img = self._read_image(img_path)
+            mask = self._read_mask(mask_path)
+            depth = self._read_depth(depth_path)
 
             # Launch data_augmentation if needed
             if self.use_data_augmentation:
