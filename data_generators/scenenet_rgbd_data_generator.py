@@ -167,8 +167,13 @@ class ScenenetRGBDDataGenerator(keras.utils.Sequence):
         # generate directory + filenames
         for part in self.config.generator.parts:
             part = os.path.normpath(os.path.join(self.img_dir, part))
+            # remove double backslashes for windows
+            part = part.replace('\\\\', '\\')
+
             for directory in os.listdir(part):
                 directory = os.path.normpath(os.path.join(part, directory))
+                directory = directory.replace('\\\\', '\\')
+
                 for i in range(0, 7476, 25):
                     result.append((directory, str(i)))
 
