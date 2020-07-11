@@ -1,6 +1,7 @@
 from models.joint_fpn import JointFpn
 from trainers.segmentation_trainer import SegmentationTrainer
 from data_generators.joint_data_generator import JointDataGenerator
+from data_generators.scenenet_rgbd_data_generator import ScenenetRGBDDataGenerator
 from utils.config import process_config
 from utils.dirs import create_dirs
 from utils.utils import get_args
@@ -33,7 +34,10 @@ def main():
                  config.callbacks.checkpoint_dir])
 
     print('Create the training data generator.')
-    train_data = JointDataGenerator(config)
+    if config.generator.is_scenenet == True:
+        train_data = ScenenetRGBDDataGenerator(config)
+    else:
+        train_data = JointDataGenerator(config)
 
     validation_data = None
     if type(config.validation.img_dir) == str:
