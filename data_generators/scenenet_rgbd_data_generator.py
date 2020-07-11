@@ -166,9 +166,9 @@ class ScenenetRGBDDataGenerator(keras.utils.Sequence):
 
         # generate directory + filenames
         for part in self.config.generator.parts:
-            part = os.path.join(self.img_dir, part)
+            part = os.path.normpath(os.path.join(self.img_dir, part))
             for directory in os.listdir(part):
-                directory = os.path.join(part, directory)
+                directory = os.path.normpath(os.path.join(part, directory))
                 for i in range(0, 7476, 25):
                     result.append((directory, str(i)))
 
