@@ -56,13 +56,13 @@ class ScenenetRGBDDataGenerator(keras.utils.Sequence):
 
         for directory, filename in batch:
             img = self._read_image(
-                os.path.join(directory, 'photo', filename)
+                os.path.join(directory, 'photo', filename + ".jpg")
             )
             mask = self._read_mask(
-                os.path.join(directory, 'class40', filename)
+                os.path.join(directory, 'class40', filename + ".png")
             )
             depth = self._read_depth(
-                os.path.join(directory, 'depth', filename)
+                os.path.join(directory, 'depth', filename + ".png")
             )
 
             # Launch data_augmentation if needed
@@ -170,7 +170,7 @@ class ScenenetRGBDDataGenerator(keras.utils.Sequence):
             for directory in os.listdir(part):
                 directory = os.path.join(part, directory)
                 for i in range(0, 7476, 25):
-                    result.append((directory, str(i) + '.png'))
+                    result.append((directory, str(i)))
 
         # shuffles the dataset
         random.shuffle(result)

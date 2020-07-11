@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAF_mobilenetv2_pretrain_u2_f300",
+    "name": "HDAFNet_resnet50_320px_u3_v1_s2_f512_scenenet",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -8,21 +8,21 @@
     "img_dir": "datasets/nyu_v2/train_rgb",
     "mask_dir": "datasets/nyu_v2/train_mask",
     "depth_dir": "datasets/nyu_v2/train_depth",
-    "use_data_augmentation": true,
+    "use_data_augmentation": false,
     "shuffle_seed": 9,
-    "img_mode": "color"
-  },
-  "validation": {
-    "img_dir": "datasets/nyu_v2/test_rgb",
-    "mask_dir": "datasets/nyu_v2/test_mask",
-    "depth_dir": "datasets/nyu_v2/test_depth",
-    "weights_file": "tests/hdaf/mobv2_light_cross_cutout/HDAF_mobilenetv2_cross_berhu_rgbd_100ep-100.hdf5"
+    "img_mode": "color",
+    "is_scenenet": true,
+    "parts": [
+      "0",
+      "1",
+      "2"
+    ]
   },
   "hdaf": {
-    "s": 1,
-    "u": 2,
+    "s": 2,
+    "u": 3,
     "v": 1,
-    "f": 300,
+    "f": 512,
     "use_depth": true
   },
   "model": {
@@ -33,8 +33,8 @@
     },
     "lr": {
       "policy": "polynomial",
-      "initial": 1e-2,
-      "maximal_learning_rate": 1e-1,
+      "initial": 5e-3,
+      "maximal_learning_rate": 1e-6,
       "step_size": 500,
       "power": 0.9,
       "cycle": false
@@ -43,12 +43,12 @@
     "height": 256,
     "channels": 3,
     "classes": 41,
-    "seg_loss": "categorical_crossentropy",
+    "seg_loss": "focal_loss",
     "alpha": 0.25,
     "gamma": 2.0,
     "depth_loss": "berHu",
     "backbone_pretrain": "imagenet",
-    "backbone": "mobilenet_v2",
+    "backbone": "resnet50",
     "loss_weights": {
       "main_segmentation": 1.0,
       "main_depth": 1.0,
@@ -57,13 +57,13 @@
     }
   },
   "trainer": {
-    "num_epochs": 100,
-    "batch_size": 8,
+    "num_epochs": 10,
+    "batch_size": 1,
     "verbose_training": true,
     "workers": 1
   },
   "callbacks": {
-    "checkpoint_monitor": "val_loss",
+    "checkpoint_monitor": "loss",
     "checkpoint_mode": "min",
     "checkpoint_save_best_only": true,
     "checkpoint_save_weights_only": true,
