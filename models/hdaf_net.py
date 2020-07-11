@@ -265,7 +265,7 @@ class HdafNet(BaseModel):
     def segmentation_head(self, P2, P3, P4, P5, name="seg_head_"):
         features = merge_block(P5, P4, P3, P2, 64, name=name+"merge_block_")
         features = conv2d(features, self.config.model.classes,
-                          1, 1, kernel_size=1, name=name + "conv1x1")
+                          1, 1, kernel_size=1, use_bn=False, name=name + "conv1x1")
 
         upsampled = resize_img(
             features, self.config.model.height, self.config.model.width)
@@ -277,7 +277,7 @@ class HdafNet(BaseModel):
     def depth_head(self, P2, P3, P4, P5, name="dep_head_"):
         features = merge_block(P5, P4, P3, P2, 64, name=name+"merge_block_")
         features = conv2d(features, 1,
-                          1, 1, kernel_size=1, name=name + "conv1x1")
+                          1, 1, kernel_size=1, use_bn=False, name=name + "conv1x1")
 
         upsampled = resize_img(
             features, self.config.model.height, self.config.model.width, name=name+"out")
@@ -332,7 +332,7 @@ def ppm_block(input, bin_sizes, inter_channels, out_channels):
     return x
 
 
-def conv2d(input, filters, stride, n, kernel_size=3, name=None):
+def conv2d(input, filters, stride, n, kernel_size=3, use_bn=True, name=None):
     x = input
     for i in range(n):
         # define names for layers
@@ -346,7 +346,8 @@ def conv2d(input, filters, stride, n, kernel_size=3, name=None):
         x = Conv2D(filters, (kernel_size, kernel_size), strides=(
             stride, stride), padding="same", name=conv_name)(x)
 
-        x = BatchNormalization(name=bn_name)(x)
+        if use_bn:
+            x = BatchNormalization(name=bn_name)(x)
 
         x = Activation(lambda a: tf.nn.relu(a), name=relu_name)(x)
     return x
