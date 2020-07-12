@@ -1,6 +1,6 @@
 {
   "exp": {
-    "name": "HDAF_mobilenetv2_u2_f300",
+    "name": "HDAF_mobilenetv2_scenenet_u2_f300",
     "mixed_precision": false,
     "jpa_optimization": true
   },
@@ -8,15 +8,30 @@
     "img_dir": "datasets/nyu_v2/train_rgb",
     "mask_dir": "datasets/nyu_v2/train_mask",
     "depth_dir": "datasets/nyu_v2/train_depth",
-    "use_data_augmentation": true,
+    "use_data_augmentation": false,
     "shuffle_seed": 9,
-    "img_mode": "color"
-  },
-  "validation": {
-    "img_dir": "datasets/nyu_v2/test_rgb",
-    "mask_dir": "datasets/nyu_v2/test_mask",
-    "depth_dir": "datasets/nyu_v2/test_depth",
-    "weights_file": "tests/hdaf/mobv2_light_cross_cutout/HDAF_mobilenetv2_cross_berhu_rgbd_100ep-100.hdf5"
+    "img_mode": "color",
+    "is_scenenet": true,
+    "parts": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16"
+    ],
+    "img_step": 10
   },
   "hdaf": {
     "s": 1,

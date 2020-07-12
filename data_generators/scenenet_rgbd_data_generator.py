@@ -175,8 +175,11 @@ class ScenenetRGBDDataGenerator(keras.utils.Sequence):
                 directory = os.path.normpath(os.path.join(part, directory))
                 directory = directory.replace('\\\\', '\\')
 
-                for i in range(0, 7476, 25):
-                    result.append((directory, str(i)))
+                for i in range(0, 300):
+                    # use the picture in the dataset according to the configuration's step (ex : 1/10 picture)
+                    if i % self.config.generator.img_step == 0:
+                        pic_num = i * 25
+                        result.append((directory, str(pic_num)))
 
         # shuffles the dataset
         random.shuffle(result)
