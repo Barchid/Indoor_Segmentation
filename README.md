@@ -6,70 +6,92 @@
 This repository contains the codes and models to address the problem of semantic segmentation for indoor scenes in real-time. The project is written in Keras and Tensorflow 2.1.
 
 ## Dependencies
-This code was used with **Python 3.7.6** Install the dependencies with :
+We used **Python 3.7** with **Tensorflow 2.2**. Install the dependencies with :
 
-``pip install -r requirements.txt``
+``conda install tensorflow-gpu``
+
+``pip install numpy scipy Dotmap imgaug Pillow opencv-python imageio scikit-image``
 
 
 ## Datasets installation
 
-Execute the following commands :
+Execute the following commands to install NYUdV2 and SUN-RGBD datasets for experimentations :
+
 ```bash
 chmod u+x installation.sh
 ./installation.sh
 ```
 
-The project uses three datasets well known in the indoor semantic segmentation problem : **NYU-v2**, **SUN RGB-D** and **SceneNet RGB-D**.
-
 ## Training
-You can use one of the available models of this repository by executing a python script with a JSON config file that describes all the parameters used by the model (e.g. the learning rate, the dataset's directory, ...). For exemple : 
+Three modes are available for training :
+
+###### RGB semantic segmentation
+Uses the `train.py` script with a config json file as parameter.
 
 ```bash
-python fast_scnn_nyuv2.py -c configs/segmentation-example_NYU.json
+python train.py -c configs/fpn_framework.json
+```
+
+###### Depth estimation
+Uses the `train_depth.py` script with a config json file as parameter.
+
+```bash
+python train_depth.py -c configs/fpn_depth.json
+```
+
+###### RGBD semantic segmentation (RGB image + Depth map)
+Uses the `train_joint.py` script with a config json file as parameter.
+
+```bash
+python train_joint.py -c configs/hdaf_mobv2.json
 ```
 
 
 ## Project architecture
-The project contains a customizable structure you can use to create your personal models :
+The project contains a customizable structure you can use to create your personal models. The main components are introduced in the following structure :
 
 ```
-├── main.py             - here's an example of main that is responsible for the whole pipeline. It instantiates and executes all the other components
-│
-│
+├── train_joint.py             - "main" script to make a training experimentation for RGBD semantic segmentation
+├── train_depth.py             - "main" script to make a training experimentation for monocular depth estimation
+├── train.py                   - "main" script to make a training experimentation for RGB semantic segmentation
+|
+├── lr_find.py                 - Script to launch the Learning Rate finder algorithm for your model.
+|
+├── seg_grad_cam.py            - Script to launch the SEG-grad-cam algorithm with a pre-trained model.
+|
 ├── base                - this folder contains the abstract classes of the project components
 │   ├── base_model.py   - abstract class to inherit in order to define the new model architecture.
 │   └── base_train.py   - this file contains the abstract class of the trainer to inherit to define a new trainer architecture.
 │
 │
-├── models               - this folder contains the models of your project.
+├── models               - this folder contains the models of your project (i.e. the classes that inherit from base/base_model.py).
 │
 ├── trainers             - this folder contains the trainers of your project.
-│   ├── simple_mnist_trainer.py             - Example for MNIST classification training
-│   └── segmentation_trainer.py             - General trainer to use for segmentation task.
+│   └── segmentation_trainer.py             - General trainer to use for segmentation task (or depth estimation).
 │
 |
-├── configs                                 - this folder contains the experiment and model configs of your project.
-│   ├── simple_mnist_config.json            - example for simple MNIST classification task.
-│   └── segmentation_example.json           - another example for segmentation task.
+├── configs                                 - this folder contains the JSON config file of your project to use as argument fro the train scripts.
 │
-├── datasets                                - this folder might contain the datasets of your project.
+├── datasets                                - this folder contains the datasets of your project.
 │   ├── sun_rgbd                            - contains the SUN RGB-D dataset.
-│   ├── nyu_v2                              - contains the NYU-V2 dataset.
-│   ├── scenenet_rgbd                       - contains the ScenetNet RGB-D dataset.
-│   └── stanford_indoor                     - contains the Stanford 2D-3D-S RGB-D dataset.
+│   └── nyu_v2                              - contains the NYU-V2 dataset.
 │
 ├── evaluater                               - this folder contains the evaluation for a segmentation task using the selected test set.
 │
-├── data_generators                         - this folder contains all the process of data generation for a segmentation task training.
+├── data_generators                         - this folder contains the data generators to use for training.
+│   ├── segmentation_data_generator.py      - Data generator for RGB semantic segmentation
+│   ├── depth_data_generator.py             - Data generator for monocular depth estimation
+│   ├── joint_data_generator.py             - Data generator for RGBD semantic segmentation
+│   ├── scenenet_rgbd_data_generator.py     - Data generator for RGBD semantic segmentation with the SceneNet-RGBD dataset.
+│   └── augmentations.py                    - Data augmentation process (to edit if you want to change the default data augmentations)
 │
-├── layers                                  - this folder contains some Keras layers that can be used in the models architecture.
+├── layers                                  - this folder contains some Keras layers that can be used in the designed models.
 │
-├── metrics                                 - this folder contains several implementation of metrics to use in our Keras architecture.
+├── metrics                                 - this folder contains several implementations of metrics to use in the designed models.
+│
+├── losses                                  - this folder contains several implementations of losses to use in the designed models.
 │
 └── utils               - this folder contains any utils you need.
-     ├── config.py      - util functions for parsing the config files.
-     ├── dirs.py        - util functions for creating directories.
-     └── utils.py       - util functions for parsing arguments.
 ```
 
 ## Customization 
