@@ -24,7 +24,7 @@ class BerHuLoss(keras.losses.Loss):
         # small error is abs_error
         # big error formula is :
         big_error = K.square(error) + K.square(delta)
-        big_error = tf.divide(big_error, 2 * delta)
+        big_error = tf.divide(big_error, (2 * delta) + K.epsilon())
 
         berhu = tf.where(tf.greater(error, delta), big_error, abs_error)
         return tf.reduce_mean(berhu)

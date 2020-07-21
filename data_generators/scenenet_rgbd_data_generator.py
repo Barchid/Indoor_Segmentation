@@ -120,8 +120,9 @@ class ScenenetRGBDDataGenerator(keras.utils.Sequence):
         """Reads the depth image from the depth directory and returns the associated numpy array
         """
         depth = np.array(Image.open(depth_path))
-        # normalize between 0 & 1
-        depth = ((depth - np.min(depth)) / (np.max(depth) - np.min(depth)))
+        # normalize between 0 & 1 (with 1e-7 as an epsilon to avoid divide by 0)
+        depth = ((depth - np.min(depth)) /
+                 (np.max(depth) - np.min(depth) + 1e-7))
 
         # Resize image
         depth = cv2.resize(
