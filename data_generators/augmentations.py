@@ -30,14 +30,14 @@ def init_augmenter(img_mode="color"):
                 (0, 0.50),
                 (0, 0.50),
                 (0, 0.50)
-            )),
-            sometimes(iaa.OneOf([
-                iaa.Cutout(nb_iterations=(1, 4), size=0.2,
-                           squared=False, cval=(0, 255), fill_mode="constant"),
-                iaa.Cutout(nb_iterations=(1, 4), size=0.2, squared=False, cval=(
-                    0, 255), fill_mode="gaussian", fill_per_channel=True),
-                iaa.AdditiveGaussianNoise(scale=(0, 0.1*255))
-            ]))
+            ))
+            # sometimes(iaa.OneOf([
+            #     iaa.Cutout(nb_iterations=(1, 4), size=0.2,
+            #                squared=False, cval=(0, 255), fill_mode="constant"),
+            #     iaa.Cutout(nb_iterations=(1, 4), size=0.2, squared=False, cval=(
+            #         0, 255), fill_mode="gaussian", fill_per_channel=True),
+            #     iaa.AdditiveGaussianNoise(scale=(0, 0.1*255))
+            # ]))
         ])
     else:
         return iaa.Sequential([
