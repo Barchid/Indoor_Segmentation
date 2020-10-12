@@ -1,0 +1,73 @@
+{
+  "exp": {
+    "name": "HDAF_EF0_u2_f256",
+    "mixed_precision": false,
+    "jpa_optimization": true
+  },
+  "generator": {
+    "img_dir": "datasets/nyu_v2/train_rgb",
+    "mask_dir": "datasets/nyu_v2/train_mask",
+    "depth_dir": "datasets/nyu_v2/train_depth",
+    "use_data_augmentation": true,
+    "shuffle_seed": 9,
+    "img_mode": "color"
+  },
+  "validation": {
+    "img_dir": "datasets/nyu_v2/test_rgb",
+    "mask_dir": "datasets/nyu_v2/test_mask",
+    "depth_dir": "datasets/nyu_v2/test_depth",
+    "weights_file": "tests/hdaf/mobv2_light_cross_cutout/HDAF_mobilenetv2_cross_berhu_rgbd_100ep-100.hdf5"
+  },
+  "hdaf": {
+    "s": 1,
+    "u": 2,
+    "v": 1,
+    "f": 64,
+    "use_depth": true
+  },
+  "model": {
+    "class_name": "models.hdaf_net.HdafNet",
+    "optimizer": {
+      "name": "SGD",
+      "momentum": 0.9
+    },
+    "lr": {
+      "policy": "polynomial",
+      "initial": 1e-1,
+      "maximal_learning_rate": 1e-4,
+      "step_size": 500,
+      "power": 0.9,
+      "cycle": false
+    },
+    "width": 320,
+    "height": 256,
+    "channels": 3,
+    "classes": 13,
+    "seg_loss": "categorical_crossentropy",
+    "alpha": 0.25,
+    "gamma": 2.0,
+    "depth_loss": "berHu",
+    "backbone_pretrain": "imagenet",
+    "backbone": "EF0",
+    "loss_weights": {
+      "main_segmentation": 1.0,
+      "main_depth": 1.0,
+      "deep_segmentation": 1.0,
+      "deep_depth": 1.0
+    }
+  },
+  "trainer": {
+    "num_epochs": 300,
+    "batch_size": 8,
+    "verbose_training": true,
+    "workers": 1
+  },
+  "callbacks": {
+    "checkpoint_monitor": "val_loss",
+    "checkpoint_mode": "min",
+    "checkpoint_save_best_only": true,
+    "checkpoint_save_weights_only": true,
+    "checkpoint_verbose": true,
+    "tensorboard_write_graph": true
+  }
+}

@@ -39,6 +39,31 @@ skip_connections = {
         'tf_op_layer_Relu_7',  # stride 8
         'tf_op_layer_Relu_1'  # stride 4
     ),
+    'EF0': (
+        'block6a_expand_activation  ',  # stride 16
+        'block4a_expand_activation',  # stride 8
+        'block3a_expand_activation'  # stride 4
+    ),
+    'EF1': (
+        'block6a_expand_activation  ',  # stride 16
+        'block4a_expand_activation',  # stride 8
+        'block3a_expand_activation'  # stride 4
+    ),
+    'EF2': (
+        'block6a_expand_activation  ',  # stride 16
+        'block4a_expand_activation',  # stride 8
+        'block3a_expand_activation'  # stride 4
+    ),
+    'EF3': (
+        'block6a_expand_activation  ',  # stride 16
+        'block4a_expand_activation',  # stride 8
+        'block3a_expand_activation'  # stride 4
+    ),
+    'EF4': (
+        'block6a_expand_activation  ',  # stride 16
+        'block4a_expand_activation',  # stride 8
+        'block3a_expand_activation'  # stride 4
+    )
 }
 
 
