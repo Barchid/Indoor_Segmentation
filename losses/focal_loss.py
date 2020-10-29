@@ -41,3 +41,48 @@ class CategoricalFocalLoss(keras.losses.Loss):
 
         # Compute mean loss in mini_batch
         return K.mean(K.sum(loss, axis=-1))
+
+
+class BinaryFocalLoss(keras.losses.Loss):
+    """Implementation of simple binary focal loss.
+    """
+
+    def __init__(self, name=None, gamma=2.0, alpha=0.25):
+        """
+        :param name: displayed name for loss function
+        :param gamma: gamma constant used in focal loss. gamma > 0 reduces the relative loss for well-classified examples (p>0.5) putting more focus on hard misclassified example
+        :param alpha: alpha constant used in focal loss equation. scalar factor to reduce the relative loss.
+        """
+        super(BinaryFocalLoss, self).__init__(name=name)
+        self.gamma = gamma
+        self.alpha = alpha
+
+    def call(self, y_true, y_pred):
+        """
+        :param y_true: A tensor of the same shape as `y_pred`
+        :param y_pred:  A tensor resulting from a sigmoid
+        """
+
+        y_true = tf.cast(y_true, tf.float32)
+        # Define epsilon so that the back-propagation will not result in NaN for 0 divisor case
+        epsilon = K.epsilon()
+        # Add the epsilon to prediction value
+        # y_pred = y_pred + epsilon
+        # Clip the prediciton value
+        y_pred = K.clip(y_pred, epsilon, 1.0 - epsilon)
+        # Calculate p_t
+        p_t = tf.where(K.equal(y_true, 1), y_pred, 1 - y_pred)
+        # Calculate alpha_t
+        alpha_factor = K.ones_like(y_true) * self.alpha
+        alpha_t = tf.where(K.equal(y_true, 1), alpha_factor, 1 - alpha_factor)
+        
+        # Calculate cross entropy
+        cross_entropy = - K.log(p_t)
+        weight = alpha_t * K.pow((1 - p_t), self.gamma)
+        
+        # Calculate focal loss
+        loss = weight * cross_entropy
+
+        # Sum the losses in mini_batch
+        loss = K.mean(K.sum(loss, axis=1))
+        return loss
