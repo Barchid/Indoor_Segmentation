@@ -115,7 +115,6 @@ class MudaNet(BaseModel):
         losses[fix_output_name(main_out.name)] = self.segmentation_loss()
         loss_weights[fix_output_name(
             main_out.name)] = self.config.model.loss_weights.main_segmentation
-            main_out.name)] = self.config.model.loss_weights.main_segmentation
 
         # register metric for main out seg mask
         metrics[fix_output_name(main_out.name)] = self._generate_metrics()
