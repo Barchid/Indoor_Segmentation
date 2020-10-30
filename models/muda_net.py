@@ -145,7 +145,7 @@ class MudaNet(BaseModel):
         Merge all mini-decoders' outputs
         """
         merge = concatenate(mini_decoders, name="merge_block_concatenate")
-        merge = conv2d(merge, self.config.model.classes, 1, 1,
+        merge = conv2d(merge, 64, 1, 1,
                        kernel_size=3, name="merge_block_conv3x3")
         merge = conv2d(merge, self.config.model.classes, 1, 1,
                        kernel_size=3, name="merge_block_conv3x3_final")
@@ -215,17 +215,17 @@ class MudaNet(BaseModel):
         P5 = conv2d(P5, P4_filters, 1, 1, kernel_size=1,
                     name=class_name + "_decoder_control_backbone_")
         decoder = fusion_node(
-            P5, P4, P4_filters, name="decoder_" + class_name + "_P5_P4_fusion_")
+            P5, P4, filters=P4_filters, next_filters=P3_filters, name="decoder_" + class_name + "_P5_P4_fusion_")
         decoder = fusion_node(
-            decoder, P3, P3_filters, name="decoder_" + class_name + "_P4_P3_fusion_")
+            decoder, P3, filters=P3_filters, next_filters=P2_filters, name="decoder_" + class_name + "_P4_P3_fusion_")
         decoder = fusion_node(
-            decoder, P2, P2_filters, name="decoder_" + class_name + "_P3_P2_fusion_")
+            decoder, P2, filters=P2_filters, next_filters=P2_filters, name="decoder_" + class_name + "_P3_P2_fusion_")
 
         # segmentation head
         segmentation = Conv2D(1, (1, 1), strides=(
             1, 1), padding="same", name=class_name + "_segout_conv")(decoder)
         segmentation = Activation(lambda a: tf.nn.sigmoid(
-            a), name=class_name + "_sigmoid")(decoder)
+            a), name=class_name + "_sigmoid")(segmentation)
         segmentation = resize_img(
             segmentation, self.config.model.height, self.config.model.width)
 
@@ -293,17 +293,18 @@ def conv2d(input, filters, stride, n, kernel_size=3, use_bn=True, name=None):
 
 def fix_output_name(name: str):
     """Removes the "Identity:0" of a tensor's name if it exists"""
-    return name.replace("/Identity:0", "", 1)
+    return name.replace("/Identity:0", "", 1).replace("/resize/ResizeBilinear:0", "", 1)
 
 
-def fusion_node(low_res, high_res, filters=64, name="fusion_"):
+def fusion_node(low_res, high_res, filters=64, next_filters=64, name="fusion_"):
     # channel controller
     high_res = conv2d(high_res, filters, 1, 1, kernel_size=1,
                       name=name + "channel_controller")
     low_res = UpSampling2D(name=name + "UP2D")(low_res)
     fusion = FastNormalizedFusion(
         name=name + "FastNormAdd")([low_res, high_res])
-    fusion = conv2d(fusion, filters, 1, 1, kernel_size=3, name=name + "conv")
+    fusion = conv2d(fusion, next_filters, 1, 1,
+                    kernel_size=3, name=name + "conv")
     return fusion
 
 

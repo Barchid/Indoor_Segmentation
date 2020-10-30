@@ -32,7 +32,6 @@ class MudaDataGenerator(keras.utils.Sequence):
         self.input_dimensions = (config.model.height, config.model.width)
         self.config = config
         # configuration of each class for the relative binary mask
-        self.classes = config.classes
         self.augmenter = augmentations.init_augmenter(
             img_mode=self.config.generator.img_mode)
 

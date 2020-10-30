@@ -1,0 +1,177 @@
+{
+  "exp": {
+    "name": "muda_13c",
+    "mixed_precision": false,
+    "jpa_optimization": true
+  },
+  "generator": {
+    "img_dir": "datasets/nyu_v2_13c/train_rgb",
+    "mask_dir": "datasets/nyu_v2_13c/train_mask",
+    "depth_dir": "datasets/nyu_v2_13c/train_depth",
+    "use_data_augmentation": true,
+    "shuffle_seed": 9,
+    "img_mode": "color"
+  },
+  "validation": {
+    "img_dir": "datasets/nyu_v2_13c/test_rgb",
+    "mask_dir": "datasets/nyu_v2_13c/test_mask",
+    "depth_dir": "datasets/nyu_v2_13c/test_depth",
+    "weights_file": "tests/hdaf/mobv2_light_cross_cutout/HDAF_mobilenetv2_cross_berhu_rgbd_100ep-100.hdf5"
+  },
+  "classes": [
+    {
+      "name": "background",
+      "P2": 24,
+      "P3": 32,
+      "P4": 64,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "bed",
+      "P2": 8,
+      "P3": 16,
+      "P4": 20,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "books",
+      "P2": 8,
+      "P3": 12,
+      "P4": 16,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "ceiling",
+      "P2": 8,
+      "P3": 12,
+      "P4": 16,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "chair",
+      "P2": 16,
+      "P3": 24,
+      "P4": 32,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "floor",
+      "P2": 16,
+      "P3": 24,
+      "P4": 32,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "furniture",
+      "P2": 24,
+      "P3": 32,
+      "P4": 64,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "objects",
+      "P2": 24,
+      "P3": 32,
+      "P4": 64,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "painting",
+      "P2": 8,
+      "P3": 12,
+      "P4": 16,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "sofa",
+      "P2": 8,
+      "P3": 16,
+      "P4": 20,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "table",
+      "P2": 8,
+      "P3": 16,
+      "P4": 20,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "tv",
+      "P2": 8,
+      "P3": 12,
+      "P4": 16,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "wall",
+      "P2": 24,
+      "P3": 32,
+      "P4": 64,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "name": "window",
+      "P2": 8,
+      "P3": 16,
+      "P4": 24,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    }
+  ],
+  "model": {
+    "class_name": "models.muda_net.MudaNet",
+    "optimizer": {
+      "name": "SGD",
+      "momentum": 0.9
+    },
+    "lr": {
+      "policy": "polynomial",
+      "initial": 1e-1,
+      "maximal_learning_rate": 1e-4,
+      "step_size": 500,
+      "power": 0.9,
+      "cycle": false
+    },
+    "width": 320,
+    "height": 256,
+    "channels": 3,
+    "classes": 14,
+    "seg_loss": "focal",
+    "alpha": 0.25,
+    "gamma": 2.0,
+    "depth_loss": "berHu",
+    "backbone_pretrain": "imagenet",
+    "backbone": "mobilenet_v2",
+    "loss_weights": {
+      "main_segmentation": 1.0
+    }
+  },
+  "trainer": {
+    "num_epochs": 300,
+    "batch_size": 8,
+    "verbose_training": true,
+    "workers": 1
+  },
+  "callbacks": {
+    "checkpoint_monitor": "val_loss",
+    "checkpoint_mode": "min",
+    "checkpoint_save_best_only": true,
+    "checkpoint_save_weights_only": true,
+    "checkpoint_verbose": true,
+    "tensorboard_write_graph": true
+  }
+}
