@@ -1,6 +1,7 @@
 from data_generators.joint_data_generator import JointDataGenerator
 from data_generators.depth_data_generator import DepthDataGenerator
 from data_generators.segmentation_data_generator import SegmentationDataGenerator
+from data_generators.muda_data_generator import MudaDataGenerator
 from utils import factory
 from utils.config import process_config
 from utils.utils import get_args
@@ -23,7 +24,7 @@ except:
 MIN_LR = 1e-10
 MAX_LR = 10
 NUM_EPOCHS = 30
-MODEL_TASK = "RGBD"
+MODEL_TASK = "MUDA"
 config.generator.use_data_augmentation = False  # force no data augmentation
 config.model.lr.policy = "mdr"  # force no special lr scheduler
 datagen = None
@@ -31,6 +32,8 @@ if MODEL_TASK == "RGB":
     datagen = SegmentationDataGenerator(config)
 elif MODEL_TASK == "D":
     datagen = DepthDataGenerator(config)
+elif MODEL_TASK == "MUDA":
+    datagen = MudaDataGenerator(config)
 else:
     datagen = JointDataGenerator(config)
 
