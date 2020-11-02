@@ -151,7 +151,7 @@ class MudaNet(BaseModel):
                        kernel_size=3, name="merge_block_conv3x3_final")
         merge = Activation('softmax', name="Main_Softmax")(merge)
         merge = resize_img(merge, self.config.model.height,
-                           self.config.model.width)
+                           self.config.model.width, name="Main_mask")
         return merge
 
     def get_backbone(self):
@@ -227,7 +227,7 @@ class MudaNet(BaseModel):
         segmentation = Activation(lambda a: tf.nn.sigmoid(
             a), name=class_name + "_sigmoid")(segmentation)
         segmentation = resize_img(
-            segmentation, self.config.model.height, self.config.model.width)
+            segmentation, self.config.model.height, self.config.model.width, name=class_name + "_mask")
 
         return segmentation, decoder
 
@@ -236,7 +236,7 @@ class MudaNet(BaseModel):
                           1, 1, kernel_size=1, use_bn=False, name=name + "conv1x1")
 
         upsampled = resize_img(
-            features, self.config.model.height, self.config.model.width)
+            features, self.config.model.height, self.config.model.width, name=name + "resize")
 
         segmentation_mask = Activation(
             'softmax', name=name + "out")(upsampled)
