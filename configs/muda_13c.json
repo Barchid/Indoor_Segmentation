@@ -161,7 +161,7 @@
     }
   },
   "trainer": {
-    "num_epochs": 100,
+    "num_epochs": 300,
     "batch_size": 16,
     "verbose_training": true,
     "workers": 1
