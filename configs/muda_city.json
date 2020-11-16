@@ -1,0 +1,245 @@
+{
+  "exp": {
+    "name": "muda_city",
+    "mixed_precision": false,
+    "jpa_optimization": true
+  },
+  "generator": {
+    "img_dir": "datasets/nyu_v2_13c/train_rgb",
+    "mask_dir": "datasets/nyu_v2_13c/train_mask",
+    "depth_dir": "datasets/nyu_v2_13c/train_depth",
+    "use_data_augmentation": true,
+    "shuffle_seed": 9,
+    "img_mode": "color"
+  },
+  "validation": {
+    "img_dir": "datasets/nyu_v2_13c/test_rgb",
+    "mask_dir": "datasets/nyu_v2_13c/test_mask",
+    "depth_dir": "datasets/nyu_v2_13c/test_depth",
+    "weights_file": "tests/hdaf/mobv2_light_cross_cutout/HDAF_mobilenetv2_cross_berhu_rgbd_100ep-100.hdf5"
+  },
+  "classes": [
+    {
+      "id": 0,
+      "name": "road",
+      "P2": 24,
+      "P3": 32,
+      "P4": 64,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 1,
+      "name": "sidewalk",
+      "P2": 8,
+      "P3": 16,
+      "P4": 20,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 2,
+      "name": "building",
+      "P2": 8,
+      "P3": 12,
+      "P4": 16,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 3,
+      "name": "wall",
+      "P2": 8,
+      "P3": 12,
+      "P4": 16,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 4,
+      "name": "fence",
+      "P2": 16,
+      "P3": 24,
+      "P4": 32,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 5,
+      "name": "pole",
+      "P2": 16,
+      "P3": 24,
+      "P4": 32,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 6,
+      "name": "traffic_light",
+      "P2": 24,
+      "P3": 32,
+      "P4": 64,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 7,
+      "name": "traffic_sign",
+      "P2": 24,
+      "P3": 32,
+      "P4": 64,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 8,
+      "name": "vegetation",
+      "P2": 8,
+      "P3": 12,
+      "P4": 16,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 9,
+      "name": "terrain",
+      "P2": 8,
+      "P3": 16,
+      "P4": 20,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 10,
+      "name": "sky",
+      "P2": 8,
+      "P3": 16,
+      "P4": 20,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 11,
+      "name": "person",
+      "P2": 8,
+      "P3": 12,
+      "P4": 16,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 12,
+      "name": "rider",
+      "P2": 24,
+      "P3": 32,
+      "P4": 64,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 13,
+      "name": "car",
+      "P2": 8,
+      "P3": 16,
+      "P4": 24,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 14,
+      "name": "truck",
+      "P2": 8,
+      "P3": 16,
+      "P4": 24,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 15,
+      "name": "bus",
+      "P2": 8,
+      "P3": 16,
+      "P4": 24,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 16,
+      "name": "train",
+      "P2": 8,
+      "P3": 16,
+      "P4": 24,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 17,
+      "name": "motorcycle",
+      "P2": 8,
+      "P3": 16,
+      "P4": 24,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 18,
+      "name": "bicycle",
+      "P2": 8,
+      "P3": 16,
+      "P4": 24,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    },
+    {
+      "id": 19,
+      "name": "void",
+      "P2": 8,
+      "P3": 16,
+      "P4": 24,
+      "loss": "binary_crossentropy",
+      "loss_weight": 1.0
+    }
+  ],
+  "model": {
+    "class_name": "models.muda_net.MudaNet",
+    "optimizer": {
+      "name": "SGD",
+      "momentum": 0.9
+    },
+    "lr": {
+      "policy": "polynomial",
+      "initial": 1e-1,
+      "maximal_learning_rate": 1e-4,
+      "step_size": 500,
+      "power": 0.9,
+      "cycle": false
+    },
+    "width": 320,
+    "height": 256,
+    "channels": 3,
+    "classes": 20,
+    "seg_loss": "focal",
+    "alpha": 0.25,
+    "gamma": 2.0,
+    "depth_loss": "berHu",
+    "backbone_pretrain": "imagenet",
+    "backbone": "mobilenet_v2",
+    "loss_weights": {
+      "main_segmentation": 1.0
+    }
+  },
+  "trainer": {
+    "num_epochs": 300,
+    "batch_size": 16,
+    "verbose_training": true,
+    "workers": 1
+  },
+  "callbacks": {
+    "checkpoint_monitor": "val_loss",
+    "checkpoint_mode": "min",
+    "checkpoint_save_best_only": true,
+    "checkpoint_save_weights_only": true,
+    "checkpoint_verbose": true,
+    "tensorboard_write_graph": true
+  }
+}
